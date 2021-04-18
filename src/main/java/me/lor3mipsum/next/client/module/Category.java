@@ -1,7 +1,7 @@
 package me.lor3mipsum.next.client.module;
 
 public enum Category {
-    COMBAT("Combat"), EXPLOIT("Exploit"), PLAYER("Player"), RENDER("Render"), MISC("Misc");
+    COMBAT("Combat"), EXPLOIT("Exploit"), PLAYER("Player"), RENDER("Render"), MISC("Misc"), CLIENT("Client");
 
     private String name;
 

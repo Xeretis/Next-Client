@@ -32,6 +32,7 @@ dependencies {
 	// You may need to force-disable transitiveness on them.
 
 	compile('com.lukflug:panelstudio:0.1.11')
+	compile('com.lukflug:panelstudio-mc16:0.1.9')
 
 }
 
@@ -98,5 +99,6 @@ publishing {
 shadowJar {
 	dependencies {
 		include(dependency('com.lukflug:panelstudio'))
+		include(dependency('com.lukflug:panelstudio-mc16'))
 	}
 }
