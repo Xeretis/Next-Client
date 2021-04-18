@@ -45,14 +45,9 @@ public class ClickGuiModule extends Module {
         this.keybind.setKey(keybind);
     }
 
-    @EventTarget
-    public void keyEvent(KeyEvent event) {
-        if(event.getKey() == GLFW.GLFW_KEY_ESCAPE)
-            this.toggle();
-    }
-
     @Override
     public void onEnable() {
         Next.INSTANCE.clickGui.enterGUI();
+        this.toggle();
     }
 }
