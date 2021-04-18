@@ -1,61 +1,178 @@
 package me.lor3mipsum.next.client.gui.clickgui;
 
-import com.lukflug.panelstudio.ClickGUI;
-import com.lukflug.panelstudio.DraggableContainer;
-import com.lukflug.panelstudio.Interface;
-import com.lukflug.panelstudio.SettingsAnimation;
-import com.lukflug.panelstudio.mc16.MinecraftGUI;
-import com.lukflug.panelstudio.settings.SimpleToggleable;
-import com.lukflug.panelstudio.settings.Toggleable;
-import com.lukflug.panelstudio.theme.ColorScheme;
-import com.lukflug.panelstudio.theme.GameSenseTheme;
-import com.lukflug.panelstudio.theme.Theme;
+import com.lukflug.panelstudio.*;
+import com.lukflug.panelstudio.hud.HUDClickGUI;
+import com.lukflug.panelstudio.mc16.GLInterface;
+import com.lukflug.panelstudio.mc16.MinecraftHUDGUI;
+import com.lukflug.panelstudio.settings.*;
+import com.lukflug.panelstudio.theme.*;
+import me.lor3mipsum.next.Next;
+import me.lor3mipsum.next.client.gui.clickgui.components.SyncableColorComponent;
+import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
+import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
+import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
+import me.lor3mipsum.next.client.impl.settings.ModeSetting;
+import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
-
+import me.lor3mipsum.next.client.module.Module;
+import me.lor3mipsum.next.client.setting.Setting;
+import me.lor3mipsum.next.client.utils.FontUtils;
 import java.awt.*;
 
-public class NextGui {
-//    private final Theme theme;
-//    private final ClickGUI gui;
-//
-//    public NextGui() {
-//        theme = new GameSenseTheme(new ColorScheme() {
-//            @Override
-//            public Color getActiveColor() {
-//                return new Color(121, 193, 255, 100);
-//            }
-//
-//            @Override
-//            public Color getInactiveColor() {
-//                return new Color(0, 0, 0, 200);
-//            }
-//
-//            @Override
-//            public Color getBackgroundColor() {
-//                return new Color(0, 0, 0, 200);
-//            }
-//
-//            @Override
-//            public Color getOutlineColor() {
-//                return new Color(255, 255, 255, 255);
-//            }
-//
-//            @Override
-//            public Color getFontColor() {
-//                return new Color(121, 193, 255, 100);
-//            }
-//
-//            @Override
-//            public int getOpacity() {
-//                return 255;
-//            }
-//        }, 12, 2,1);
-//
-//        gui = new ClickGUI(this, null);
-//
-//        Point pos = new Point(10, 10);
-//        for (Category category : Category.values()) {
-//            DraggableContainer panel = new DraggableContainer(category.name(), null, theme.getPanelRenderer(), new SimpleToggleable(false), new Point(pos));
-//        }
-//    }
+public class NextGui extends MinecraftHUDGUI {
+    public final static int WIDTH=ClickGuiModule.INSTANCE.thinGui.isOn() ? 80 : 100,HEIGHT=12,DISTANCE=10,HUD_BORDER=2;
+    private final Theme theme;
+    private final Toggleable colorToggle;
+    public final GUIInterface guiInterface;
+    public final HUDClickGUI gui;
+
+    public NextGui() {
+        theme = new GameSenseTheme(new NextTheme(), HEIGHT, 2, (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber());
+        colorToggle = new Toggleable() {
+            @Override
+            public void toggle() {
+                ColorMode.colorModel.increment();
+            }
+
+            @Override
+            public boolean isOn() {
+                return ColorMode.colorModel.is("RBG");
+            }
+        };
+        guiInterface = new GUIInterface(true) {
+            @Override
+            protected String getResourcePrefix() {
+                return "nxt/textures";
+            }
+
+            @Override
+            public void drawString(Point pos, String s, Color c) {
+                GLInterface.end();
+                int x=pos.x+2, y=pos.y+1;
+                FontUtils.drawStringWithShadow(s, x, y, c);
+                GLInterface.begin();
+            }
+
+            @Override
+            public int getFontWidth(String s) {
+                return Math.round(FontUtils.getStringWidth(s))+4;
+            }
+
+            @Override
+            public int getFontHeight() {
+                return Math.round(FontUtils.getFontHeight())+2;
+            }
+        };
+        gui = new HUDClickGUI(guiInterface, ClickGuiModule.INSTANCE.descriptionMode.is("Mouse") ? new MouseDescription(new Point(5,0)) : new FixedDescription(new Point(0,0))) {
+            @Override
+            public void handleScroll (int diff) {
+                super.handleScroll(diff);
+                if (ClickGuiModule.INSTANCE.scrollMode.is("screen")) {
+                    for (FixedComponent component: components) {
+                        if (!hudComponents.contains(component)) {
+                            Point p=component.getPosition(guiInterface);
+                            p.translate(0,-diff);
+                            component.setPosition(guiInterface,p);
+                        }
+                    }
+                }
+            }
+        };
+        Toggleable hudToggle = new Toggleable() {
+            @Override
+            public void toggle() {
+                render();
+            }
+
+            @Override
+            public boolean isOn() {
+                return hudEditor;
+            }
+        };
+        Point pos = new Point(DISTANCE, DISTANCE);
+        for (Category category : Category.values()) {
+            DraggableContainer panel = new DraggableContainer(category.toString(), null, theme.getPanelRenderer(), new SimpleToggleable(false), new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), null, new Point(pos), WIDTH) {
+                @Override
+                protected int getScrollHeight (int childHeight) {
+                    if (ClickGuiModule.INSTANCE.scrollMode.is("screen")) {
+                        return childHeight;
+                    }
+                    return Math.min(childHeight,Math.max(HEIGHT*4,NextGui.this.height-getPosition(guiInterface).y-renderer.getHeight(open.getValue()!=0)-HEIGHT));
+                }
+            };
+            gui.addComponent(panel);
+            pos.translate(0, HEIGHT + DISTANCE);
+            for (Module module : Next.INSTANCE.moduleManager.getModulesByCategory(category)) {
+                addModule(panel, module);
+            }
+        }
+    }
+
+    private void addModule(CollapsibleContainer panel, Module module) {
+        CollapsibleContainer container=new CollapsibleContainer(module.getName(),module.getDescription(),theme.getContainerRenderer(),new SimpleToggleable(false),new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), module);
+
+        if (!module.isHidden()) {
+            panel.addComponent(container);
+            for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(module.getName())) {
+                if (setting instanceof BooleanSetting) {
+                    container.addComponent(new BooleanComponent(setting.name,null,theme.getComponentRenderer(),(BooleanSetting) setting));
+                } else if (setting instanceof NumberSetting) {
+                    container.addComponent(new NumberComponent(setting.name,null,theme.getComponentRenderer(),(NumberSetting) setting,((NumberSetting) setting).getMinimumValue(),((NumberSetting) setting).getMaximumValue()));
+                }  else if (setting instanceof ModeSetting) {
+                    container.addComponent(new EnumComponent(setting.name,null,theme.getComponentRenderer(),(ModeSetting) setting));
+                }	else if (setting instanceof ColorSetting) {
+                    container.addComponent(new SyncableColorComponent(theme, (me.lor3mipsum.next.client.impl.settings.ColorSetting) setting,colorToggle,new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed)));
+                } else if (setting instanceof KeybindSetting) {
+                    container.addComponent(new KeybindComponent(theme.getComponentRenderer(),(KeybindSetting) setting));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected HUDClickGUI getHUDGUI() {
+        return gui;
+    }
+
+    @Override
+    protected GUIInterface getInterface() {
+        return guiInterface;
+    }
+
+    @Override
+    protected int getScrollSpeed() {
+        return (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber();
+    }
+
+    private static class NextTheme implements ColorScheme {
+        @Override
+        public Color getActiveColor() {
+            return ClickGuiModule.INSTANCE.activeColor.getValue();
+        }
+
+        @Override
+        public Color getInactiveColor() {
+            return ClickGuiModule.INSTANCE.backgroundColor.getValue();
+        }
+
+        @Override
+        public Color getBackgroundColor() {
+            return ClickGuiModule.INSTANCE.settingBackgroundColor.getValue();
+        }
+
+        @Override
+        public Color getOutlineColor() {
+            return ClickGuiModule.INSTANCE.outlineColor.getValue();
+        }
+
+        @Override
+        public Color getFontColor() {
+            return ClickGuiModule.INSTANCE.fontColor.getValue();
+        }
+
+        @Override
+        public int getOpacity() {
+            return (int) ClickGuiModule.INSTANCE.opacity.getNumber();
+        }
+    }
 }

@@ -42,7 +42,7 @@ public class ModeSetting extends Setting implements EnumSetting {
 
     @Override
     public String getValueName() {
-        return this.modes.get(this.index);
+        return modes.get(this.index);
     }
 
     @Override

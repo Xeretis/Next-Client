@@ -4,6 +4,8 @@ import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
+import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
+import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.misc.Demo;
 
 import java.util.ArrayList;
@@ -26,6 +28,9 @@ public class ModuleManager {
     public void addModules() {
         //Misc
         addModule(new Demo());
+        //Client
+        addModule(new ClickGuiModule());
+        addModule(new ColorMode());
     }
 
     public List<Module> getModules() {
@@ -38,6 +43,16 @@ public class ModuleManager {
 
     public Module getModule(String name, boolean caseSensitive) {
         return modules.stream().filter(mod -> !caseSensitive && name.equalsIgnoreCase(mod.getName()) || name.equals(mod.getName())).findFirst().orElse(null);
+    }
+
+    public List<Module> getModulesByCategory(Category c) {
+        List<Module> returnList = new ArrayList<Module>();
+
+        for(Module m : modules) {
+            if(m.getCategory() == c)
+                returnList.add(m);
+        }
+        return returnList;
     }
 
     @EventTarget

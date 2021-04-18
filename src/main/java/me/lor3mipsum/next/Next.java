@@ -3,6 +3,7 @@ package me.lor3mipsum.next;
 import me.lor3mipsum.next.client.config.ConfigManager;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
+import me.lor3mipsum.next.client.gui.clickgui.NextGui;
 import me.lor3mipsum.next.client.impl.events.DisconnectEvent;
 import me.lor3mipsum.next.client.module.ModuleManager;
 import me.lor3mipsum.next.client.setting.SettingManager;
@@ -19,6 +20,7 @@ public class Next implements ModInitializer {
 
 	public ModuleManager moduleManager;
 	public SettingManager settingManager;
+	public NextGui clickGui;
 	private ConfigManager configManager;
 
 	public Next() {
@@ -35,11 +37,12 @@ public class Next implements ModInitializer {
 		moduleManager.addModules();
 
 		configManager.load();
+
+		clickGui = new NextGui();
 	}
 
 	@EventTarget
 	public void onDisconnect(DisconnectEvent event) {
-		System.out.println("Disc.");
 		try {
 			configManager.save();
 		} catch (Exception e) {

@@ -1,10 +1,11 @@
 package me.lor3mipsum.next.client.module;
 
+import com.lukflug.panelstudio.settings.Toggleable;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
 
-public abstract class Module {
+public abstract class Module implements Toggleable {
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public Category category;
@@ -77,6 +78,16 @@ public abstract class Module {
 
     protected void onDisable() {
 
+    }
+
+    @Override
+    public void toggle() {
+        setState(!state);
+    }
+
+    @Override
+    public boolean isOn() {
+        return state;
     }
 
 }
