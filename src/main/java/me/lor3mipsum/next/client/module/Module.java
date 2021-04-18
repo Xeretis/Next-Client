@@ -11,23 +11,21 @@ public abstract class Module implements Toggleable {
     public Category category;
     public String name;
     public String description;
-    public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
     public boolean canBeEnabled;
     public boolean hidden;
     public boolean state;
 
     protected Module(String name, String description, Category moduleCategory) {
-        this(name, description, moduleCategory, true, false, GLFW.GLFW_KEY_UNKNOWN);
+        this(name, description, moduleCategory, true, false);
     }
 
-    protected Module(String name, String description, Category category, boolean canBeEnabled, boolean hidden, int keybind) {
+    protected Module(String name, String description, Category category, boolean canBeEnabled, boolean hidden) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.canBeEnabled = canBeEnabled;
         this.hidden = hidden;
-        this.keybind.setKey(keybind);
     }
 
     public String getName() {
@@ -50,13 +48,9 @@ public abstract class Module implements Toggleable {
         return hidden;
     }
 
-    public int getKeybind() {
-        return keybind.getKey();
-    }
+    public abstract int getKeybind();
 
-    public void setKeybind(int keybind) {
-        this.keybind.setKey(keybind);
-    }
+    public abstract void setKeybind(int keybind);
 
     public boolean getState() {
         return state;

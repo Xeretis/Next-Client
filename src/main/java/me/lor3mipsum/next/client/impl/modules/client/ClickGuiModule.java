@@ -3,10 +3,7 @@ package me.lor3mipsum.next.client.impl.modules.client;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
-import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
-import me.lor3mipsum.next.client.impl.settings.ColorSetting;
-import me.lor3mipsum.next.client.impl.settings.ModeSetting;
-import me.lor3mipsum.next.client.impl.settings.NumberSetting;
+import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
 import org.lwjgl.glfw.GLFW;
@@ -27,14 +24,25 @@ public class ClickGuiModule extends Module {
     public ModeSetting descriptionMode = new ModeSetting("DescriptionMode", "Mouse", "Mouse", "Fixed");
     public ModeSetting scrollMode = new ModeSetting("ScrollMode", "Container", "Container", "Screen");
     public BooleanSetting thinGui = new BooleanSetting("ThinGui", false);
+    public KeybindSetting keybind = new KeybindSetting(Next.GUI_KEY);
 
     public ClickGuiModule() {
-        super("ClickGui", "The settings of the click gui.", Category.CLIENT, true, false, Next.GUI_KEY);
+        super("ClickGui", "The settings of the click gui.", Category.CLIENT, true, false);
         INSTANCE = this;
     }
 
     public static Module getClickGuiModule() {
         return INSTANCE;
+    }
+
+    @Override
+    public int getKeybind() {
+        return keybind.getKey();
+    }
+
+    @Override
+    public void setKeybind(int keybind) {
+        this.keybind.setKey(keybind);
     }
 
     @EventTarget

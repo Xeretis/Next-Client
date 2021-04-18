@@ -7,6 +7,7 @@ import com.lukflug.panelstudio.mc16.MinecraftHUDGUI;
 import com.lukflug.panelstudio.settings.*;
 import com.lukflug.panelstudio.theme.*;
 import me.lor3mipsum.next.Next;
+import me.lor3mipsum.next.client.gui.clickgui.components.ResetableKeybindComponent;
 import me.lor3mipsum.next.client.gui.clickgui.components.SyncableColorComponent;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
@@ -36,7 +37,7 @@ public class NextGui extends MinecraftHUDGUI {
 
             @Override
             public boolean isOn() {
-                return ColorMode.colorModel.is("RBG");
+                return ColorMode.colorModel.is("HSB");
             }
         };
         guiInterface = new GUIInterface(true) {
@@ -123,7 +124,7 @@ public class NextGui extends MinecraftHUDGUI {
                 }	else if (setting instanceof ColorSetting) {
                     container.addComponent(new SyncableColorComponent(theme, (me.lor3mipsum.next.client.impl.settings.ColorSetting) setting,colorToggle,new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed)));
                 } else if (setting instanceof KeybindSetting) {
-                    container.addComponent(new KeybindComponent(theme.getComponentRenderer(),(KeybindSetting) setting));
+                    container.addComponent(new ResetableKeybindComponent(theme.getComponentRenderer(),(KeybindSetting) setting));
                 }
             }
         }

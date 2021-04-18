@@ -3,6 +3,7 @@ package me.lor3mipsum.next.client.impl.settings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import me.lor3mipsum.next.client.utils.Utils;
 import org.lwjgl.glfw.GLFW;
 import me.lor3mipsum.next.client.setting.Setting;
 
@@ -25,7 +26,7 @@ public class KeybindSetting extends Setting implements com.lukflug.panelstudio.s
 
     @Override
     public String getKeyName() {
-        return GLFW.glfwGetKeyName(code, 0);
+        return Utils.getKeyName(code);
     }
 
     @Override
