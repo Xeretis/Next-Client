@@ -22,7 +22,7 @@ public class ClickGuiModule extends Module {
     public NumberSetting opacity = new NumberSetting("Opacity", 255, 0, 255, 5);
     public ModeSetting descriptionMode = new ModeSetting("DescriptionMode", "Mouse", "Mouse", "Fixed");
     public ModeSetting scrollMode = new ModeSetting("ScrollMode", "Container", "Container", "Screen");
-    public BooleanSetting thinGui = new BooleanSetting("ThinGui", false);
+    public ModeSetting theme = new ModeSetting("Theme", "GameSense", "GameSense", "Clear", "ClearGradient");
     public KeybindSetting keybind = new KeybindSetting(Next.GUI_KEY);
 
     public ClickGuiModule() {

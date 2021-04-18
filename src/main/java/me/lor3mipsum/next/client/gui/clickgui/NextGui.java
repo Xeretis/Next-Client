@@ -22,14 +22,25 @@ import me.lor3mipsum.next.client.utils.FontUtils;
 import java.awt.*;
 
 public class NextGui extends MinecraftHUDGUI {
-    public final static int WIDTH=ClickGuiModule.INSTANCE.thinGui.isOn() ? 80 : 100,HEIGHT=12,DISTANCE=6,HUD_BORDER=2;
-    private final Theme theme;
+    public final static int WIDTH=100,HEIGHT=12,DISTANCE=6,HUD_BORDER=2;
+    private final ColorScheme scheme = new SettingsColorScheme(ClickGuiModule.INSTANCE.activeColor, ClickGuiModule.INSTANCE.backgroundColor, ClickGuiModule.INSTANCE.settingBackgroundColor, ClickGuiModule.INSTANCE.outlineColor, ClickGuiModule.INSTANCE.fontColor, ClickGuiModule.INSTANCE.opacity);
+    private final Theme theme, gameSenseTheme, clearTheme, clearGradientTheme;
     private final Toggleable colorToggle;
     public final GUIInterface guiInterface;
     public final HUDClickGUI gui;
 
     public NextGui() {
-        theme = new GameSenseTheme(new NextTheme(), HEIGHT, 2, (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber());
+        gameSenseTheme = new GameSenseTheme(scheme, HEIGHT, 2, (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber());
+        clearTheme = new ClearTheme(scheme, false, HEIGHT, 1);
+        clearGradientTheme = new ClearTheme(scheme, true, HEIGHT, 1);
+        theme = new ThemeMultiplexer() {
+            @Override
+            protected Theme getTheme() {
+                if (ClickGuiModule.INSTANCE.theme.is("GameSense")) return  gameSenseTheme;
+                else if (ClickGuiModule.INSTANCE.theme.is("Clear")) return  clearTheme;
+                else return clearGradientTheme;
+            }
+        };
         colorToggle = new Toggleable() {
             @Override
             public void toggle() {
@@ -144,37 +155,5 @@ public class NextGui extends MinecraftHUDGUI {
     @Override
     protected int getScrollSpeed() {
         return (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber();
-    }
-
-    private static class NextTheme implements ColorScheme {
-        @Override
-        public Color getActiveColor() {
-            return ClickGuiModule.INSTANCE.activeColor.getValue();
-        }
-
-        @Override
-        public Color getInactiveColor() {
-            return ClickGuiModule.INSTANCE.backgroundColor.getValue();
-        }
-
-        @Override
-        public Color getBackgroundColor() {
-            return ClickGuiModule.INSTANCE.settingBackgroundColor.getValue();
-        }
-
-        @Override
-        public Color getOutlineColor() {
-            return ClickGuiModule.INSTANCE.outlineColor.getValue();
-        }
-
-        @Override
-        public Color getFontColor() {
-            return ClickGuiModule.INSTANCE.fontColor.getValue();
-        }
-
-        @Override
-        public int getOpacity() {
-            return (int) ClickGuiModule.INSTANCE.opacity.getNumber();
-        }
     }
 }
