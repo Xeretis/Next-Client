@@ -32,14 +32,6 @@ public class ModeSetting extends Setting implements EnumSetting {
         return (this.index == this.modes.indexOf(mode));
     }
 
-    public void cycle() {
-        if (this.index < this.modes.size() - 1) {
-            this.index++;
-        }else {
-            this.index = 0;
-        }
-    }
-
     @Override
     public String getValueName() {
         return modes.get(this.index);

@@ -2,11 +2,10 @@ package me.lor3mipsum.next.client.impl.modules.client;
 
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
-import me.lor3mipsum.next.client.impl.events.KeyEvent;
+import me.lor3mipsum.next.client.gui.clickgui.NextGui;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
-import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 

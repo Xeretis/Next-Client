@@ -53,7 +53,6 @@ public class ConfigManager {
                 JsonObject moduleObject = new JsonObject();
 
                 moduleObject.addProperty("state", module.getState());
-                moduleObject.addProperty("keybind", module.getKeybind());
 
                 modules.add(module.getName(), moduleObject);
             }

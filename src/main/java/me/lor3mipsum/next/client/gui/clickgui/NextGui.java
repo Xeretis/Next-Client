@@ -7,6 +7,7 @@ import com.lukflug.panelstudio.mc16.MinecraftHUDGUI;
 import com.lukflug.panelstudio.settings.*;
 import com.lukflug.panelstudio.theme.*;
 import me.lor3mipsum.next.Next;
+import me.lor3mipsum.next.client.gui.clickgui.components.DynamicDescription;
 import me.lor3mipsum.next.client.gui.clickgui.components.ResetableKeybindComponent;
 import me.lor3mipsum.next.client.gui.clickgui.components.SyncableColorComponent;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
@@ -21,7 +22,7 @@ import me.lor3mipsum.next.client.utils.FontUtils;
 import java.awt.*;
 
 public class NextGui extends MinecraftHUDGUI {
-    public final static int WIDTH=ClickGuiModule.INSTANCE.thinGui.isOn() ? 80 : 100,HEIGHT=12,DISTANCE=10,HUD_BORDER=2;
+    public final static int WIDTH=ClickGuiModule.INSTANCE.thinGui.isOn() ? 80 : 100,HEIGHT=12,DISTANCE=6,HUD_BORDER=2;
     private final Theme theme;
     private final Toggleable colorToggle;
     public final GUIInterface guiInterface;
@@ -64,7 +65,7 @@ public class NextGui extends MinecraftHUDGUI {
                 return Math.round(FontUtils.getFontHeight())+2;
             }
         };
-        gui = new HUDClickGUI(guiInterface, ClickGuiModule.INSTANCE.descriptionMode.is("Mouse") ? new MouseDescription(new Point(5,0)) : new FixedDescription(new Point(0,0))) {
+        gui = new HUDClickGUI(guiInterface, new DynamicDescription(new Point(5, 0), new Point(0, 0))) {
             @Override
             public void handleScroll (int diff) {
                 super.handleScroll(diff);
@@ -102,7 +103,7 @@ public class NextGui extends MinecraftHUDGUI {
                 }
             };
             gui.addComponent(panel);
-            pos.translate(0, HEIGHT + DISTANCE);
+            pos.translate( WIDTH + DISTANCE, 0);
             for (Module module : Next.INSTANCE.moduleManager.getModulesByCategory(category)) {
                 addModule(panel, module);
             }
