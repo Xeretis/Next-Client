@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.client.module;
 
+import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
@@ -19,6 +20,7 @@ public class ModuleManager {
     private void addModule(Module module) {
         modules.add(module);
         EventManager.register(module);
+        Next.INSTANCE.settingManager.registerObject(module.getName(), module);
     }
 
     public void addModules() {
@@ -40,7 +42,7 @@ public class ModuleManager {
 
     @EventTarget
     private void onKey(KeyEvent event) {
-        for (Module module : modules) if (module.getKeybind() == event.getKey()) module.setState(!module.getState());
+        for (Module module : modules) if (module.getKeybind() == event.getKey() && module.isCanBeEnabled()) module.setState(!module.getState());
     }
 
 }

@@ -39,6 +39,6 @@ public class SettingManager {
 
         if (found == null) return null;
 
-        return found.stream().filter(val -> name.equalsIgnoreCase(val.getName())).findFirst().orElse(null);
+        return found.stream().filter(val -> name.equalsIgnoreCase(val.name)).findFirst().orElse(null);
     }
 }

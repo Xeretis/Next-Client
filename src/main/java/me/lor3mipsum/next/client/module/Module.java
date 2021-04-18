@@ -1,19 +1,20 @@
 package me.lor3mipsum.next.client.module;
 
+import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
 
 public abstract class Module {
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
 
-    private Category category;
-    private String name;
-    private String description;
-    private int keybind;
+    public Category category;
+    public String name;
+    public String description;
+    public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
-    private boolean canBeEnabled;
-    private boolean hidden;
-    private boolean state;
+    public boolean canBeEnabled;
+    public boolean hidden;
+    public boolean state;
 
     protected Module(String name, String description, Category moduleCategory) {
         this(name, description, moduleCategory, true, false, GLFW.GLFW_KEY_UNKNOWN);
@@ -25,7 +26,7 @@ public abstract class Module {
         this.category = category;
         this.canBeEnabled = canBeEnabled;
         this.hidden = hidden;
-        this.keybind = keybind;
+        this.keybind.setKey(keybind);
     }
 
     public String getName() {
@@ -49,11 +50,11 @@ public abstract class Module {
     }
 
     public int getKeybind() {
-        return keybind;
+        return keybind.getKey();
     }
 
     public void setKeybind(int keybind) {
-        this.keybind = keybind;
+        this.keybind.setKey(keybind);
     }
 
     public boolean getState() {

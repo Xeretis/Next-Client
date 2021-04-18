@@ -3,66 +3,74 @@ package me.lor3mipsum.next.client.impl.settings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.lukflug.panelstudio.settings.EnumSetting;
 import me.lor3mipsum.next.client.setting.Setting;
 
-import java.util.function.Predicate;
+import java.util.Arrays;
+import java.util.List;
 
-public class ModeSetting extends Setting<Integer> {
-    private String[] modes;
+public class ModeSetting extends Setting implements EnumSetting {
+    public int index;
 
-    public ModeSetting(String name, String defaultVal, String... modes) {
-        this(name, defaultVal, null, modes);
+    public List<String> modes;
+
+    public ModeSetting(String name, String defaultMode, String... modes) {
+        this.name = name;
+        this.modes = Arrays.asList(modes);
+        this.index = this.modes.indexOf(defaultMode);
     }
 
-    public ModeSetting(String name, String defaultVal, Predicate<Integer> validator, String... modes) {
-        super(name, 0, validator);
-        this.modes = modes;
-
-        setObject(defaultVal);
+    public String getMode() {
+        return this.modes.get(this.index);
     }
 
-    public String[] getModes() {
-        return modes;
+    public void setMode(String mode) {
+        this.index = this.modes.indexOf(mode);
     }
 
-    private void setObject(String s) {
-        int object = -1;
+    public boolean is(String mode) {
+        return (this.index == this.modes.indexOf(mode));
+    }
 
-        for (int i = 0; i < modes.length; i++) {
-            String mode = modes[i];
-
-            if (mode.equalsIgnoreCase(s)) object = i;
+    public void cycle() {
+        if (this.index < this.modes.size() - 1) {
+            this.index++;
+        }else {
+            this.index = 0;
         }
-        if (object == -1) throw new IllegalArgumentException("Value '" + object + "' wasn't found");
-
-        setObject(object);
     }
 
     @Override
-    public boolean setObject(Integer object) {
-        if (object < 0 || modes.length <= object)
-            throw new IllegalArgumentException(object + " is not valid (max: " + (modes.length - 1) + ")");
+    public String getValueName() {
+        return this.modes.get(this.index);
+    }
 
-        return super.setObject(object);
+    @Override
+    public void increment() {
+        if (this.index < this.modes.size() - 1) {
+            this.index++;
+        }else {
+            this.index = 0;
+        }
     }
 
     @Override
     public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(getName(), getObject());
+        obj.addProperty(name, getMode());
     }
 
     @Override
     public void fromJsonObject(JsonObject obj) {
-        if (obj.has(getName())) {
-            JsonElement element = obj.get(getName());
+        if (obj.has(name)) {
+            JsonElement element = obj.get(name);
 
-            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isNumber()) {
-                setObject(element.getAsInt());
+            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isString()) {
+                setMode(element.getAsString());
             } else {
-                throw new IllegalArgumentException("Entry '" + getName() + "' is not valid");
+                throw new IllegalArgumentException("Entry '" + name + "' is not valid");
             }
         } else {
-            throw new IllegalArgumentException("Object does not have setting '" + getName() + "'");
+            throw new IllegalArgumentException("Object does not have setting '" + name + "'");
         }
     }
 

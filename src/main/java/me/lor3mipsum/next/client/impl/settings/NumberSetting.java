@@ -5,59 +5,74 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.lor3mipsum.next.client.setting.Setting;
 
-import java.util.function.Predicate;
+public class NumberSetting extends Setting implements com.lukflug.panelstudio.settings.NumberSetting {
+    public double value;
+    public double minimum;
+    public double maximum;
+    public double increment;
 
-public class NumberSetting<T extends Number> extends Setting<T> {
-    private T min;
-    private T max;
-
-    public NumberSetting(String name, T defaultVal, T min, T max) {
-        this(name, defaultVal, min, max, null);
+    public NumberSetting(String name, double value, double minimum, double maximum, double increment) {
+        this.name = name;
+        this.value = value;
+        this.minimum = minimum;
+        this.maximum = maximum;
+        this.increment = increment;
     }
 
-    public NumberSetting(String name, T defaultVal, T min, T max, Predicate<T> validator) {
-        super(name, defaultVal, validator == null ? val -> val.doubleValue() >= min.doubleValue() && val.doubleValue() <= max.doubleValue() : validator.and(val -> val.doubleValue() >= min.doubleValue() && val.doubleValue() <= max.doubleValue()));
-        this.min = min;
-        this.max = max;
+    public double getIncrement() {
+        return this.increment;
     }
 
-    public T getMin() {
-        return min;
-    }
-
-    public T getMax() {
-        return max;
+    public void setIncrement(double increment) {
+        this.increment = increment;
     }
 
     @Override
+    public double getMaximumValue() {
+        return this.maximum;
+    }
+
+    @Override
+    public double getMinimumValue() {
+        return this.minimum;
+    }
+
+    @Override
+    public double getNumber() {
+        return this.value;
+    }
+
+    @Override
+    public int getPrecision() {
+        return 1;
+    }
+
+    @Override
+    public void setNumber(double value) {
+        double precision = 1.0D / this.increment;
+        this.value = Math.round(Math.max(this.minimum, Math.min(this.maximum, value)) * precision) / precision;
+    }
+
+    //config
+    @Override
     public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(getName(), getObject());
+        obj.addProperty(name, getNumber());
     }
 
     @Override
     public void fromJsonObject(JsonObject obj) {
-        if (obj.has(getName())) {
-            JsonElement element = obj.get(getName());
+        if (obj.has(name)) {
+            JsonElement element = obj.get(name);
 
             if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isNumber()) {
 
-                if (getObject() instanceof Integer) {
-                    setObject((T) Integer.valueOf(obj.get(getName()).getAsNumber().intValue()));
-                }
-                if (getObject() instanceof Long) {
-                    setObject((T) Long.valueOf(obj.get(getName()).getAsNumber().longValue()));
-                }
-                if (getObject() instanceof Float) {
-                    setObject((T) Float.valueOf(obj.get(getName()).getAsNumber().floatValue()));
-                }
-                if (getObject() instanceof Double) {
-                    setObject((T) Double.valueOf(obj.get(getName()).getAsNumber().doubleValue()));
-                }
+                setNumber(obj.get(name).getAsNumber().doubleValue());
+
             } else {
-                throw new IllegalArgumentException("Entry '" + getName() + "' is not valid");
+                throw new IllegalArgumentException("Entry '" + name + "' is not valid");
             }
         } else {
-            throw new IllegalArgumentException("Object does not have setting '" + getName() + "'");
+            throw new IllegalArgumentException("Object does not have setting '" + name + "'");
         }
     }
 }

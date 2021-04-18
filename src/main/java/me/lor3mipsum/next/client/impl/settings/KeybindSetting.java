@@ -3,33 +3,39 @@ package me.lor3mipsum.next.client.impl.settings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.lukflug.panelstudio.settings.Toggleable;
+import org.lwjgl.glfw.GLFW;
 import me.lor3mipsum.next.client.setting.Setting;
 
-public class BooleanSetting extends Setting implements Toggleable {
-    public boolean enabled;
+public class KeybindSetting extends Setting implements com.lukflug.panelstudio.settings.KeybindSetting {
+    public int code;
 
-    public BooleanSetting(String name, boolean enabled) {
+    public KeybindSetting(int code) {
+        this("KeyBind", code);
+    }
+
+    public KeybindSetting(String name, int code) {
         this.name = name;
-        this.enabled = enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void toggle() {
-        this.enabled = !this.enabled;
+        this.code = code;
     }
 
     @Override
-    public boolean isOn() {
-        return enabled;
+    public int getKey() {
+        return code;
+    }
+
+    @Override
+    public String getKeyName() {
+        return GLFW.glfwGetKeyName(code, 0);
+    }
+
+    @Override
+    public void setKey(int key) {
+        code=key;
     }
 
     @Override
     public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(name, enabled);
+        obj.addProperty(name, getKey());
     }
 
     @Override
@@ -37,8 +43,10 @@ public class BooleanSetting extends Setting implements Toggleable {
         if (obj.has(name)) {
             JsonElement element = obj.get(name);
 
-            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isBoolean()) {
-                setEnabled(element.getAsBoolean());
+            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isNumber()) {
+
+                setKey(obj.get(name).getAsNumber().intValue());
+
             } else {
                 throw new IllegalArgumentException("Entry '" + name + "' is not valid");
             }
