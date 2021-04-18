@@ -1,5 +1,7 @@
 package me.lor3mipsum.next.client.setting;
 
+import com.google.gson.JsonObject;
+
 import java.util.function.Predicate;
 
 public abstract class Setting<T> {
@@ -15,6 +17,10 @@ public abstract class Setting<T> {
         this.defaultValue = defaultVal;
         this.validator = validator;
     }
+
+    public abstract void addToJsonObject(JsonObject obj);
+
+    public abstract void fromJsonObject(JsonObject obj);
 
     public String getName() {
         return name;
