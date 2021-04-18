@@ -6,6 +6,9 @@ import net.fabricmc.api.ModInitializer;
 
 public class Next implements ModInitializer {
 
+	public static final String CLIENT_NAME = "Next";
+	public static final String CLIENT_VERSION = "0.2.0";
+
 	public static Next INSTANCE;
 
 	public ModuleManager moduleManager;
