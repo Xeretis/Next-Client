@@ -80,7 +80,7 @@ public class NextGui extends MinecraftHUDGUI {
             @Override
             public void handleScroll (int diff) {
                 super.handleScroll(diff);
-                if (ClickGuiModule.INSTANCE.scrollMode.is("screen")) {
+                if (ClickGuiModule.INSTANCE.scrollMode.is("Screen")) {
                     for (FixedComponent component: components) {
                         if (!hudComponents.contains(component)) {
                             Point p=component.getPosition(guiInterface);
@@ -107,7 +107,7 @@ public class NextGui extends MinecraftHUDGUI {
             DraggableContainer panel = new DraggableContainer(category.toString(), null, theme.getPanelRenderer(), new SimpleToggleable(false), new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), null, new Point(pos), WIDTH) {
                 @Override
                 protected int getScrollHeight (int childHeight) {
-                    if (ClickGuiModule.INSTANCE.scrollMode.is("screen")) {
+                    if (ClickGuiModule.INSTANCE.scrollMode.is("Screen")) {
                         return childHeight;
                     }
                     return Math.min(childHeight,Math.max(HEIGHT*4,NextGui.this.height-getPosition(guiInterface).y-renderer.getHeight(open.getValue()!=0)-HEIGHT));
