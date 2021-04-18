@@ -11,7 +11,7 @@ import net.fabricmc.api.ModInitializer;
 public class Next implements ModInitializer {
 
 	public static final String CLIENT_NAME = "Next";
-	public static final double CLIENT_VERSION = 0.2;
+	public static final double CLIENT_VERSION = 0.3;
 
 	public static Next INSTANCE;
 
