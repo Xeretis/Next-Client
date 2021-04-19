@@ -6,36 +6,36 @@ import org.lwjgl.glfw.GLFW;
 public class Utils {
     public static String getKeyName(int key) {
         switch (key) {
-            case GLFW.GLFW_KEY_UNKNOWN: return "Unknown";
+            case GLFW.GLFW_KEY_UNKNOWN: return "Null";
             case GLFW.GLFW_KEY_ESCAPE: return "Esc";
             case GLFW.GLFW_KEY_GRAVE_ACCENT: return "Grave Accent";
-            case GLFW.GLFW_KEY_PRINT_SCREEN: return "Print Screen";
+            case GLFW.GLFW_KEY_PRINT_SCREEN: return "Print Sc";
             case GLFW.GLFW_KEY_PAUSE: return "Pause";
             case GLFW.GLFW_KEY_INSERT: return "Insert";
             case GLFW.GLFW_KEY_DELETE: return "Delete";
             case GLFW.GLFW_KEY_HOME: return "Home";
-            case GLFW.GLFW_KEY_PAGE_UP: return "Page Up";
-            case GLFW.GLFW_KEY_PAGE_DOWN: return "Page Down";
+            case GLFW.GLFW_KEY_PAGE_UP: return "PgUp";
+            case GLFW.GLFW_KEY_PAGE_DOWN: return "PgDown";
             case GLFW.GLFW_KEY_END: return "End";
             case GLFW.GLFW_KEY_TAB: return "Tab";
-            case GLFW.GLFW_KEY_LEFT_CONTROL: return "Left Control";
-            case GLFW.GLFW_KEY_RIGHT_CONTROL: return "Right Control";
-            case GLFW.GLFW_KEY_LEFT_ALT: return "Left Alt";
-            case GLFW.GLFW_KEY_RIGHT_ALT: return "Right Alt";
-            case GLFW.GLFW_KEY_LEFT_SHIFT: return "Left Shift";
-            case GLFW.GLFW_KEY_RIGHT_SHIFT: return "Right Shift";
-            case GLFW.GLFW_KEY_UP: return "Arrow Up";
-            case GLFW.GLFW_KEY_DOWN: return "Arrow Down";
-            case GLFW.GLFW_KEY_LEFT: return "Arrow Left";
-            case GLFW.GLFW_KEY_RIGHT: return "Arrow Right";
+            case GLFW.GLFW_KEY_LEFT_CONTROL: return "LCtrl";
+            case GLFW.GLFW_KEY_RIGHT_CONTROL: return "RCtrl";
+            case GLFW.GLFW_KEY_LEFT_ALT: return "LAlt";
+            case GLFW.GLFW_KEY_RIGHT_ALT: return "RAlt";
+            case GLFW.GLFW_KEY_LEFT_SHIFT: return "LShift";
+            case GLFW.GLFW_KEY_RIGHT_SHIFT: return "RShift";
+            case GLFW.GLFW_KEY_UP: return "Arrow U";
+            case GLFW.GLFW_KEY_DOWN: return "Arrow D";
+            case GLFW.GLFW_KEY_LEFT: return "Arrow L";
+            case GLFW.GLFW_KEY_RIGHT: return "Arrow R";
             case GLFW.GLFW_KEY_APOSTROPHE: return "Apostrophe";
             case GLFW.GLFW_KEY_BACKSPACE: return "Backspace";
-            case GLFW.GLFW_KEY_CAPS_LOCK: return "Caps Lock";
+            case GLFW.GLFW_KEY_CAPS_LOCK: return "CLock";
             case GLFW.GLFW_KEY_MENU: return "Menu";
-            case GLFW.GLFW_KEY_LEFT_SUPER: return "Left Super";
-            case GLFW.GLFW_KEY_RIGHT_SUPER: return "Right Super";
+            case GLFW.GLFW_KEY_LEFT_SUPER: return "LSuper";
+            case GLFW.GLFW_KEY_RIGHT_SUPER: return "RSuper";
             case GLFW.GLFW_KEY_ENTER: return "Enter";
-            case GLFW.GLFW_KEY_NUM_LOCK: return "Num Lock";
+            case GLFW.GLFW_KEY_NUM_LOCK: return "NLock";
             case GLFW.GLFW_KEY_SPACE: return "Space";
             case GLFW.GLFW_KEY_F1: return "F1";
             case GLFW.GLFW_KEY_F2: return "F2";
@@ -64,7 +64,7 @@ public class Utils {
             case GLFW.GLFW_KEY_F25: return "F25";
             default:
                 String keyName = GLFW.glfwGetKeyName(key, 0);
-                if (keyName == null) return "Unknown";
+                if (keyName == null) return "Null";
                 return StringUtils.capitalize(keyName);
         }
     }

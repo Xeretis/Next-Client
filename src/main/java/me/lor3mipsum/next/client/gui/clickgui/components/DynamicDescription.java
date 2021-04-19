@@ -22,18 +22,20 @@ public class DynamicDescription implements DescriptionRenderer {
                 Point mouseDescPos=context.getInterface().getMouse();
                 mouseDescPos.translate(offset.x,offset.y);
                 Rectangle r=new Rectangle(mouseDescPos,new Dimension(context.getInterface().getFontWidth(context.getDescription()),context.getInterface().getFontHeight()));
-                Color bgcolor=new Color(0,0,0);
+                Color bgcolor=new Color(ClickGuiModule.INSTANCE.settingBackgroundColor.getColor().getRed(),ClickGuiModule.INSTANCE.settingBackgroundColor.getColor().getGreen(),ClickGuiModule.INSTANCE.settingBackgroundColor.getColor().getBlue(), (int) ClickGuiModule.INSTANCE.opacity.getNumber());
                 context.getInterface().fillRect(r,bgcolor,bgcolor,bgcolor,bgcolor);
-                Color color=new Color(255,255,255);
+                Color color=new Color(ClickGuiModule.INSTANCE.backgroundColor.getColor().getRed(), ClickGuiModule.INSTANCE.backgroundColor.getColor().getGreen(),ClickGuiModule.INSTANCE.backgroundColor.getColor().getBlue(), (int) ClickGuiModule.INSTANCE.opacity.getNumber());
                 context.getInterface().drawRect(r,color,color,color,color);
-                context.getInterface().drawString(mouseDescPos,context.getDescription(),color);
+                Color textColor = new Color(ClickGuiModule.INSTANCE.fontColor.getColor().getRed(), ClickGuiModule.INSTANCE.fontColor.getColor().getGreen(),ClickGuiModule.INSTANCE.fontColor.getColor().getBlue());
+                context.getInterface().drawString(mouseDescPos,context.getDescription(),textColor);
             } else {
                 Rectangle r=new Rectangle(pos,new Dimension(context.getInterface().getFontWidth(context.getDescription()),context.getInterface().getFontHeight()));
-                Color bgcolor=new Color(0,0,0);
+                Color bgcolor=new Color(ClickGuiModule.INSTANCE.settingBackgroundColor.getColor().getRed(),ClickGuiModule.INSTANCE.settingBackgroundColor.getColor().getGreen(),ClickGuiModule.INSTANCE.settingBackgroundColor.getColor().getBlue(), (int) ClickGuiModule.INSTANCE.opacity.getNumber());
                 context.getInterface().fillRect(r,bgcolor,bgcolor,bgcolor,bgcolor);
-                Color color=new Color(255,255,255);
+                Color color=new Color(ClickGuiModule.INSTANCE.backgroundColor.getColor().getRed(), ClickGuiModule.INSTANCE.backgroundColor.getColor().getGreen(),ClickGuiModule.INSTANCE.backgroundColor.getColor().getBlue(), (int) ClickGuiModule.INSTANCE.opacity.getNumber());
                 context.getInterface().drawRect(r,color,color,color,color);
-                context.getInterface().drawString(pos,context.getDescription(),color);
+                Color textColor = new Color(ClickGuiModule.INSTANCE.fontColor.getColor().getRed(), ClickGuiModule.INSTANCE.fontColor.getColor().getGreen(),ClickGuiModule.INSTANCE.fontColor.getColor().getBlue());
+                context.getInterface().drawString(pos,context.getDescription(),textColor);
             }
         }
     }
