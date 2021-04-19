@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import me.lor3mipsum.next.Next;
+import me.lor3mipsum.next.client.module.HudModule;
 import me.lor3mipsum.next.client.setting.Setting;
 import net.fabricmc.loader.FabricLoader;
 import me.lor3mipsum.next.client.module.Module;
@@ -53,6 +54,10 @@ public class ConfigManager {
                 JsonObject moduleObject = new JsonObject();
 
                 moduleObject.addProperty("state", module.getState());
+                if (module instanceof HudModule) {
+                    moduleObject.addProperty("x", ((HudModule) module).getComponent().getPosition(Next.INSTANCE.clickGui.guiInterface).x);
+                    moduleObject.addProperty("y", ((HudModule) module).getComponent().getPosition(Next.INSTANCE.clickGui.guiInterface).x);
+                }
 
                 modules.add(module.getName(), moduleObject);
             }
@@ -137,12 +142,22 @@ public class ConfigManager {
                             backupReasons.add("'" + stringJsonElementEntry.getKey() + "/state' isn't valid");
                         }
 
-                        JsonElement keybind = moduleObject.get("keybind");
+                        if (module instanceof HudModule) {
+                            JsonElement x = moduleObject.get("x");
 
-                        if (keybind instanceof JsonPrimitive && ((JsonPrimitive) keybind).isNumber()) {
-                            module.setKeybind(keybind.getAsInt());
-                        } else {
-                            backupReasons.add("'" + stringJsonElementEntry.getKey() + "/keybind' isn't valid");
+                            if (x instanceof JsonPrimitive && ((JsonPrimitive) x).isNumber()) {
+                                ((HudModule) module).position.x = x.getAsInt();
+                            } else {
+                                backupReasons.add("'" + stringJsonElementEntry.getKey() + "/x' isn't valid");
+                            }
+
+                            JsonElement y = moduleObject.get("y");
+
+                            if (y instanceof JsonPrimitive && ((JsonPrimitive) y).isNumber()) {
+                                ((HudModule) module).position.y = y.getAsInt();
+                            } else {
+                                backupReasons.add("'" + stringJsonElementEntry.getKey() + "/y' isn't valid");
+                            }
                         }
                     } else {
                         backupReasons.add("Module object '" + stringJsonElementEntry.getKey() + "' isn't valid");

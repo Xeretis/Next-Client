@@ -9,7 +9,7 @@ import java.awt.*;
 
 public abstract class HudModule extends Module {
     protected FixedComponent component;
-    protected Point position;
+    public Point position;
 
     public HudModule (String name, String description, Point defaultPos, Category category) {
         super(name, description, category);
