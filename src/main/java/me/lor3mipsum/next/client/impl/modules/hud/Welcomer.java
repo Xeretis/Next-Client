@@ -6,8 +6,6 @@ import com.lukflug.panelstudio.theme.Theme;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
-import org.lwjgl.glfw.GLFW;
-
 import java.awt.*;
 
 public class Welcomer extends HudModule {
@@ -30,7 +28,7 @@ public class Welcomer extends HudModule {
 
         @Override
         public String getItem(int index) {
-            return "Welcome to Next Client, " + mc.player.getName() + ".";
+            return "Welcome to Next Client, " + mc.player.getName().asString() + ".";
         }
 
         @Override

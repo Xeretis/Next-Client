@@ -7,7 +7,8 @@
   ],
   "client": [
     "KeyboardMixin",
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

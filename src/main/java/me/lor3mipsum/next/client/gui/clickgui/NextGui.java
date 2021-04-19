@@ -112,8 +112,8 @@ public class NextGui extends MinecraftHUDGUI {
 
         for (Module module : Next.INSTANCE.moduleManager.getModules()) {
             if (module instanceof HudModule) {
-                ((HudModule)module).populate(theme);
-                gui.addComponent(new HUDPanel(((HudModule)module).getComponent(), theme.getPanelRenderer(), module, new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), hudToggle, HUD_BORDER));
+                ((HudModule) module).populate(theme);
+                gui.addHUDComponent(new HUDPanel(((HudModule)module).getComponent(), theme.getPanelRenderer(), module, new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), hudToggle, HUD_BORDER));
             }
         }
 

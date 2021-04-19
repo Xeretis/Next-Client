@@ -4,6 +4,7 @@ import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
+import me.lor3mipsum.next.client.impl.events.RenderEvent;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
@@ -58,6 +59,12 @@ public class ModuleManager {
                 returnList.add(m);
         }
         return returnList;
+    }
+
+    @EventTarget
+    private void onHotbarRenderEvent(RenderEvent event) {
+        if (event.getName() == "hotbar")
+            Next.INSTANCE.clickGui.render();
     }
 
     @EventTarget
