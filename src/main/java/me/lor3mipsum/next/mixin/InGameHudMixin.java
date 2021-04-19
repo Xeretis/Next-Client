@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
     @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
-    private void onRenderCrosshair(float tickDelta, MatrixStack matrices, CallbackInfo info) {
+    private void onRenderHotbar(float tickDelta, MatrixStack matrices, CallbackInfo info) {
         EventManager.call(new RenderEvent("hotbar"));
     }
 }
