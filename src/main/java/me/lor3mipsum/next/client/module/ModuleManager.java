@@ -6,6 +6,7 @@ import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
+import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.misc.Demo;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class ModuleManager {
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());
+        addModule(new HudEditor());
     }
 
     public List<Module> getModules() {
