@@ -121,6 +121,7 @@ public class ConfigManager {
 
     public void load() {
         try {
+            checkMetadata();
             loadModules();
             loadStates();
             loadClickGuiPositions();
@@ -241,10 +242,10 @@ public class ConfigManager {
         System.out.println("Creating backup " + backupReason);
 
         try {
-            if (!Files.exists(Paths.get(backupDir)))
-                Files.createDirectories(Paths.get(backupDir));
+            if (!Files.exists(Paths.get(rootDir + backupDir)))
+                Files.createDirectories(Paths.get(rootDir + backupDir));
 
-            File out = new File(backupDir, "backup_" + System.currentTimeMillis());
+            File out = new File(rootDir + backupDir, "backup_" + System.currentTimeMillis());
             out.mkdirs();
 
             File reason = new File(out, "reason.txt");
@@ -252,8 +253,8 @@ public class ConfigManager {
 
             com.google.common.io.Files.write(backupReason.getBytes(StandardCharsets.UTF_8), reason);
 
-            pack(mainDir, out.getPath());
-            pack(moduleDir, out.getPath());
+            pack(rootDir + mainDir, out.getPath() + "/Main.zip");
+            pack(rootDir + moduleDir, out.getPath() + "/Modules.zip");
         } catch (Exception e) {
             System.out.println("Failed to backup");
             e.printStackTrace();
@@ -261,6 +262,7 @@ public class ConfigManager {
     }
 
     private void pack(String sourceDirPath, String zipFilePath) throws IOException {
+        System.out.println("Pack function called");
         Path p = Files.createFile(Paths.get(zipFilePath));
         try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
             Path pp = Paths.get(sourceDirPath);
