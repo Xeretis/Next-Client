@@ -2,6 +2,7 @@ package me.lor3mipsum.next.client.gui.clickgui;
 
 import com.lukflug.panelstudio.*;
 import com.lukflug.panelstudio.hud.HUDClickGUI;
+import com.lukflug.panelstudio.hud.HUDPanel;
 import com.lukflug.panelstudio.mc16.GLInterface;
 import com.lukflug.panelstudio.mc16.MinecraftHUDGUI;
 import com.lukflug.panelstudio.settings.*;
@@ -17,6 +18,7 @@ import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
+import me.lor3mipsum.next.client.module.HudModule;
 import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.setting.Setting;
 import me.lor3mipsum.next.client.utils.FontUtils;
@@ -107,6 +109,14 @@ public class NextGui extends MinecraftHUDGUI {
                 return hudEditor;
             }
         };
+
+        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
+            if (module instanceof HudModule) {
+                ((HudModule)module).populate(theme);
+                gui.addComponent(new HUDPanel(((HudModule)module).getComponent(), theme.getPanelRenderer(), module, new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), hudToggle, HUD_BORDER));
+            }
+        }
+
         Point pos = new Point(DISTANCE, DISTANCE);
         for (Category category : Category.values()) {
             DraggableContainer panel = new DraggableContainer(category.toString(), null, theme.getPanelRenderer(), new SimpleToggleable(false), new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), null, new Point(pos), WIDTH) {
