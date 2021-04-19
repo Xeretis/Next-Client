@@ -36,9 +36,9 @@ public class Next implements ModInitializer {
 
 		moduleManager.addModules();
 
-		configManager.load();
-
 		clickGui = new NextGui();
+
+		configManager.load();
 	}
 
 	@EventTarget

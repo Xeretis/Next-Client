@@ -1,239 +1,281 @@
 package me.lor3mipsum.next.client.config;
 
 
-import com.google.common.io.Files;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import me.lor3mipsum.next.Next;
-import me.lor3mipsum.next.client.module.HudModule;
+import me.lor3mipsum.next.client.gui.clickgui.GuiConfig;
+import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.setting.Setting;
-import net.fabricmc.loader.FabricLoader;
 import me.lor3mipsum.next.client.module.Module;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ConfigManager {
-    private final File clientDir = new File(String.valueOf(FabricLoader.INSTANCE.getGameDir()), Next.CLIENT_NAME);
-    private final File backupDir = new File(clientDir, "backups");
-    private final File saveFile = new File(clientDir, "client.json");
+    public final String rootDir = Next.CLIENT_NAME + "/";
+    private final String backupDir = "Backups/";
+    private final String mainDir = "Main/";
+    private final String moduleDir = "Modules/";
 
-    public void save() throws Exception {
-        clientDir.mkdir();
+    public void save() throws IOException {
+        if (!Files.exists(Paths.get(rootDir)))
+            Files.createDirectories(Paths.get(rootDir));
+        if (!Files.exists(Paths.get(rootDir + backupDir)))
+            Files.createDirectories(Paths.get(rootDir + backupDir));
+        if (!Files.exists(Paths.get(rootDir + mainDir)))
+            Files.createDirectories(Paths.get(rootDir + mainDir));
+        if (!Files.exists(Paths.get(rootDir + moduleDir)))
+            Files.createDirectories(Paths.get(rootDir + moduleDir));
 
-        if (!saveFile.exists() && !saveFile.createNewFile())
-            throw new IOException("Failed to create " + saveFile.getAbsolutePath());
+        saveMetadata();
+        saveModules();
+        saveStates();
+        saveClickGuiPositions();
 
-        Files.write(toJsonObject().toString().getBytes(StandardCharsets.UTF_8), saveFile);
     }
 
-    private JsonObject toJsonObject() {
-        System.out.println("Saving config");
+    private void registerFiles(String location, String name) throws IOException {
+        if (Files.exists(Paths.get(rootDir + location + name + ".json"))) {
+            File file = new File(rootDir + location + name + ".json");
 
-        JsonObject obj = new JsonObject();
+            file.delete();
 
-        {
-            JsonObject metadata = new JsonObject();
-
-            metadata.addProperty("clientVersion", Next.CLIENT_VERSION);
-
-            obj.add("metadata", metadata);
         }
+        Files.createFile(Paths.get(rootDir + location + name + ".json"));
+    }
 
-        {
-            JsonObject modules = new JsonObject();
+    private void saveMetadata() throws IOException {
+        registerFiles(mainDir, "Metadata");
 
-            for (Module module : Next.INSTANCE.moduleManager.getModules()) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "Metadata" + ".json"), StandardCharsets.UTF_8);
+        JsonObject mainObject = new JsonObject();
+
+        mainObject.add("Version", new JsonPrimitive(Next.CLIENT_VERSION));
+
+        String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private void saveModules() throws IOException {
+        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
+            try {
+                registerFiles(moduleDir, module.getName());
+
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + moduleDir + module.getName() + ".json"), StandardCharsets.UTF_8);
                 JsonObject moduleObject = new JsonObject();
+                JsonObject settingObject = new JsonObject();
+                moduleObject.add("Module", new JsonPrimitive(module.getName()));
 
-                moduleObject.addProperty("state", module.getState());
-                if (module instanceof HudModule) {
-                    moduleObject.addProperty("x", ((HudModule) module).getComponent().getPosition(Next.INSTANCE.clickGui.guiInterface).x);
-                    moduleObject.addProperty("y", ((HudModule) module).getComponent().getPosition(Next.INSTANCE.clickGui.guiInterface).x);
+                for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(module.getName())) {
+                    if (setting instanceof BooleanSetting)
+                        settingObject.add(setting.name, new JsonPrimitive(((BooleanSetting) setting).isOn()));
+                    if (setting instanceof NumberSetting)
+                        settingObject.add(setting.name, new JsonPrimitive(((NumberSetting) setting).getNumber()));
+                    if (setting instanceof ColorSetting)
+                        settingObject.add(setting.name, new JsonPrimitive(((ColorSetting) setting).toInteger()));
+                    if (setting instanceof ModeSetting)
+                        settingObject.add(setting.name, new JsonPrimitive(((ModeSetting) setting).getMode()));
+                    if (setting instanceof KeybindSetting)
+                        settingObject.add(setting.name, new JsonPrimitive(((KeybindSetting) setting).getKey()));
                 }
-
-                modules.add(module.getName(), moduleObject);
+                moduleObject.add("Settings", settingObject);
+                String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+                fileOutputStreamWriter.write(jsonString);
+                fileOutputStreamWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            obj.add("modules", modules);
         }
+    }
 
-        {
-            JsonObject settings = new JsonObject();
+    private void saveStates() throws IOException {
+        registerFiles(mainDir, "Toggle");
 
-            for (Map.Entry<String, List<Setting>> stringListEntry : Next.INSTANCE.settingManager.getAllSettings().entrySet()) {
-                JsonObject setting = new JsonObject();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "Toggle" + ".json"), StandardCharsets.UTF_8);
+        JsonObject moduleObject = new JsonObject();
+        JsonObject enabledObject = new JsonObject();
 
-                for (Setting setting1 : stringListEntry.getValue()) setting1.addToJsonObject(setting);
+        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
 
-                settings.add(stringListEntry.getKey(), setting);
-            }
-
-            obj.add("settings", settings);
+            enabledObject.add(module.getName(), new JsonPrimitive(module.getState()));
         }
+        moduleObject.add("Modules", enabledObject);
+        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
 
-        return obj;
+    private void saveClickGuiPositions() throws IOException {
+        registerFiles(mainDir, "ClickGui");
+        Next.INSTANCE.clickGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
     }
 
     public void load() {
-        if (!saveFile.exists()) return;
-
-        List<String> backupReasons = new ArrayList<>();
-
         try {
-            JsonObject object = (JsonObject) new JsonParser().parse(new InputStreamReader(new FileInputStream(saveFile)));
-
-            if (object.has("metadata")) {
-                JsonElement metadataElement = object.get("metadata");
-
-                if (metadataElement instanceof JsonObject) {
-                    JsonObject metadata = (JsonObject) metadataElement;
-
-                    JsonElement clientVersion = metadata.get("clientVersion");
-
-                    if (clientVersion != null && clientVersion.isJsonPrimitive() && ((JsonPrimitive) clientVersion).isNumber()) {
-                        double version = clientVersion.getAsDouble();
-
-                        if (version > Next.CLIENT_VERSION) {
-                            backupReasons.add("Version number of save file (" + version + ") is higher than " + Next.CLIENT_VERSION);
-                        }
-                        if (version < Next.CLIENT_VERSION) {
-                            backupReasons.add("Version number of save file (" + version + ") is lower than " + Next.CLIENT_VERSION);
-                        }
-                    } else {
-                        backupReasons.add("'clientVersion' object is not valid.");
-                    }
-                } else {
-                    backupReasons.add("'metadata' object is not valid.");
-                }
-
-            } else {
-                backupReasons.add("Save file has no metadata");
-            }
-
-            JsonElement modulesElement = object.get("modules");
-
-            if (modulesElement instanceof JsonObject) {
-                JsonObject modules = (JsonObject) modulesElement;
-
-                for (Map.Entry<String, JsonElement> stringJsonElementEntry : modules.entrySet()) {
-                    Module module = Next.INSTANCE.moduleManager.getModule(stringJsonElementEntry.getKey(), true);
-
-                    if (module == null) {
-                        backupReasons.add("Module '" + stringJsonElementEntry.getKey() + "' doesn't exist");
-                        continue;
-                    }
-
-                    if (stringJsonElementEntry.getValue() instanceof JsonObject) {
-                        JsonObject moduleObject = (JsonObject) stringJsonElementEntry.getValue();
-
-                        JsonElement state = moduleObject.get("state");
-
-                        if (state instanceof JsonPrimitive && ((JsonPrimitive) state).isBoolean()) {
-                            module.setState(state.getAsBoolean());
-                        } else {
-                            backupReasons.add("'" + stringJsonElementEntry.getKey() + "/state' isn't valid");
-                        }
-
-                        if (module instanceof HudModule) {
-                            JsonElement x = moduleObject.get("x");
-
-                            if (x instanceof JsonPrimitive && ((JsonPrimitive) x).isNumber()) {
-                                ((HudModule) module).position.x = x.getAsInt();
-                            } else {
-                                backupReasons.add("'" + stringJsonElementEntry.getKey() + "/x' isn't valid");
-                            }
-
-                            JsonElement y = moduleObject.get("y");
-
-                            if (y instanceof JsonPrimitive && ((JsonPrimitive) y).isNumber()) {
-                                ((HudModule) module).position.y = y.getAsInt();
-                            } else {
-                                backupReasons.add("'" + stringJsonElementEntry.getKey() + "/y' isn't valid");
-                            }
-                        }
-                    } else {
-                        backupReasons.add("Module object '" + stringJsonElementEntry.getKey() + "' isn't valid");
-                    }
-                }
-            } else {
-                backupReasons.add("'modules' object is not valid");
-            }
-
-            JsonElement settingsElement = object.get("settings");
-
-            if (settingsElement instanceof JsonObject) {
-                for (Map.Entry<String, JsonElement> stringJsonElementEntry : ((JsonObject) settingsElement).entrySet()) {
-                    List<Setting> settings = Next.INSTANCE.settingManager.getAllSettingsFrom(stringJsonElementEntry.getKey());
-
-                    if (settings == null) {
-                        backupReasons.add("Setting owner '" + stringJsonElementEntry.getKey() + "' doesn't exist");
-                        continue;
-                    }
-
-                    if (!stringJsonElementEntry.getValue().isJsonObject()) {
-                        backupReasons.add("'settings/" + stringJsonElementEntry.getKey() + "' is not valid");
-                        continue;
-                    }
-
-                    JsonObject settingObject = (JsonObject) stringJsonElementEntry.getValue();
-
-                    for (Setting setting : settings) {
-                        try {
-                            setting.fromJsonObject(settingObject);
-                        } catch (Exception e) {
-                            backupReasons.add("Error while applying 'settings/" + stringJsonElementEntry.getKey() + "' " + e.toString());
-                        }
-                    }
-                }
-            } else {
-                backupReasons.add("'settings' is not valid");
-            }
-
-            if (backupReasons.size() > 0) {
-                backup(backupReasons);
-            }
-        } catch (FileNotFoundException e) {
+            loadModules();
+            loadStates();
+            loadClickGuiPositions();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void backup(List<String> backupReasons) {
-        System.out.println("Creating backup " + backupReasons);
+    private void checkMetadata() throws IOException {
+        String metadataLocation = rootDir + mainDir;
+
+        if (!Files.exists(Paths.get(metadataLocation + "Metadata" + ".json")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(rootDir + mainDir + "Metadata"+ ".json"));
+        JsonObject metadataObject;
+        try {
+            metadataObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        } catch (java.lang.IllegalStateException e) {
+            return;
+        }
+        if(metadataObject.get("Version") == null)
+            return;
+
+        JsonElement version = metadataObject.get("Version");
+
+        if (version.isJsonPrimitive() && version.getAsDouble() == Next.CLIENT_VERSION)
+            return;
+        else
+            backup("Version change");
+    }
+
+    private void loadModules() throws IOException {
+        String moduleLocation = rootDir + moduleDir;
+
+        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
+            try {
+                if (!Files.exists(Paths.get(moduleLocation + module.getName() + ".json")))
+                    return;
+
+                InputStream inputStream = Files.newInputStream(Paths.get(moduleLocation + module.getName() + ".json"));
+                JsonObject moduleObject;
+                try {
+                    moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+                } catch (java.lang.IllegalStateException e) {
+                    return;
+                }
+
+                if (moduleObject.get("Module") == null)
+                    return;
+
+                JsonObject settingObject = moduleObject.get("Settings").getAsJsonObject();
+                for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(module.name)) {
+                    JsonElement dataObject = settingObject.get(setting.name);
+                    try {
+                        if (dataObject != null && dataObject.isJsonPrimitive()) {
+                            if (setting instanceof BooleanSetting) {
+                                ((BooleanSetting) setting).setEnabled(dataObject.getAsBoolean());
+                            } else if (setting instanceof NumberSetting) {
+                                ((NumberSetting) setting).setNumber(dataObject.getAsDouble());
+                            } else if (setting instanceof KeybindSetting) {
+                                ((KeybindSetting) setting).setKey(dataObject.getAsInt());
+                            } else if (setting instanceof ColorSetting) {
+                                ((ColorSetting) setting).fromInteger(dataObject.getAsInt());
+                            } else if (setting instanceof ModeSetting) {
+                                ((ModeSetting) setting).setMode(dataObject.getAsString());
+                            }
+                        }
+                    } catch (java.lang.NumberFormatException e) {
+                        backup("Failed to load settings");
+                        System.out.println(setting.name + " " + module.getName());
+                        System.out.println(dataObject);
+                    }
+                }
+                inputStream.close();
+            } catch (IOException e) {
+                backup("Failed to load modules");
+                System.out.println(module.getName());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadStates() throws IOException {
+        String enabledLocation = rootDir + mainDir;
+
+        if (!Files.exists(Paths.get(enabledLocation + "Toggle" + ".json")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "Toggle" + ".json"));
+        JsonObject moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+
+        if (moduleObject.get("Modules") == null)
+            return;
+
+        JsonObject settingObject = moduleObject.get("Modules").getAsJsonObject();
+        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
+            JsonElement dataObject = settingObject.get(module.getName());
+
+            if (dataObject != null && dataObject.isJsonPrimitive()) {
+                if (dataObject.getAsBoolean())
+                    try {
+                        module.setState(true);
+                    } catch (NullPointerException e) {
+                        backup("Failed to load state");
+                        e.printStackTrace();
+                    }
+            }
+        }
+        inputStream.close();
+    }
+
+    private void loadClickGuiPositions() throws IOException {
+        Next.INSTANCE.clickGui.gui.loadConfig(new GuiConfig(rootDir + mainDir));
+    }
+
+    private void backup(String backupReason) {
+        System.out.println("Creating backup " + backupReason);
 
         try {
-            backupDir.mkdirs();
+            if (!Files.exists(Paths.get(backupDir)))
+                Files.createDirectories(Paths.get(backupDir));
 
-            File out = new File(backupDir, "backup_" + System.currentTimeMillis() + ".zip");
-            out.createNewFile();
+            File out = new File(backupDir, "backup_" + System.currentTimeMillis());
+            out.mkdirs();
 
-            StringBuilder reason = new StringBuilder();
+            File reason = new File(out, "reason.txt");
+            reason.createNewFile();
 
-            for (String backupReason : backupReasons) {
-                reason.append("- ").append(backupReason).append("\n");
-            }
+            com.google.common.io.Files.write(backupReason.getBytes(StandardCharsets.UTF_8), reason);
 
-            ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(out));
-
-            outputStream.putNextEntry(new ZipEntry("client.json"));
-            Files.copy(saveFile, outputStream);
-            outputStream.closeEntry();
-
-            outputStream.putNextEntry(new ZipEntry("reason.txt"));
-            outputStream.write(reason.toString().getBytes(StandardCharsets.UTF_8));
-            outputStream.closeEntry();
-
-            outputStream.close();
+            pack(mainDir, out.getPath());
+            pack(moduleDir, out.getPath());
         } catch (Exception e) {
             System.out.println("Failed to backup");
             e.printStackTrace();
+        }
+    }
+
+    private void pack(String sourceDirPath, String zipFilePath) throws IOException {
+        Path p = Files.createFile(Paths.get(zipFilePath));
+        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
+            Path pp = Paths.get(sourceDirPath);
+            Files.walk(pp)
+                    .filter(path -> !Files.isDirectory(path))
+                    .forEach(path -> {
+                        ZipEntry zipEntry = new ZipEntry(pp.relativize(path).toString());
+                        try {
+                            zs.putNextEntry(zipEntry);
+                            Files.copy(path, zs);
+                            zs.closeEntry();
+                        } catch (IOException e) {
+                            System.err.println(e);
+                        }
+                    });
         }
     }
 }
