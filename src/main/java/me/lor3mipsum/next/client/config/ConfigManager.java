@@ -97,10 +97,10 @@ public class ConfigManager {
     }
 
     private void saveStates() throws IOException {
-        registerFiles(mainDir, "Toggle");
+        registerFiles(mainDir, "States");
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "Toggle" + ".json"), StandardCharsets.UTF_8);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "States" + ".json"), StandardCharsets.UTF_8);
         JsonObject moduleObject = new JsonObject();
         JsonObject enabledObject = new JsonObject();
 
@@ -208,10 +208,10 @@ public class ConfigManager {
     private void loadStates() throws IOException {
         String enabledLocation = rootDir + mainDir;
 
-        if (!Files.exists(Paths.get(enabledLocation + "Toggle" + ".json")))
+        if (!Files.exists(Paths.get(enabledLocation + "States" + ".json")))
             return;
 
-        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "Toggle" + ".json"));
+        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "States" + ".json"));
         JsonObject moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
 
         if (moduleObject.get("Modules") == null)
@@ -262,7 +262,6 @@ public class ConfigManager {
     }
 
     private void pack(String sourceDirPath, String zipFilePath) throws IOException {
-        System.out.println("Pack function called");
         Path p = Files.createFile(Paths.get(zipFilePath));
         try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
             Path pp = Paths.get(sourceDirPath);

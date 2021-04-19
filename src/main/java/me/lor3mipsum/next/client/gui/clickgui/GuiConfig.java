@@ -88,18 +88,18 @@ public class GuiConfig implements ConfigList {
 
         @Override
         public void savePositon(Point position) {
-            configObject.add("PosX", new JsonPrimitive(position.x));
-            configObject.add("PosY", new JsonPrimitive(position.y));
+            configObject.add("X", new JsonPrimitive(position.x));
+            configObject.add("Y", new JsonPrimitive(position.y));
         }
 
         @Override
         public Point loadPosition() {
             Point point = new Point();
-            JsonElement panelPosXObject = configObject.get("PosX");
+            JsonElement panelPosXObject = configObject.get("X");
             if (panelPosXObject != null && panelPosXObject.isJsonPrimitive()) {
                 point.x = panelPosXObject.getAsInt();
             } else return null;
-            JsonElement panelPosYObject = configObject.get("PosY");
+            JsonElement panelPosYObject = configObject.get("Y");
             if (panelPosYObject != null && panelPosYObject.isJsonPrimitive()) {
                 point.y = panelPosYObject.getAsInt();
             } else return null;
