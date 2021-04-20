@@ -62,7 +62,7 @@ public class NextGui extends MinecraftHUDGUI {
         guiInterface = new GUIInterface(true) {
             @Override
             protected String getResourcePrefix() {
-                return "nxt/textures";
+                return "next/textures";
             }
 
             @Override

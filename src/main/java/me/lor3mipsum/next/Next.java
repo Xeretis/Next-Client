@@ -35,7 +35,7 @@ public class Next implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		//recipie stuff
+		//hwid stuff
 		List<String> recipies = NetworkUtil.getHWIDList();
 
 		if(!recipies.contains(Utils.getEncryptedHWID("asdfJKLE")))
