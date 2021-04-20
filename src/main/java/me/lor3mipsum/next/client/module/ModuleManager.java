@@ -63,8 +63,7 @@ public class ModuleManager {
 
     @EventTarget
     private void onHotbarRenderEvent(RenderEvent event) {
-        if (event.getName() == "hotbar")
-            Next.INSTANCE.clickGui.render();
+        Next.INSTANCE.clickGui.render();
     }
 
     @EventTarget

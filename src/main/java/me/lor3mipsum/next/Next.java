@@ -7,8 +7,13 @@ import me.lor3mipsum.next.client.gui.clickgui.NextGui;
 import me.lor3mipsum.next.client.impl.events.DisconnectEvent;
 import me.lor3mipsum.next.client.module.ModuleManager;
 import me.lor3mipsum.next.client.setting.SettingManager;
+import me.lor3mipsum.next.client.utils.NetworkUtil;
+import me.lor3mipsum.next.client.utils.NoStackTraceThrowable;
+import me.lor3mipsum.next.client.utils.Utils;
 import net.fabricmc.api.ModInitializer;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 public class Next implements ModInitializer {
 
@@ -30,6 +35,13 @@ public class Next implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		//recipie stuff
+		List<String> recipies = NetworkUtil.getHWIDList();
+
+		if(!recipies.contains(Utils.getEncryptedHWID("asdfJKLE")))
+			throw new NoStackTraceThrowable("hmmmm");
+
+		//other stuff
 		moduleManager = new ModuleManager();
 		settingManager = new SettingManager();
 		configManager = new ConfigManager();

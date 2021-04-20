@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InGameHudMixin {
     @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
     private void onRenderHotbar(float tickDelta, MatrixStack matrices, CallbackInfo info) {
-        EventManager.call(new RenderEvent("hotbar"));
+        EventManager.call(new RenderEvent());
     }
 }

@@ -248,7 +248,7 @@ public class ConfigManager {
             File out = new File(rootDir + backupDir, "backup_" + System.currentTimeMillis());
             out.mkdirs();
 
-            File reason = new File(out, "reason.txt");
+            File reason = new File(out, "Reason.txt");
             reason.createNewFile();
 
             com.google.common.io.Files.write(backupReason.getBytes(StandardCharsets.UTF_8), reason);
