@@ -19,18 +19,8 @@ public class FastUse extends Module {
         super("FastUse", "You can use stuff faster with this", Category.PLAYER);
     }
 
-    @Override
-    public void onEnable() {
-
-    }
-
-    @Override
-    public void onDisable() {
-
-    }
-
     @EventTarget
-    public void onTick(TickEvent.Post event) {
+    private void onTick(TickEvent.Post event) {
         switch (mode.getMode()) {
             case "Exp":
                 if(mc.player.getMainHandStack().getItem() == Items.EXPERIENCE_BOTTLE || mc.player.getOffHandStack().getItem() == Items.EXPERIENCE_BOTTLE)

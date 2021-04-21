@@ -22,28 +22,17 @@ public class Fullbright extends Module {
 
     @Override
     public void onEnable() {
-        timesEnabled++;
+        prevGamma = mc.options.gamma;
     }
 
     @Override
     public void onDisable() {
-        timesEnabled--;;
+        mc.options.gamma = prevGamma;
     }
 
     @EventTarget
-    public void onTick(TickEvent.Post event) {
-        if (timesEnabled > 0 && lastTimesEnabled == 0) {
-            prevGamma = mc.options.gamma;
-        }
-        else if (timesEnabled == 0 && lastTimesEnabled > 0) {
-            mc.options.gamma = prevGamma;
-        }
-
-        if (timesEnabled > 0) {
-            mc.options.gamma = 16;
-        }
-
-        lastTimesEnabled = timesEnabled;
+    private void onTick(TickEvent.Post event) {
+        mc.options.gamma = 1000;
     }
 
     @Override

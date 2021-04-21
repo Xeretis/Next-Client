@@ -9,7 +9,8 @@ import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
-import me.lor3mipsum.next.client.impl.modules.misc.Demo;
+import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
+import me.lor3mipsum.next.client.impl.modules.player.Demo;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
 
@@ -30,12 +31,13 @@ public class ModuleManager {
     }
 
     public void addModules() {
-        //Misc
-        addModule(new Demo());
+        //Movement
+        addModule(new Sprint());
         //Render
         addModule(new Fullbright());
         //Player
         addModule(new FastUse());
+        addModule(new Demo());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());

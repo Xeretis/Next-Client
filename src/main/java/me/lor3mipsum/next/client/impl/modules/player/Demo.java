@@ -1,6 +1,5 @@
-package me.lor3mipsum.next.client.impl.modules.misc;
+package me.lor3mipsum.next.client.impl.modules.player;
 
-import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
@@ -15,10 +14,10 @@ public class Demo extends Module {
     private ColorSetting testColorSetting = new ColorSetting("testColorSetting", new Color(0, 0, 0, 255));
     private ModeSetting testModeSetting = new ModeSetting("testModeSetting", "first", "first", "second");
     private KeybindSetting testKeybindSetting = new KeybindSetting("testKeybindSetting", GLFW.GLFW_KEY_U);
-    public KeybindSetting keybind = new KeybindSetting(Next.GUI_KEY);
+    public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
     public Demo() {
-        super("Demo", "A demo module", Category.MISC, true, false);
+        super("Demo", "A demo module", Category.PLAYER);
     }
 
     @Override
