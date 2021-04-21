@@ -33,26 +33,4 @@ public class KeybindSetting extends Setting implements com.lukflug.panelstudio.s
         code=key;
     }
 
-    @Override
-    public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(name, getKey());
-    }
-
-    @Override
-    public void fromJsonObject(JsonObject obj) {
-        if (obj.has(name)) {
-            JsonElement element = obj.get(name);
-
-            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isNumber()) {
-
-                setKey(obj.get(name).getAsNumber().intValue());
-
-            } else {
-                throw new IllegalArgumentException("Entry '" + name + "' is not valid");
-            }
-        } else {
-            throw new IllegalArgumentException("Object does not have setting '" + name + "'");
-        }
-    }
-
 }

@@ -52,27 +52,4 @@ public class NumberSetting extends Setting implements com.lukflug.panelstudio.se
         double precision = 1.0D / this.increment;
         this.value = Math.round(Math.max(this.minimum, Math.min(this.maximum, value)) * precision) / precision;
     }
-
-    //config
-    @Override
-    public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(name, getNumber());
-    }
-
-    @Override
-    public void fromJsonObject(JsonObject obj) {
-        if (obj.has(name)) {
-            JsonElement element = obj.get(name);
-
-            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isNumber()) {
-
-                setNumber(obj.get(name).getAsNumber().doubleValue());
-
-            } else {
-                throw new IllegalArgumentException("Entry '" + name + "' is not valid");
-            }
-        } else {
-            throw new IllegalArgumentException("Object does not have setting '" + name + "'");
-        }
-    }
 }

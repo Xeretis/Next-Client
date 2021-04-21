@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive;
 import com.lukflug.panelstudio.settings.EnumSetting;
 import me.lor3mipsum.next.client.setting.Setting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,10 +15,15 @@ public class ModeSetting extends Setting implements EnumSetting {
 
     public List<String> modes;
 
+    private final List<String> suggestions;
+
     public ModeSetting(String name, String defaultMode, String... modes) {
         this.name = name;
         this.modes = Arrays.asList(modes);
         this.index = this.modes.indexOf(defaultMode);
+
+        suggestions = new ArrayList<>(modes.length);
+        for (String mode : modes) suggestions.add(mode);
     }
 
     public String getMode() {
@@ -43,26 +49,6 @@ public class ModeSetting extends Setting implements EnumSetting {
             this.index++;
         }else {
             this.index = 0;
-        }
-    }
-
-    @Override
-    public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(name, getMode());
-    }
-
-    @Override
-    public void fromJsonObject(JsonObject obj) {
-        if (obj.has(name)) {
-            JsonElement element = obj.get(name);
-
-            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isString()) {
-                setMode(element.getAsString());
-            } else {
-                throw new IllegalArgumentException("Entry '" + name + "' is not valid");
-            }
-        } else {
-            throw new IllegalArgumentException("Object does not have setting '" + name + "'");
         }
     }
 

@@ -1,10 +1,14 @@
 package me.lor3mipsum.next.client.module;
 
 import com.lukflug.panelstudio.settings.Toggleable;
+import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
+import me.lor3mipsum.next.client.setting.Setting;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 public abstract class Module implements Toggleable {
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
@@ -55,6 +59,10 @@ public abstract class Module implements Toggleable {
 
     public boolean getState() {
         return state;
+    }
+
+    public List<Setting> getSettings() {
+        return Next.INSTANCE.settingManager.getAllSettingsFrom(name);
     }
 
     public void setState(boolean state) {

@@ -1,5 +1,6 @@
 package me.lor3mipsum.next;
 
+import me.lor3mipsum.next.client.command.CommandManager;
 import me.lor3mipsum.next.client.config.ConfigManager;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
@@ -27,6 +28,7 @@ public class Next implements ModInitializer {
 	public SettingManager settingManager;
 	public NextGui clickGui;
 	private ConfigManager configManager;
+	public CommandManager commandManager;
 
 	public Next() {
 		INSTANCE = this;
@@ -36,17 +38,19 @@ public class Next implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		//hwid stuff
-		List<String> recipies = NetworkUtil.getHWIDList();
+		List<String> hwids = NetworkUtil.getHWIDList();
 
-		if(!recipies.contains(Utils.getEncryptedHWID("asdfJKLE")))
+		if(!hwids.contains(Utils.getEncryptedHWID("asdfJKLE")))
 			throw new NoStackTraceThrowable("hmmmm");
 
 		//other stuff
 		moduleManager = new ModuleManager();
 		settingManager = new SettingManager();
 		configManager = new ConfigManager();
+		commandManager = new CommandManager();
 
 		moduleManager.addModules();
+		commandManager.addCommands();
 
 		clickGui = new NextGui();
 

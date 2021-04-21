@@ -1,15 +1,17 @@
 package me.lor3mipsum.next.client.impl.settings;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.common.collect.ImmutableList;
 import me.lor3mipsum.next.client.setting.Setting;
 
 import java.awt.*;
+import java.util.List;
+
 
 public class ColorSetting extends Setting implements com.lukflug.panelstudio.settings.ColorSetting {
     private boolean rainbow;
     private Color value;
+
+    private static final List<String> SUGGESTIONS = ImmutableList.of("0 0 0 255", "225 25 25 255", "25 225 25 255", "25 25 225 255", "255 255 255 255");
 
     public ColorSetting (String name, final Color value) {
         this.name = name;
@@ -53,25 +55,5 @@ public class ColorSetting extends Setting implements com.lukflug.panelstudio.set
     @Override
     public void setRainbow(boolean rainbow) {
         this.rainbow = rainbow;
-    }
-
-    @Override
-    public void addToJsonObject(JsonObject obj) {
-        obj.addProperty(name, toInteger());
-    }
-
-    @Override
-    public void fromJsonObject(JsonObject obj) {
-        if (obj.has(name)) {
-            JsonElement element = obj.get(name);
-
-            if (element instanceof JsonPrimitive && ((JsonPrimitive) element).isNumber()) {
-                fromInteger(element.getAsLong());
-            } else {
-                throw new IllegalArgumentException("Entry '" + name + "' is not valid");
-            }
-        } else {
-            throw new IllegalArgumentException("Object does not have setting '" + name + "'");
-        }
     }
 }
