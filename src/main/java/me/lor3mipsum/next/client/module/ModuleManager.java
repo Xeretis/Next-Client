@@ -10,6 +10,7 @@ import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
 import me.lor3mipsum.next.client.impl.modules.misc.Demo;
+import me.lor3mipsum.next.client.impl.modules.player.FastUse;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ public class ModuleManager {
 
     private void addModule(Module module) {
         modules.add(module);
-        EventManager.register(module);
         Next.INSTANCE.settingManager.registerObject(module.getName(), module);
     }
 
@@ -34,6 +34,8 @@ public class ModuleManager {
         addModule(new Demo());
         //Render
         addModule(new Fullbright());
+        //Player
+        addModule(new FastUse());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());
@@ -71,7 +73,9 @@ public class ModuleManager {
 
     @EventTarget
     private void onKey(KeyEvent event) {
-        for (Module module : modules) if (module.getKeybind() == event.getKey() && module.isCanBeEnabled()) module.setState(!module.getState());
+        for (Module module : modules)
+            if (module.getKeybind() == event.getKey() && module.isCanBeEnabled())
+                module.setState(!module.getState());
     }
 
 }

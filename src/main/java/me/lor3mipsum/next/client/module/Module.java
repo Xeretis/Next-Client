@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.client.module;
 
 import com.lukflug.panelstudio.settings.Toggleable;
+import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
@@ -59,9 +60,11 @@ public abstract class Module implements Toggleable {
     public void setState(boolean state) {
         if (state) {
             this.state = true;
+            EventManager.register(this);
             onEnable();
         } else {
             this.state = false;
+            EventManager.unregister(this);
             onDisable();
         }
     }

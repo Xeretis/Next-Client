@@ -1,17 +1,15 @@
 package me.lor3mipsum.next.client.impl.modules.render;
 
-import me.lor3mipsum.next.Next;
-import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.TickEvent;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
-import net.minecraft.entity.effect.StatusEffect;
+import org.lwjgl.glfw.GLFW;
 
 public class Fullbright extends Module {
 
-    public KeybindSetting keybind = new KeybindSetting(Next.GUI_KEY);
+    public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
     private int timesEnabled;
     private int lastTimesEnabled;
@@ -19,7 +17,7 @@ public class Fullbright extends Module {
     private static double prevGamma;
 
     public Fullbright() {
-        super("Fullbright", "It's just... Fullbright.", Category.RENDER);
+        super("Fullbright", "It's just... Fullbright", Category.RENDER);
     }
 
     @Override
