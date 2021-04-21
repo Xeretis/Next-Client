@@ -3,6 +3,7 @@ package me.lor3mipsum.next.mixin;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.impl.events.DisconnectEvent;
+import me.lor3mipsum.next.client.impl.events.TickEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,5 +38,15 @@ public abstract class MinecraftClientMixin {
         if (world != null) {
             EventManager.call(new DisconnectEvent());
         }
+    }
+
+    @Inject(at = @At("HEAD"), method = "tick")
+    private void onPreTick(CallbackInfo info) {
+        EventManager.call(new TickEvent.Pre());
+    }
+
+    @Inject(at = @At("TAIL"), method = "tick")
+    private void onTick(CallbackInfo info) {
+        EventManager.call(new TickEvent.Post());
     }
 }

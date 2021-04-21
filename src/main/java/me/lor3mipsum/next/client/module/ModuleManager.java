@@ -10,6 +10,7 @@ import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
 import me.lor3mipsum.next.client.impl.modules.misc.Demo;
+import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public class ModuleManager {
     public void addModules() {
         //Misc
         addModule(new Demo());
+        //Render
+        addModule(new Fullbright());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());
