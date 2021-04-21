@@ -5,6 +5,7 @@ import me.lor3mipsum.next.client.command.Command;
 import me.lor3mipsum.next.client.command.CommandException;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 import me.lor3mipsum.next.client.module.Module;
+import net.minecraft.util.Formatting;
 
 public class Toggle extends Command {
     public Toggle() {
@@ -30,6 +31,6 @@ public class Toggle extends Command {
 
         mod.setState(state);
 
-        ChatUtils.info(mod.getName() + " has been (highlight)%s(default)", (state ? "enabled" : "disabled"));
+        ChatUtils.info(mod.getName() + " has been " + (state ? Formatting.GREEN : Formatting.RED) + (state ? "enabled" : "disabled"));
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import me.lor3mipsum.next.client.module.Module;
 
 public class ChatUtils {
     private static final MinecraftClient mc = MinecraftClient.getInstance();
@@ -73,13 +74,45 @@ public class ChatUtils {
         prefixMessage(Formatting.RED, prefix, msg, args);
     }
 
+    private static void moduleMessage(Formatting color, Module module, String msg, Object... args) {
+        sendMsg(0, module.name, PrefixType.Module, formatMsg(msg, color, args), color);
+    }
+
+    private static void moduleMessage(Formatting color, Module module, Text msg) {
+        sendMsg(0, module.name, PrefixType.Module, msg);
+    }
+
+    public static void moduleInfo(Module module, String msg, Object... args) {
+        moduleMessage(Formatting.GRAY, module, msg, args);
+    }
+
+    public static void moduleInfo(Module module, Text msg) {
+        moduleMessage(Formatting.GRAY, module, msg);
+    }
+
+    public static void moduleWarning(Module module, String msg, Object... args) {
+        moduleMessage(Formatting.YELLOW, module, msg, args);
+    }
+
+    public static void moduleWarning(Module module, Text msg) {
+        moduleMessage(Formatting.YELLOW, module, msg);
+    }
+
+    public static void moduleError(Module module, String msg, Object... args) {
+        moduleMessage(Formatting.RED, module, msg, args);
+    }
+
+    public static void moduleError(Module module, Text msg) {
+        moduleMessage(Formatting.RED, module, msg);
+    }
+
     private static BaseText getPrefix(String title, PrefixType type) {
-        BaseText next = new LiteralText("");
+        BaseText next;
         BaseText prefix = new LiteralText("");
 
 
         next = new LiteralText("Next");
-        next.setStyle(next.getStyle().withFormatting(Formatting.BLUE));
+        next.setStyle(next.getStyle().withFormatting(Formatting.DARK_AQUA));
 
 
         prefix.setStyle(prefix.getStyle().withFormatting(Formatting.GRAY));
@@ -109,7 +142,7 @@ public class ChatUtils {
 
     private enum PrefixType {
         Module(Formatting.AQUA),
-        Other(Formatting.LIGHT_PURPLE),
+        Other(Formatting.BLUE),
         None(Formatting.RESET);
 
         public Formatting color;
