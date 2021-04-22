@@ -27,22 +27,26 @@ import java.awt.*;
 public class NextGui extends MinecraftHUDGUI {
     public final static int WIDTH=100,HEIGHT=12,DISTANCE=6,HUD_BORDER=2;
     private final ColorScheme scheme = new SettingsColorScheme(ClickGuiModule.INSTANCE.activeColor, ClickGuiModule.INSTANCE.backgroundColor, ClickGuiModule.INSTANCE.settingBackgroundColor, ClickGuiModule.INSTANCE.outlineColor, ClickGuiModule.INSTANCE.fontColor, ClickGuiModule.INSTANCE.opacity);
-    private final Theme theme, nextLineTheme, nextTheme, gameSenseTheme, clearTheme, clearGradientTheme;
+    private final Theme theme, nextLineTheme, nextOutlineTheme, nextOutlineLineTheme, nextTheme, gameSenseTheme, clearTheme, clearGradientTheme;
     private final Toggleable colorToggle;
     public final GUIInterface guiInterface;
     public final HUDClickGUI gui;
 
     public NextGui() {
-        nextLineTheme = new NextTheme(scheme, HEIGHT,true);
-        nextTheme = new NextTheme(scheme, HEIGHT, false);
+        nextLineTheme = new NextTheme(scheme, HEIGHT,true, false);
+        nextTheme = new NextTheme(scheme, HEIGHT, false, false);
+        nextOutlineTheme = new NextTheme(scheme, HEIGHT, false, true);
+        nextOutlineLineTheme = new NextTheme(scheme, HEIGHT, true, true);
         gameSenseTheme = new GameSenseTheme(scheme, HEIGHT, 2, (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber());
         clearTheme = new ClearTheme(scheme, false, HEIGHT, 1);
         clearGradientTheme = new ClearTheme(scheme, true, HEIGHT, 1);
         theme = new ThemeMultiplexer() {
             @Override
             protected Theme getTheme() {
-                if (ClickGuiModule.INSTANCE.theme.is("Next") && ClickGuiModule.INSTANCE.line.isOn()) return nextLineTheme;
-                else if (ClickGuiModule.INSTANCE.theme.is("Next")) return nextTheme;
+                if (ClickGuiModule.INSTANCE.theme.is("Next") && ClickGuiModule.INSTANCE.line.isOn() && !ClickGuiModule.INSTANCE.outline.isOn()) return nextLineTheme;
+                else if (ClickGuiModule.INSTANCE.theme.is("Next") && ClickGuiModule.INSTANCE.line.isOn() && ClickGuiModule.INSTANCE.outline.isOn()) return nextOutlineLineTheme;
+                else if (ClickGuiModule.INSTANCE.theme.is("Next") && !ClickGuiModule.INSTANCE.line.isOn() && ClickGuiModule.INSTANCE.outline.isOn()) return nextOutlineTheme;
+                else if (ClickGuiModule.INSTANCE.theme.is("Next") && !ClickGuiModule.INSTANCE.line.isOn() && !ClickGuiModule.INSTANCE.outline.isOn()) return nextTheme;
                 else if (ClickGuiModule.INSTANCE.theme.is("GameSense")) return  gameSenseTheme;
                 else if (ClickGuiModule.INSTANCE.theme.is("Clear")) return clearTheme;
                 else return clearGradientTheme;

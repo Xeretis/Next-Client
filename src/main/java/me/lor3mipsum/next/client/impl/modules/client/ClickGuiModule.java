@@ -25,6 +25,7 @@ public class ClickGuiModule extends Module {
     public ModeSetting scrollMode = new ModeSetting("Scroll", "Container", "Container", "Screen");
     public ModeSetting theme = new ModeSetting("Theme", "Next", "Next", "GameSense", "Clear", "ClearGradient");
     public BooleanSetting line = new BooleanSetting("Line", true);
+    public BooleanSetting outline = new BooleanSetting("NextOutline", false);
     public KeybindSetting keybind = new KeybindSetting(Next.GUI_KEY);
 
     public ClickGuiModule() {

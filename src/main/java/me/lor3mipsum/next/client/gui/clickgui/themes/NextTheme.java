@@ -10,9 +10,11 @@ public class NextTheme implements Theme {
     protected ColorScheme scheme;
     protected Renderer componentRenderer, containerRenderer, panelRenderer;
     boolean line;
+    boolean outline;
 
-    public NextTheme (ColorScheme scheme, int height, boolean line) {
+    public NextTheme (ColorScheme scheme, int height, boolean line, boolean outline) {
         this.line = line;
+        this.outline = outline;
         this.scheme=scheme;
         panelRenderer = new ComponentRenderer(0,height,2);
         containerRenderer = new ComponentRenderer(1, height, 2);
@@ -90,7 +92,7 @@ public class NextTheme implements Theme {
         @Override
         public void renderBorder (Context context, boolean focus, boolean active, boolean open) {
             Color color = new Color(getDefaultColorScheme().getOutlineColor().getRed(), getDefaultColorScheme().getOutlineColor().getGreen(), getDefaultColorScheme().getOutlineColor().getBlue(), getDefaultColorScheme().getOpacity());
-            if (level==1 && open) {
+            if (level==1 && open && outline) {
                 context.getInterface().fillRect(new Rectangle(new Point(context.getPos().x,context.getPos().y+context.getSize().height-1),new Dimension(context.getSize().width,3)),color,color,color,color);
                 context.getInterface().fillRect(new Rectangle(new Point(context.getPos().x,context.getPos().y+getHeight(open)-1),new Dimension(context.getSize().width,3)),color,color,color,color);
             }
