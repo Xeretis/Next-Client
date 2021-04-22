@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public class Utils {
+    public static boolean isReleasingTrident;
+
     public static String getKeyName(int key) {
         switch (key) {
             case GLFW.GLFW_KEY_UNKNOWN: return "Null";

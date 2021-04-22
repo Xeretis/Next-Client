@@ -17,19 +17,17 @@ public abstract class Module implements Toggleable {
     public String name;
     public String description;
 
-    public boolean canBeEnabled;
     public boolean hidden;
     public boolean state;
 
     protected Module(String name, String description, Category moduleCategory) {
-        this(name, description, moduleCategory, true, false);
+        this(name, description, moduleCategory, false);
     }
 
-    protected Module(String name, String description, Category category, boolean canBeEnabled, boolean hidden) {
+    protected Module(String name, String description, Category category, boolean hidden) {
         this.name = name;
         this.description = description;
         this.category = category;
-        this.canBeEnabled = canBeEnabled;
         this.hidden = hidden;
     }
 
@@ -43,10 +41,6 @@ public abstract class Module implements Toggleable {
 
     public Category getCategory() {
         return category;
-    }
-
-    public boolean isCanBeEnabled() {
-        return canBeEnabled;
     }
 
     public boolean isHidden() {

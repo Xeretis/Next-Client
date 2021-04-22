@@ -11,6 +11,7 @@ import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
+import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
 import me.lor3mipsum.next.client.impl.modules.player.Demo;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
@@ -34,6 +35,7 @@ public class ModuleManager {
     public void addModules() {
         //Movement
         addModule(new Sprint());
+        addModule(new Velocity());
         //Exploit
         addModule(new AirPlace());
         //Render
@@ -79,7 +81,7 @@ public class ModuleManager {
     @EventTarget
     private void onKey(KeyEvent event) {
         for (Module module : modules)
-            if (module.getKeybind() == event.getKey() && module.isCanBeEnabled())
+            if (module.getKeybind() == event.getKey())
                 module.setState(!module.getState());
     }
 

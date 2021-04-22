@@ -28,12 +28,8 @@ public class ClickGuiModule extends Module {
     public KeybindSetting keybind = new KeybindSetting(Next.GUI_KEY);
 
     public ClickGuiModule() {
-        super("ClickGui", "The settings of the click gui.", Category.CLIENT, true, false);
+        super("ClickGui", "The settings of the click gui.", Category.CLIENT);
         INSTANCE = this;
-    }
-
-    public static Module getClickGuiModule() {
-        return INSTANCE;
     }
 
     @Override

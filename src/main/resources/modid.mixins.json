@@ -12,7 +12,10 @@
     "MinecraftClientAccessor",
     "ChatHudAccessor",
     "ClientPlayerEntityMixin",
-    "WorldRenderMixin"
+    "WorldRenderMixin",
+    "TridentItemMixin",
+    "EntityMixin",
+    "ClientPlayerNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
