@@ -21,7 +21,7 @@ public class Boxes {
         return box.offset(getMinVec(box).negate());
     }
 
-    /** Returns the distance between to oppisite corners of the box. **/
+    /** Returns the distance between to opposite corners of the box. **/
     public static double getCornerLength(Box box) {
         return getMinVec(box).distanceTo(getMaxVec(box));
     }

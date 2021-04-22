@@ -3,7 +3,6 @@ package me.lor3mipsum.next.client.config;
 
 import com.google.gson.*;
 import me.lor3mipsum.next.Next;
-import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.gui.clickgui.GuiConfig;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.setting.Setting;

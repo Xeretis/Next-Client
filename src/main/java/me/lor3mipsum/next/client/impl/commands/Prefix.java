@@ -3,9 +3,7 @@ package me.lor3mipsum.next.client.impl.commands;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.command.Command;
 import me.lor3mipsum.next.client.command.CommandException;
-import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.utils.ChatUtils;
-import net.minecraft.util.Formatting;
 
 public class Prefix extends Command {
 

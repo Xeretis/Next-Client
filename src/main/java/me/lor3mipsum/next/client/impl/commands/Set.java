@@ -30,7 +30,7 @@ public class Set extends Command {
         if (toSet == null) throw new CommandException("The module '" + args[0] + "' does not have any setting called '" + args[1] + "'");
 
         if (toSet instanceof KeybindSetting) {
-            int key = -1;
+            int key;
             try {
                 key = InputUtil.fromTranslationKey("key.keyboard." + args[2].toLowerCase(Locale.ENGLISH)).getCode();
             } catch (IllegalArgumentException e) {

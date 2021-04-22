@@ -62,7 +62,7 @@ public class ModuleManager {
     }
 
     public List<Module> getModulesByCategory(Category c) {
-        List<Module> returnList = new ArrayList<Module>();
+        List<Module> returnList = new ArrayList<>();
 
         for(Module m : modules) {
             if(m.getCategory() == c)

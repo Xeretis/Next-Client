@@ -21,17 +21,17 @@ public class Help extends Command {
         if (args.length < 1) {
             ChatUtils.info("Commands:");
             for (Command command : commands) {
-                String msg = "[" + Formatting.WHITE;
+                StringBuilder msg = new StringBuilder("[" + Formatting.WHITE);
 
                 List<String> aliases = command.getNameAndAliases();
                 for (String element : aliases) {
-                    msg += element + ", ";
+                    msg.append(element).append(", ");
                 }
 
-                msg = msg.substring(0, msg.length() - 2);
-                msg += Formatting.GRAY + "] - " + command.description;
+                msg = new StringBuilder(msg.substring(0, msg.length() - 2));
+                msg.append(Formatting.GRAY + "] - " + command.description);
 
-                ChatUtils.info(msg);
+                ChatUtils.info(msg.toString());
             }
         } else if (args.length == 1) {
             Command command;
@@ -42,17 +42,17 @@ public class Help extends Command {
                 throw new CommandException("Couldn't find command '" + args[0] + "'");
             }
 
-            String msg = "[" + Formatting.WHITE;
+            StringBuilder msg = new StringBuilder("[" + Formatting.WHITE);
 
             List<String> aliases = command.getNameAndAliases();
             for (String element : aliases) {
-                msg += element + ", ";
+                msg.append(element).append(", ");
             }
 
-            msg = msg.substring(0, msg.length() - 2);
-            msg += Formatting.GRAY + "] - " + command.description;
+            msg = new StringBuilder(msg.substring(0, msg.length() - 2));
+            msg.append(Formatting.GRAY + "] - " + command.description);
 
-            ChatUtils.info(msg);
+            ChatUtils.info(msg.toString());
         } else
             throw new CommandException("Usage: " + Next.prefix + alias + " [<command>]");
     }
