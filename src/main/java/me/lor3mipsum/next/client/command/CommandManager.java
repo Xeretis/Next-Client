@@ -7,13 +7,17 @@ import me.lor3mipsum.next.client.utils.ChatUtils;
 import java.util.*;
 
 public class CommandManager {
-    private List<Command> commands = new ArrayList<>();
+    private static List<Command> commands;
 
-    public List<Command> getCommands() {
+    public static List<Command> getCommands() {
         return commands;
     }
 
-    public void addCommands() {
+    public static void init() {
+        commands = new ArrayList<>();
+    }
+
+    public static void addCommands() {
         addCommand(new HClip());
         addCommand(new Toggle());
         addCommand(new Set());
@@ -22,11 +26,11 @@ public class CommandManager {
         addCommand(new Help());
     }
 
-    private void addCommand(Command cmd) {
+    private static void addCommand(Command cmd) {
         commands.add(cmd);
     }
 
-    public boolean executeCommand(String string) {
+    public static boolean executeCommand(String string) {
         String raw = string.substring(1);
         String[] split = raw.split(" ");
 
