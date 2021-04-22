@@ -8,6 +8,7 @@ import me.lor3mipsum.next.client.gui.clickgui.NextGui;
 import me.lor3mipsum.next.client.impl.events.DisconnectEvent;
 import me.lor3mipsum.next.client.module.ModuleManager;
 import me.lor3mipsum.next.client.setting.SettingManager;
+import me.lor3mipsum.next.client.social.SocialManager;
 import me.lor3mipsum.next.client.utils.NetworkUtil;
 import me.lor3mipsum.next.client.utils.NoStackTraceThrowable;
 import me.lor3mipsum.next.client.utils.Utils;
@@ -50,6 +51,7 @@ public class Next implements ModInitializer {
 		settingManager = new SettingManager();
 		configManager = new ConfigManager();
 		commandManager = new CommandManager();
+		SocialManager.init();
 
 		moduleManager.addModules();
 		commandManager.addCommands();
