@@ -10,7 +10,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class VClip extends Command {
     public VClip() {
-        super("vclip");
+        super("vclip", "Clips you through blocks vertically");
     }
 
     @Override

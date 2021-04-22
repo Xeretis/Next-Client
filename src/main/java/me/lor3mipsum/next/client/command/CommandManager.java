@@ -9,12 +9,17 @@ import java.util.*;
 public class CommandManager {
     private List<Command> commands = new ArrayList<>();
 
+    public List<Command> getCommands() {
+        return commands;
+    }
+
     public void addCommands() {
         addCommand(new HClip());
         addCommand(new Toggle());
         addCommand(new Set());
         addCommand(new Prefix());
         addCommand(new VClip());
+        addCommand(new Help());
     }
 
     private void addCommand(Command cmd) {

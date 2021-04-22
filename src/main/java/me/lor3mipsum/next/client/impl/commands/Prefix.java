@@ -10,7 +10,7 @@ import net.minecraft.util.Formatting;
 public class Prefix extends Command {
 
     public Prefix() {
-        super("prefix", "p");
+        super("prefix", "Allows you to change the command prefix ('.' by default)", "p");
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.util.Formatting;
 
 public class Toggle extends Command {
     public Toggle() {
-        super("toggle", "t");
+        super("toggle", "Toggles the state of the given module", "t");
     }
 
     @Override

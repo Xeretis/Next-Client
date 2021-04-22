@@ -13,7 +13,7 @@ import java.util.Locale;
 
 public class Set extends Command {
     public Set() {
-        super("set");
+        super("set", "Allows you to set a specific setting in a module to a certain value");
     }
 
     @Override

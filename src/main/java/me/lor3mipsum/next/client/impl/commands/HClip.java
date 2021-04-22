@@ -10,7 +10,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class HClip extends Command {
     public HClip() {
-        super("hclip");
+        super("hclip", "Clips you through blocks horizontally");
     }
 
     @Override

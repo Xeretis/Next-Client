@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Command {
-    private String name;
-    private String[] aliases;
+    public String name;
+    public String description;
+    public String[] aliases;
 
-    protected Command(String name, String... aliases) {
+    protected Command(String name, String description, String... aliases) {
         this.name = name;
+        this.description = description;
         this.aliases = aliases;
     }
 
@@ -22,7 +24,7 @@ public abstract class Command {
         return this.name.equalsIgnoreCase(name);
     }
 
-    List<String> getNameAndAliases() {
+    public List<String> getNameAndAliases() {
         List<String> l = new ArrayList<>();
         l.add(name);
         l.addAll(Arrays.asList(aliases));
