@@ -11,7 +11,8 @@
     "InGameHudMixin",
     "MinecraftClientAccessor",
     "ChatHudAccessor",
-    "ClientPlayerEntityMixin"
+    "ClientPlayerEntityMixin",
+    "WorldRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

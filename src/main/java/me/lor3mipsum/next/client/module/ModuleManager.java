@@ -8,6 +8,7 @@ import me.lor3mipsum.next.client.impl.events.RenderEvent;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
+import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.player.Demo;
@@ -33,6 +34,8 @@ public class ModuleManager {
     public void addModules() {
         //Movement
         addModule(new Sprint());
+        //Exploit
+        addModule(new AirPlace());
         //Render
         addModule(new Fullbright());
         //Player
