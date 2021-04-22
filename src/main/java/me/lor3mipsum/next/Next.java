@@ -3,9 +3,7 @@ package me.lor3mipsum.next;
 import me.lor3mipsum.next.client.command.CommandManager;
 import me.lor3mipsum.next.client.config.ConfigManager;
 import me.lor3mipsum.next.client.event.EventManager;
-import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.gui.clickgui.NextGui;
-import me.lor3mipsum.next.client.impl.events.DisconnectEvent;
 import me.lor3mipsum.next.client.module.ModuleManager;
 import me.lor3mipsum.next.client.setting.SettingManager;
 import me.lor3mipsum.next.client.social.SocialManager;
@@ -30,7 +28,6 @@ public class Next implements ModInitializer {
 	public ModuleManager moduleManager;
 	public SettingManager settingManager;
 	public NextGui clickGui;
-	private ConfigManager configManager;
 
 	public Next() {
 		INSTANCE = this;
@@ -48,7 +45,7 @@ public class Next implements ModInitializer {
 		//other stuff
 		moduleManager = new ModuleManager();
 		settingManager = new SettingManager();
-		configManager = new ConfigManager();
+		ConfigManager.init();
 		CommandManager.init();
 		SocialManager.init();
 
@@ -57,16 +54,6 @@ public class Next implements ModInitializer {
 
 		clickGui = new NextGui();
 
-		configManager.load();
-	}
-
-	@EventTarget
-	public void onDisconnect(DisconnectEvent event) {
-		try {
-			configManager.save();
-		} catch (Exception e) {
-			System.err.println("Failed to save settings: ");
-			e.printStackTrace();
-		}
+		ConfigManager.load();
 	}
 }

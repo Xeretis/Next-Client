@@ -1,8 +1,8 @@
 package me.lor3mipsum.next.mixin;
 
 import me.lor3mipsum.next.Next;
+import me.lor3mipsum.next.client.config.ConfigManager;
 import me.lor3mipsum.next.client.event.EventManager;
-import me.lor3mipsum.next.client.impl.events.DisconnectEvent;
 import me.lor3mipsum.next.client.impl.events.TickEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -36,7 +36,12 @@ public abstract class MinecraftClientMixin {
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
     private void onDisconnect(Screen screen, CallbackInfo info) {
         if (world != null) {
-            EventManager.call(new DisconnectEvent());
+            try {
+                ConfigManager.save();
+            } catch (Exception e) {
+                System.err.println("Failed to save settings: ");
+                e.printStackTrace();
+            }
         }
     }
 

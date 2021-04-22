@@ -17,12 +17,19 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ConfigManager {
-    public final String rootDir = Next.CLIENT_NAME + "/";
-    private final String backupDir = "Backups/";
-    private final String mainDir = "Main/";
-    private final String moduleDir = "Modules/";
+    public static String rootDir;
+    private static String backupDir;
+    private static String mainDir;
+    private static String moduleDir;
 
-    public void save() throws IOException {
+    public static void init() {
+        rootDir = Next.CLIENT_NAME + "/";
+        backupDir = "Backups/";
+        mainDir = "Main/";
+        moduleDir = "Modules/";
+    }
+
+    public static void save() throws IOException {
         if (!Files.exists(Paths.get(rootDir)))
             Files.createDirectories(Paths.get(rootDir));
         if (!Files.exists(Paths.get(rootDir + backupDir)))
@@ -40,7 +47,7 @@ public class ConfigManager {
 
     }
 
-    private void registerFiles(String location, String name) throws IOException {
+    private static void registerFiles(String location, String name) throws IOException {
         if (Files.exists(Paths.get(rootDir + location + name + ".json"))) {
             File file = new File(rootDir + location + name + ".json");
 
@@ -50,7 +57,7 @@ public class ConfigManager {
         Files.createFile(Paths.get(rootDir + location + name + ".json"));
     }
 
-    private void saveMetadata() throws IOException {
+    private static void saveMetadata() throws IOException {
         registerFiles(mainDir, "Metadata");
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -64,7 +71,7 @@ public class ConfigManager {
         fileOutputStreamWriter.close();
     }
 
-    private void saveClientData() throws IOException {
+    private static void saveClientData() throws IOException {
         registerFiles(mainDir, "Client");
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -78,7 +85,7 @@ public class ConfigManager {
         fileOutputStreamWriter.close();
     }
 
-    private void saveModules() throws IOException {
+    private static void saveModules() throws IOException {
         for (Module module : Next.INSTANCE.moduleManager.getModules()) {
             try {
                 registerFiles(moduleDir, module.getName());
@@ -111,7 +118,7 @@ public class ConfigManager {
         }
     }
 
-    private void saveStates() throws IOException {
+    private static void saveStates() throws IOException {
         registerFiles(mainDir, "States");
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -129,12 +136,12 @@ public class ConfigManager {
         fileOutputStreamWriter.close();
     }
 
-    private void saveClickGuiPositions() throws IOException {
+    private static void saveClickGuiPositions() throws IOException {
         registerFiles(mainDir, "ClickGui");
         Next.INSTANCE.clickGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
     }
 
-    public void load() {
+    public static void load() {
         try {
             checkMetadata();
             loadClientData();
@@ -146,7 +153,7 @@ public class ConfigManager {
         }
     }
 
-    private void checkMetadata() throws IOException {
+    private static void checkMetadata() throws IOException {
         String metadataLocation = rootDir + mainDir;
 
         if (!Files.exists(Paths.get(metadataLocation + "Metadata" + ".json")))
@@ -171,7 +178,7 @@ public class ConfigManager {
             backup("Version change");
     }
 
-    private void loadClientData() throws IOException {
+    private static void loadClientData() throws IOException {
         String clientDataLocation = rootDir + mainDir;
 
         if (!Files.exists(Paths.get(clientDataLocation + "Client" + ".json")))
@@ -195,7 +202,7 @@ public class ConfigManager {
 
     }
 
-    private void loadModules() throws IOException {
+    private static void loadModules() throws IOException {
         String moduleLocation = rootDir + moduleDir;
 
         for (Module module : Next.INSTANCE.moduleManager.getModules()) {
@@ -247,7 +254,7 @@ public class ConfigManager {
         }
     }
 
-    private void loadStates() throws IOException {
+    private static void loadStates() throws IOException {
         String enabledLocation = rootDir + mainDir;
 
         if (!Files.exists(Paths.get(enabledLocation + "States" + ".json")))
@@ -282,11 +289,11 @@ public class ConfigManager {
         inputStream.close();
     }
 
-    private void loadClickGuiPositions() throws IOException {
+    private static void loadClickGuiPositions() throws IOException {
         Next.INSTANCE.clickGui.gui.loadConfig(new GuiConfig(rootDir + mainDir));
     }
 
-    private void backup(String backupReason) {
+    private static void backup(String backupReason) {
         System.out.println("Creating backup " + backupReason);
 
         try {
@@ -309,7 +316,7 @@ public class ConfigManager {
         }
     }
 
-    private void pack(String sourceDirPath, String zipFilePath) throws IOException {
+    private static void pack(String sourceDirPath, String zipFilePath) throws IOException {
         Path p = Files.createFile(Paths.get(zipFilePath));
         try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
             Path pp = Paths.get(sourceDirPath);
