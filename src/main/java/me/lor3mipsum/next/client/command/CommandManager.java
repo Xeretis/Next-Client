@@ -1,7 +1,7 @@
 package me.lor3mipsum.next.client.command;
 
-import me.lor3mipsum.next.client.impl.commands.HClip;
-import me.lor3mipsum.next.client.impl.commands.Toggle;
+import me.lor3mipsum.next.client.impl.commands.*;
+import me.lor3mipsum.next.client.impl.commands.Set;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 
 import java.util.*;
@@ -12,6 +12,9 @@ public class CommandManager {
     public void addCommands() {
         addCommand(new HClip());
         addCommand(new Toggle());
+        addCommand(new Set());
+        addCommand(new Prefix());
+        addCommand(new VClip());
     }
 
     private void addCommand(Command cmd) {

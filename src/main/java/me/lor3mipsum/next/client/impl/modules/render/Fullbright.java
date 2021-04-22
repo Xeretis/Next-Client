@@ -22,7 +22,8 @@ public class Fullbright extends Module {
 
     @Override
     public void onEnable() {
-        prevGamma = mc.options.gamma;
+        if (mc.options != null)
+            prevGamma = mc.options.gamma;
     }
 
     @Override

@@ -15,7 +15,7 @@ public class Toggle extends Command {
     @Override
     public void run(String alias, String[] args) {
         if (args.length < 1) {
-            throw new CommandException("Usage: ." + alias + " <module> [<on/off>]");
+            throw new CommandException("Usage: " + Next.prefix + alias + " <module> [<on/off>]");
         }
         Module mod = Next.INSTANCE.moduleManager.getModule(args[0], false);
 

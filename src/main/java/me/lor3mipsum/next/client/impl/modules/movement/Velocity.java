@@ -14,7 +14,7 @@ public class Velocity extends Module{
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
     public Velocity() {
-        super("Velocity", "Allows you to modify the amount of knockback you take.", Category.MOVEMENT);
+        super("Velocity", "Allows you to modify the amount of knockback you take", Category.MOVEMENT);
     }
 
     @Override

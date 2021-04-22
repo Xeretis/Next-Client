@@ -8,9 +8,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
-public class HClip extends Command {
-    public HClip() {
-        super("hclip");
+public class VClip extends Command {
+    public VClip() {
+        super("vclip");
     }
 
     @Override
@@ -28,9 +28,8 @@ public class HClip extends Command {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         assert player != null;
 
-        Vec3d forward = Vec3d.fromPolar(0, player.yaw).normalize();
-        player.updatePosition(player.getX() + forward.x * dist, player.getY(), player.getZ() + forward.z * dist);
+        player.updatePosition(player.getX(), player.getY() + dist, player.getZ());
 
-        ChatUtils.info("Hclipped (highlight)%s(default) blocks", dist);
+        ChatUtils.info("Vclipped (highlight)%s(default) blocks", dist);
     }
 }

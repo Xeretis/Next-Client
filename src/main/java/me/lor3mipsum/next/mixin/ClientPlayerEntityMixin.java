@@ -18,7 +18,7 @@ public abstract class ClientPlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "sendChatMessage", cancellable = true)
     private void onSendChatMessage(String msg, CallbackInfo info) {
-        if (msg.startsWith(".") && msg.length() > 1) {
+        if (msg.startsWith(Next.prefix) && msg.length() > 1) {
             Next.INSTANCE.commandManager.executeCommand(msg);
             info.cancel();
         }

@@ -22,6 +22,8 @@ public class Next implements ModInitializer {
 	public static final double CLIENT_VERSION = 0.6;
 	public static final int GUI_KEY = GLFW.GLFW_KEY_RIGHT_SHIFT;
 
+	public static String prefix = ".";
+
 	public static Next INSTANCE;
 
 	public ModuleManager moduleManager;

@@ -34,6 +34,7 @@ public class ConfigManager {
             Files.createDirectories(Paths.get(rootDir + moduleDir));
 
         saveMetadata();
+        saveClientData();
         saveModules();
         saveStates();
         saveClickGuiPositions();
@@ -58,6 +59,20 @@ public class ConfigManager {
         JsonObject mainObject = new JsonObject();
 
         mainObject.add("Version", new JsonPrimitive(Next.CLIENT_VERSION));
+
+        String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private void saveClientData() throws IOException {
+        registerFiles(mainDir, "Client");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "Client" + ".json"), StandardCharsets.UTF_8);
+        JsonObject mainObject = new JsonObject();
+
+        mainObject.add("Prefix", new JsonPrimitive(Next.prefix));
 
         String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
         fileOutputStreamWriter.write(jsonString);
@@ -123,6 +138,7 @@ public class ConfigManager {
     public void load() {
         try {
             checkMetadata();
+            loadClientData();
             loadModules();
             loadStates();
             loadClickGuiPositions();
@@ -137,11 +153,12 @@ public class ConfigManager {
         if (!Files.exists(Paths.get(metadataLocation + "Metadata" + ".json")))
             return;
 
-        InputStream inputStream = Files.newInputStream(Paths.get(rootDir + mainDir + "Metadata"+ ".json"));
+        InputStream inputStream = Files.newInputStream(Paths.get(metadataLocation + "Metadata"+ ".json"));
         JsonObject metadataObject;
         try {
             metadataObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
         } catch (java.lang.IllegalStateException e) {
+            backup("Couldn't check version");
             return;
         }
         if(metadataObject.get("Version") == null)
@@ -153,6 +170,30 @@ public class ConfigManager {
             return;
         else
             backup("Version change");
+    }
+
+    private void loadClientData() throws IOException {
+        String clientDataLocation = rootDir + mainDir;
+
+        if (!Files.exists(Paths.get(clientDataLocation + "Client" + ".json")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(clientDataLocation + "Client"+ ".json"));
+        JsonObject clientDataObject;
+        try {
+            clientDataObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        } catch (java.lang.IllegalStateException e) {
+            backup("Couldn't load client data");
+            return;
+        }
+
+        if(clientDataObject.get("Prefix") == null)
+            return;
+
+        JsonElement prefix = clientDataObject.get("Prefix");
+
+        Next.prefix = prefix.getAsString();
+
     }
 
     private void loadModules() throws IOException {
@@ -168,6 +209,7 @@ public class ConfigManager {
                 try {
                     moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
                 } catch (java.lang.IllegalStateException e) {
+                    backup("Couldn't load modules");
                     return;
                 }
 
@@ -213,7 +255,13 @@ public class ConfigManager {
             return;
 
         InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "States" + ".json"));
-        JsonObject moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        JsonObject moduleObject;
+        try {
+            moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        } catch(java.lang.IllegalStateException e) {
+            backup("Couldn't check version");
+            return;
+        }
 
         if (moduleObject.get("Modules") == null)
             return;
