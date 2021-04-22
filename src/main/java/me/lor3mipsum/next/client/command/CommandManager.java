@@ -24,6 +24,7 @@ public class CommandManager {
         addCommand(new Prefix());
         addCommand(new VClip());
         addCommand(new Help());
+        addCommand(new Config());
     }
 
     private static void addCommand(Command cmd) {
