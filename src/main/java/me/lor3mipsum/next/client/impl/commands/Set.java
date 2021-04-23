@@ -6,6 +6,7 @@ import me.lor3mipsum.next.client.command.CommandException;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.setting.Setting;
+import me.lor3mipsum.next.client.setting.SettingManager;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 import net.minecraft.client.util.InputUtil;
 
@@ -25,7 +26,7 @@ public class Set extends Command {
 
         if (mod == null) throw new CommandException("The module '" + args[0] + "' doesn't exist");
 
-        Setting toSet = Next.INSTANCE.settingManager.get(mod.getName(), args[1]);
+        Setting toSet = SettingManager.get(mod.getName(), args[1]);
 
         if (toSet == null) throw new CommandException("The module '" + args[0] + "' does not have any setting called '" + args[1] + "'");
 
@@ -77,6 +78,6 @@ public class Set extends Command {
             ((ColorSetting) toSet).fromInteger(value);
         }
 
-        ChatUtils.info("(highlight)%s(default) of (highlight)%s(default) has been set to (highlight)%s (default)", toSet.name, mod.getName(), args[2]);
+        ChatUtils.info("(highlight)%s(default) of (highlight)%s(default) has been set to (highlight)%s (default)", toSet.getName(), mod.getName(), args[2]);
     }
 }

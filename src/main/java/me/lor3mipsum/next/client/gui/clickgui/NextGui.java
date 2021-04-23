@@ -21,6 +21,7 @@ import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
 import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.setting.Setting;
+import me.lor3mipsum.next.client.setting.SettingManager;
 import me.lor3mipsum.next.client.utils.FontUtils;
 import java.awt.*;
 
@@ -145,13 +146,13 @@ public class NextGui extends MinecraftHUDGUI {
 
         if (!module.isHidden()) {
             panel.addComponent(container);
-            for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(module.getName())) {
+            for (Setting setting : SettingManager.getAllSettingsFrom(module.getName())) {
                 if (setting instanceof BooleanSetting) {
-                    container.addComponent(new BooleanComponent(setting.name,null,theme.getComponentRenderer(),(BooleanSetting) setting));
+                    container.addComponent(new BooleanComponent(setting.getName(),null,theme.getComponentRenderer(),(BooleanSetting) setting));
                 } else if (setting instanceof NumberSetting) {
-                    container.addComponent(new NumberComponent(setting.name,null,theme.getComponentRenderer(),(NumberSetting) setting,((NumberSetting) setting).getMinimumValue(),((NumberSetting) setting).getMaximumValue()));
+                    container.addComponent(new NumberComponent(setting.getName(),null,theme.getComponentRenderer(),(NumberSetting) setting,((NumberSetting) setting).getMinimumValue(),((NumberSetting) setting).getMaximumValue()));
                 }  else if (setting instanceof ModeSetting) {
-                    container.addComponent(new EnumComponent(setting.name,null,theme.getComponentRenderer(),(ModeSetting) setting));
+                    container.addComponent(new EnumComponent(setting.getName(),null,theme.getComponentRenderer(),(ModeSetting) setting));
                 }	else if (setting instanceof ColorSetting) {
                     container.addComponent(new SyncableColorComponent(theme, (me.lor3mipsum.next.client.impl.settings.ColorSetting) setting,colorToggle,new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed)));
                 } else if (setting instanceof KeybindSetting) {

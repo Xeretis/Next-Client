@@ -14,6 +14,7 @@ import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
+import me.lor3mipsum.next.client.setting.SettingManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class ModuleManager {
 
     private void addModule(Module module) {
         modules.add(module);
-        Next.INSTANCE.settingManager.registerObject(module.getName(), module);
+        SettingManager.registerObject(module.getName(), module);
     }
 
     public void addModules() {

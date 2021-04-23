@@ -7,6 +7,7 @@ import me.lor3mipsum.next.client.gui.clickgui.GuiConfig;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.setting.Setting;
 import me.lor3mipsum.next.client.module.Module;
+import me.lor3mipsum.next.client.setting.SettingManager;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -96,17 +97,17 @@ public class ConfigManager {
                 JsonObject settingObject = new JsonObject();
                 moduleObject.add("Module", new JsonPrimitive(module.getName()));
 
-                for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(module.getName())) {
+                for (Setting setting : SettingManager.getAllSettingsFrom(module.getName())) {
                     if (setting instanceof BooleanSetting)
-                        settingObject.add(setting.name, new JsonPrimitive(((BooleanSetting) setting).isOn()));
+                        settingObject.add(setting.getName(), new JsonPrimitive(((BooleanSetting) setting).isOn()));
                     if (setting instanceof NumberSetting)
-                        settingObject.add(setting.name, new JsonPrimitive(((NumberSetting) setting).getNumber()));
+                        settingObject.add(setting.getName(), new JsonPrimitive(((NumberSetting) setting).getNumber()));
                     if (setting instanceof ColorSetting)
-                        settingObject.add(setting.name, new JsonPrimitive(((ColorSetting) setting).toInteger()));
+                        settingObject.add(setting.getName(), new JsonPrimitive(((ColorSetting) setting).toInteger()));
                     if (setting instanceof ModeSetting)
-                        settingObject.add(setting.name, new JsonPrimitive(((ModeSetting) setting).getMode()));
+                        settingObject.add(setting.getName(), new JsonPrimitive(((ModeSetting) setting).getMode()));
                     if (setting instanceof KeybindSetting)
-                        settingObject.add(setting.name, new JsonPrimitive(((KeybindSetting) setting).getKey()));
+                        settingObject.add(setting.getName(), new JsonPrimitive(((KeybindSetting) setting).getKey()));
                 }
                 moduleObject.add("Settings", settingObject);
                 String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
@@ -223,8 +224,8 @@ public class ConfigManager {
                     return;
 
                 JsonObject settingObject = moduleObject.get("Settings").getAsJsonObject();
-                for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(module.name)) {
-                    JsonElement dataObject = settingObject.get(setting.name);
+                for (Setting setting : SettingManager.getAllSettingsFrom(module.name)) {
+                    JsonElement dataObject = settingObject.get(setting.getName());
                     try {
                         if (dataObject != null && dataObject.isJsonPrimitive()) {
                             if (setting instanceof BooleanSetting) {
@@ -241,7 +242,7 @@ public class ConfigManager {
                         }
                     } catch (java.lang.NumberFormatException e) {
                         backup("Failed to load settings");
-                        System.out.println(setting.name + " " + module.getName());
+                        System.out.println(setting.getName() + " " + module.getName());
                         System.out.println(dataObject);
                     }
                 }

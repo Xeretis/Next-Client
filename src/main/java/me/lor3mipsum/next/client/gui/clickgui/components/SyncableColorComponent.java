@@ -15,7 +15,7 @@ import me.lor3mipsum.next.client.module.ModuleManager;
 
 public class SyncableColorComponent extends ColorComponent {
     public SyncableColorComponent (Theme theme, ColorSetting setting, Toggleable colorToggle, Animation animation) {
-        super(setting.name,null,theme.getContainerRenderer(),animation,theme.getComponentRenderer(),setting,true,true,colorToggle);
+        super(setting.getName(),null,theme.getContainerRenderer(),animation,theme.getComponentRenderer(),setting,true,true,colorToggle);
         if (setting!=((ClickGuiModule) Next.INSTANCE.moduleManager.getModule("ClickGui", false)).activeColor) addComponent(new SyncButton(theme.getComponentRenderer()));
     }
 

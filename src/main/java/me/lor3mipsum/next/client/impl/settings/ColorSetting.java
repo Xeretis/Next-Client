@@ -11,8 +11,6 @@ public class ColorSetting extends Setting implements com.lukflug.panelstudio.set
     private boolean rainbow;
     private Color value;
 
-    private static final List<String> SUGGESTIONS = ImmutableList.of("0 0 0 255", "225 25 25 255", "25 225 25 255", "25 25 225 255", "255 255 255 255");
-
     public ColorSetting (String name, final Color value) {
         this.name = name;
         this.value = value;

@@ -12,8 +12,6 @@ import java.util.List;
 public class BooleanSetting extends Setting implements Toggleable {
     public boolean enabled;
 
-    private static final List<String> SUGGESTIONS = ImmutableList.of("true", "false", "toggle");
-
     public BooleanSetting(String name, boolean enabled) {
         this.name = name;
         this.enabled = enabled;

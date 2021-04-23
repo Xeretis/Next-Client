@@ -5,6 +5,7 @@ import me.lor3mipsum.next.client.command.Command;
 import me.lor3mipsum.next.client.command.CommandException;
 import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.setting.Setting;
+import me.lor3mipsum.next.client.setting.SettingManager;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 
 public class ListCmd extends Command {
@@ -30,8 +31,8 @@ public class ListCmd extends Command {
             if (mod == null) throw new CommandException("The module '" + args[1] + "doesn't exist");
 
             StringBuilder msg = new StringBuilder();
-            for (Setting setting : Next.INSTANCE.settingManager.getAllSettingsFrom(mod.getName())) {
-                msg.append(setting.name).append(", ");
+            for (Setting setting : SettingManager.getAllSettingsFrom(mod.getName())) {
+                msg.append(setting.getName()).append(", ");
             }
             msg = new StringBuilder(msg.substring(0, msg.length() - 2));
             ChatUtils.info(msg.toString());

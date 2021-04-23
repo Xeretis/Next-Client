@@ -4,9 +4,13 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class SettingManager {
-    private HashMap<String, List<Setting>> settingMap = new HashMap<>();
+    private static HashMap<String, List<Setting>> settingMap;
 
-    public void registerObject(String name, Object object) {
+    public static void init() {
+        settingMap = new HashMap<>();
+    }
+
+    public static void registerObject(String name, Object object) {
         List<Setting> values = new ArrayList<>();
         for (final Field field : object.getClass().getDeclaredFields()) {
             try {
@@ -23,18 +27,18 @@ public class SettingManager {
         settingMap.put(name, values);
     }
 
-    public List<Setting> getAllSettingsFrom(String name) {
+    public static List<Setting> getAllSettingsFrom(String name) {
         for (Map.Entry<String, List<Setting>> stringListEntry : settingMap.entrySet()) {
             if (stringListEntry.getKey().equalsIgnoreCase(name)) return stringListEntry.getValue();
         }
         return null;
     }
 
-    public HashMap<String, List<Setting>> getAllSettings() {
+    public static HashMap<String, List<Setting>> getAllSettings() {
         return settingMap;
     }
 
-    public Setting get(String owner, String name) {
+    public static Setting get(String owner, String name) {
         List<Setting> found = getAllSettingsFrom(owner);
 
         if (found == null) return null;

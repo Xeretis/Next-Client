@@ -26,7 +26,6 @@ public class Next implements ModInitializer {
 	public static Next INSTANCE;
 
 	public ModuleManager moduleManager;
-	public SettingManager settingManager;
 	public NextGui clickGui;
 
 	public Next() {
@@ -44,7 +43,7 @@ public class Next implements ModInitializer {
 
 		//other stuff
 		moduleManager = new ModuleManager();
-		settingManager = new SettingManager();
+		SettingManager.init();
 		ConfigManager.init();
 		CommandManager.init();
 		SocialManager.init();

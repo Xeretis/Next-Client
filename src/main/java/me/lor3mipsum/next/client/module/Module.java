@@ -55,10 +55,6 @@ public abstract class Module implements Toggleable {
         return state;
     }
 
-    public List<Setting> getSettings() {
-        return Next.INSTANCE.settingManager.getAllSettingsFrom(name);
-    }
-
     public void setState(boolean state) {
         if (state) {
             this.state = true;
