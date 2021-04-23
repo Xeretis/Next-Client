@@ -60,9 +60,13 @@ public class Set extends Command {
             }
             ((NumberSetting) toSet).setNumber(value);
         } else if (toSet instanceof BooleanSetting) {
-            if (!(args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")))
+            if (!(args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("toggle")))
                 throw new CommandException(args[0] + " is not a valid boolean setting");
-            ((BooleanSetting) toSet).setEnabled(Boolean.parseBoolean(args[2]));
+            if (args[2].equalsIgnoreCase("toggle")) {
+                ((BooleanSetting) toSet).setEnabled(!((BooleanSetting) toSet).isOn());
+                args[2] = Boolean.toString(((BooleanSetting) toSet).isOn());
+            } else
+                ((BooleanSetting) toSet).setEnabled(Boolean.parseBoolean(args[2]));
         } else if (toSet instanceof ModeSetting) {
             String value = args[2];
             if(!((ModeSetting) toSet).modes.contains(value))
