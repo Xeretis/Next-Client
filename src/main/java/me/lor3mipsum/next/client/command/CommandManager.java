@@ -26,6 +26,7 @@ public class CommandManager {
         addCommand(new Help());
         addCommand(new Config());
         addCommand(new ListCmd());
+        addCommand(new Say());
     }
 
     private static void addCommand(Command cmd) {
