@@ -1,6 +1,7 @@
 package me.lor3mipsum.next;
 
 import me.lor3mipsum.next.client.command.CommandManager;
+import me.lor3mipsum.next.client.command.macro.MacroManager;
 import me.lor3mipsum.next.client.config.ConfigManager;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.gui.clickgui.NextGui;
@@ -26,6 +27,7 @@ public class Next implements ModInitializer {
 	public static Next INSTANCE;
 
 	public ModuleManager moduleManager;
+	public MacroManager macroManager;
 	public NextGui clickGui;
 
 	public Next() {
@@ -43,6 +45,7 @@ public class Next implements ModInitializer {
 
 		//other stuff
 		moduleManager = new ModuleManager();
+		macroManager = new MacroManager();
 		SettingManager.init();
 		ConfigManager.init();
 		CommandManager.init();

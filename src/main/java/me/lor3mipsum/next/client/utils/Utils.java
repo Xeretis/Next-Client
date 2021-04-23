@@ -1,6 +1,8 @@
 package me.lor3mipsum.next.client.utils;
 
 import com.google.common.hash.Hashing;
+import me.lor3mipsum.next.client.command.CommandException;
+import net.minecraft.client.util.InputUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -11,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Locale;
 
 public class Utils {
     public static boolean isReleasingTrident;
@@ -78,6 +81,32 @@ public class Utils {
                 if (keyName == null) return "Null";
                 return StringUtils.capitalize(keyName);
         }
+    }
+
+    public static int getKeyFromName(String name) {
+        if (name.equalsIgnoreCase("null"))
+            return -1;
+
+        int key;
+        try {
+            key = InputUtil.fromTranslationKey("key.keyboard." + name.toLowerCase(Locale.ENGLISH)).getCode();
+        } catch (IllegalArgumentException e) {
+            if (name.toLowerCase(Locale.ENGLISH).startsWith("right")) {
+                try {
+                    key = InputUtil.fromTranslationKey("key.keyboard." + name.toLowerCase(Locale.ENGLISH).replaceFirst("right", "right.")).getCode();
+                } catch (IllegalArgumentException e1) {
+                    return -2;
+                }
+            } else if (name.toLowerCase(Locale.ENGLISH).startsWith("r")) {
+                try {
+                    key = InputUtil.fromTranslationKey("key.keyboard." + name.toLowerCase(Locale.ENGLISH).replaceFirst("r", "right.")).getCode();
+                } catch (IllegalArgumentException e1) {
+                    return -2;
+                }
+            } else
+                return -2;
+        }
+        return key;
     }
 
     public static byte[] rawHWID() throws NoSuchAlgorithmException {

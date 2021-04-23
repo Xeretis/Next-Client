@@ -8,6 +8,7 @@ import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.setting.Setting;
 import me.lor3mipsum.next.client.setting.SettingManager;
 import me.lor3mipsum.next.client.utils.ChatUtils;
+import me.lor3mipsum.next.client.utils.Utils;
 import net.minecraft.client.util.InputUtil;
 
 import java.util.Locale;
@@ -31,25 +32,9 @@ public class Set extends Command {
         if (toSet == null) throw new CommandException("The module '" + args[0] + "' does not have any setting called '" + args[1] + "'");
 
         if (toSet instanceof KeybindSetting) {
-            int key;
-            try {
-                key = InputUtil.fromTranslationKey("key.keyboard." + args[2].toLowerCase(Locale.ENGLISH)).getCode();
-            } catch (IllegalArgumentException e) {
-                if (args[2].toLowerCase(Locale.ENGLISH).startsWith("right")) {
-                    try {
-                        key = InputUtil.fromTranslationKey("key.keyboard." + args[2].toLowerCase(Locale.ENGLISH).replaceFirst("right", "right.")).getCode();
-                    } catch (IllegalArgumentException e1) {
-                        throw new CommandException("Unknown key: " + args[2] + " / " + args[2].toLowerCase(Locale.ENGLISH).replaceFirst("right", "right."));
-                    }
-                } else if (args[2].toLowerCase(Locale.ENGLISH).startsWith("r")) {
-                    try {
-                        key = InputUtil.fromTranslationKey("key.keyboard." + args[2].toLowerCase(Locale.ENGLISH).replaceFirst("r", "right.")).getCode();
-                    } catch (IllegalArgumentException e1) {
-                        throw new CommandException("Unknown key: " + args[2] + " / " + args[2].toLowerCase(Locale.ENGLISH).replaceFirst("r", "right."));
-                    }
-                } else
-                    throw new CommandException("Unknown key: " + args[2]);
-            }
+            int key = Utils.getKeyFromName(args[2]);
+            if (key == -2)
+                throw new CommandException("Unknown key: " + args[2]);
             ((KeybindSetting) toSet).setKey(key);
         } else if (toSet instanceof NumberSetting) {
             double value;
