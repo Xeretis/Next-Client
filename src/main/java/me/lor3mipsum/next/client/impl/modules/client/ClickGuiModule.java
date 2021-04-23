@@ -10,7 +10,6 @@ import me.lor3mipsum.next.client.module.Module;
 import java.awt.*;
 
 public class ClickGuiModule extends Module {
-    public static ClickGuiModule INSTANCE;
 
     public NumberSetting animationSpeed = new NumberSetting("AnimSpeed", 10, 0, 100, 1);
     public NumberSetting scrollSpeed = new NumberSetting("ScrollSpeed", 10, 0, 100, 1);
@@ -30,7 +29,6 @@ public class ClickGuiModule extends Module {
 
     public ClickGuiModule() {
         super("ClickGui", "The settings of the click gui.", Category.CLIENT);
-        INSTANCE = this;
     }
 
     @Override

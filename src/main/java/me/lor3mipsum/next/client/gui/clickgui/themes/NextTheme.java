@@ -2,6 +2,7 @@ package me.lor3mipsum.next.client.gui.clickgui.themes;
 
 import com.lukflug.panelstudio.Context;
 import com.lukflug.panelstudio.theme.*;
+import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 
 import java.awt.*;
@@ -68,7 +69,7 @@ public class NextTheme implements Theme {
             rectangle.height += 2;
             context.getInterface().fillRect(rectangle,color,color,color,color);
             if (level!=0 && overlay) {
-                Color overlayColor = ClickGuiModule.INSTANCE.highlightColor.getColor();
+                Color overlayColor = Next.INSTANCE.moduleManager.getModule(ClickGuiModule.class).highlightColor.getColor();
                 if (!context.isHovered()) {
                     overlayColor=new Color(0,0,0,0);
                 }

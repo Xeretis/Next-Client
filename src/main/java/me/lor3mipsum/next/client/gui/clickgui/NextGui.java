@@ -26,8 +26,10 @@ import me.lor3mipsum.next.client.utils.FontUtils;
 import java.awt.*;
 
 public class NextGui extends MinecraftHUDGUI {
+    private final ClickGuiModule guiModule = Next.INSTANCE.moduleManager.getModule(ClickGuiModule.class);
+
     public final static int WIDTH=100,HEIGHT=12,DISTANCE=6,HUD_BORDER=2;
-    private final ColorScheme scheme = new SettingsColorScheme(ClickGuiModule.INSTANCE.activeColor, ClickGuiModule.INSTANCE.backgroundColor, ClickGuiModule.INSTANCE.settingBackgroundColor, ClickGuiModule.INSTANCE.outlineColor, ClickGuiModule.INSTANCE.fontColor, ClickGuiModule.INSTANCE.opacity);
+    private final ColorScheme scheme = new SettingsColorScheme(guiModule.activeColor, guiModule.backgroundColor, guiModule.settingBackgroundColor, guiModule.outlineColor, guiModule.fontColor, guiModule.opacity);
     private final Theme theme, nextLineTheme, nextOutlineTheme, nextOutlineLineTheme, nextTheme, gameSenseTheme, clearTheme, clearGradientTheme;
     private final Toggleable colorToggle;
     public final GUIInterface guiInterface;
@@ -38,18 +40,18 @@ public class NextGui extends MinecraftHUDGUI {
         nextTheme = new NextTheme(scheme, HEIGHT, false, false);
         nextOutlineTheme = new NextTheme(scheme, HEIGHT, false, true);
         nextOutlineLineTheme = new NextTheme(scheme, HEIGHT, true, true);
-        gameSenseTheme = new GameSenseTheme(scheme, HEIGHT, 2, (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber());
+        gameSenseTheme = new GameSenseTheme(scheme, HEIGHT, 2, (int) guiModule.scrollSpeed.getNumber());
         clearTheme = new ClearTheme(scheme, false, HEIGHT, 1);
         clearGradientTheme = new ClearTheme(scheme, true, HEIGHT, 1);
         theme = new ThemeMultiplexer() {
             @Override
             protected Theme getTheme() {
-                if (ClickGuiModule.INSTANCE.theme.is("Next") && ClickGuiModule.INSTANCE.line.isOn() && !ClickGuiModule.INSTANCE.outline.isOn()) return nextLineTheme;
-                else if (ClickGuiModule.INSTANCE.theme.is("Next") && ClickGuiModule.INSTANCE.line.isOn() && ClickGuiModule.INSTANCE.outline.isOn()) return nextOutlineLineTheme;
-                else if (ClickGuiModule.INSTANCE.theme.is("Next") && !ClickGuiModule.INSTANCE.line.isOn() && ClickGuiModule.INSTANCE.outline.isOn()) return nextOutlineTheme;
-                else if (ClickGuiModule.INSTANCE.theme.is("Next") && !ClickGuiModule.INSTANCE.line.isOn() && !ClickGuiModule.INSTANCE.outline.isOn()) return nextTheme;
-                else if (ClickGuiModule.INSTANCE.theme.is("GameSense")) return  gameSenseTheme;
-                else if (ClickGuiModule.INSTANCE.theme.is("Clear")) return clearTheme;
+                if (guiModule.theme.is("Next") && guiModule.line.isOn() && !guiModule.outline.isOn()) return nextLineTheme;
+                else if (guiModule.theme.is("Next") && guiModule.line.isOn() && guiModule.outline.isOn()) return nextOutlineLineTheme;
+                else if (guiModule.theme.is("Next") && !guiModule.line.isOn() && guiModule.outline.isOn()) return nextOutlineTheme;
+                else if (guiModule.theme.is("Next") && !guiModule.line.isOn() && !guiModule.outline.isOn()) return nextTheme;
+                else if (guiModule.theme.is("GameSense")) return  gameSenseTheme;
+                else if (guiModule.theme.is("Clear")) return clearTheme;
                 else return clearGradientTheme;
             }
         };
@@ -92,7 +94,7 @@ public class NextGui extends MinecraftHUDGUI {
             @Override
             public void handleScroll (int diff) {
                 super.handleScroll(diff);
-                if (ClickGuiModule.INSTANCE.scrollMode.is("Screen")) {
+                if (guiModule.scrollMode.is("Screen")) {
                     for (FixedComponent component: components) {
                         if (!hudComponents.contains(component)) {
                             Point p=component.getPosition(guiInterface);
@@ -118,16 +120,16 @@ public class NextGui extends MinecraftHUDGUI {
         for (Module module : Next.INSTANCE.moduleManager.getModules()) {
             if (module instanceof HudModule) {
                 ((HudModule) module).populate(theme);
-                gui.addHUDComponent(new HUDPanel(((HudModule)module).getComponent(), theme.getPanelRenderer(), module, new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), hudToggle, HUD_BORDER));
+                gui.addHUDComponent(new HUDPanel(((HudModule)module).getComponent(), theme.getPanelRenderer(), module, new SettingsAnimation(guiModule.animationSpeed), hudToggle, HUD_BORDER));
             }
         }
 
         Point pos = new Point(DISTANCE, DISTANCE);
         for (Category category : Category.values()) {
-            DraggableContainer panel = new DraggableContainer(category.toString(), null, theme.getPanelRenderer(), new SimpleToggleable(false), new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), null, new Point(pos), WIDTH) {
+            DraggableContainer panel = new DraggableContainer(category.toString(), null, theme.getPanelRenderer(), new SimpleToggleable(false), new SettingsAnimation(guiModule.animationSpeed), null, new Point(pos), WIDTH) {
                 @Override
                 protected int getScrollHeight (int childHeight) {
-                    if (ClickGuiModule.INSTANCE.scrollMode.is("Screen")) {
+                    if (guiModule.scrollMode.is("Screen")) {
                         return childHeight;
                     }
                     return Math.min(childHeight,Math.max(HEIGHT*4,NextGui.this.height-getPosition(guiInterface).y-renderer.getHeight(open.getValue()!=0)-HEIGHT));
@@ -142,7 +144,7 @@ public class NextGui extends MinecraftHUDGUI {
     }
 
     private void addModule(CollapsibleContainer panel, Module module) {
-        CollapsibleContainer container=new CollapsibleContainer(module.getName(),module.getDescription(),theme.getContainerRenderer(),new SimpleToggleable(false),new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed), module);
+        CollapsibleContainer container=new CollapsibleContainer(module.getName(),module.getDescription(),theme.getContainerRenderer(),new SimpleToggleable(false),new SettingsAnimation(guiModule.animationSpeed), module);
 
         if (!module.isHidden()) {
             panel.addComponent(container);
@@ -154,7 +156,7 @@ public class NextGui extends MinecraftHUDGUI {
                 }  else if (setting instanceof ModeSetting) {
                     container.addComponent(new EnumComponent(setting.getName(),null,theme.getComponentRenderer(),(ModeSetting) setting));
                 }	else if (setting instanceof ColorSetting) {
-                    container.addComponent(new SyncableColorComponent(theme, (me.lor3mipsum.next.client.impl.settings.ColorSetting) setting,colorToggle,new SettingsAnimation(ClickGuiModule.INSTANCE.animationSpeed)));
+                    container.addComponent(new SyncableColorComponent(theme, (me.lor3mipsum.next.client.impl.settings.ColorSetting) setting,colorToggle,new SettingsAnimation(guiModule.animationSpeed)));
                 } else if (setting instanceof KeybindSetting) {
                     container.addComponent(new ResetableKeybindComponent(theme.getComponentRenderer(),(KeybindSetting) setting));
                 }
@@ -174,6 +176,6 @@ public class NextGui extends MinecraftHUDGUI {
 
     @Override
     protected int getScrollSpeed() {
-        return (int) ClickGuiModule.INSTANCE.scrollSpeed.getNumber();
+        return (int) guiModule.scrollSpeed.getNumber();
     }
 }
