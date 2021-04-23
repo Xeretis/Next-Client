@@ -14,6 +14,7 @@ import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
 import me.lor3mipsum.next.client.impl.modules.render.BreakIndicator;
+import me.lor3mipsum.next.client.impl.modules.render.CustomFOV;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
 import me.lor3mipsum.next.client.setting.SettingManager;
 
@@ -42,6 +43,7 @@ public class ModuleManager {
         //Render
         addModule(new Fullbright());
         addModule(new BreakIndicator());
+        addModule(new CustomFOV());
         //Player
         addModule(new FastUse());
         //Client

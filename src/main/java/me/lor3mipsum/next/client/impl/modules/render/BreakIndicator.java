@@ -115,7 +115,7 @@ public class BreakIndicator extends Module {
             );
 
             if (text.isOn())
-                WorldRenderUtils.drawText(String.valueOf(Math.round(progress * 100)) + "%", pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5);
+                WorldRenderUtils.drawText(Math.round(progress * 100) + "%", pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5);
             RenderUtils.drawBoxBoth(new Box(x1, y1, z1, x2, y2, z2), QuadColor.single(currentSide.getRGB()), QuadColor.single(currentLine.getRGB()), (float) lineWidth.getNumber());
 
         });
