@@ -5,7 +5,9 @@ import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class MacroManager {
     private List<Macro> macros = new ArrayList<>();
@@ -29,19 +31,22 @@ public class MacroManager {
         macros.add(macro);
     }
 
-    public void removeMacro(int key) {
+    public Macro getMacro(int key) {
         for (Macro macro : macros)
             if (macro.key == key)
-                macros.remove(macro);
+                return macro;
+        return null;
+    }
+
+    public void removeMacro(Macro macro) {
+        macros.remove(macro);
     }
 
     @EventTarget
     private void onKey(KeyEvent event) {
-        for (Macro macro : macros)
+        for(Macro macro : macros)
             if (macro.key == event.getKey()) {
-                System.out.println(macro.command);
                 macro.run();
             }
-
     }
 }

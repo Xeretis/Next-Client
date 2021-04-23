@@ -59,7 +59,13 @@ public class MacroCmd extends Command {
             if (key == -2)
                 throw new CommandException("Unknown key: " + args[1]);
 
-            Next.INSTANCE.macroManager.removeMacro(key);
+            Macro macro = Next.INSTANCE.macroManager.getMacro(key);
+
+            if(macro == null)
+                throw new CommandException("Couldn't find macro '" + args[1] + "'");
+
+            Next.INSTANCE.macroManager.removeMacro(macro);
+
             ChatUtils.info("Successfully removed macro (highlight)%s", args[1]);
         } else
             throw new CommandException("Usage: " + Next.prefix + alias + " <add/remove/list> [<add/remove ? key>] [<add ? command>]");
