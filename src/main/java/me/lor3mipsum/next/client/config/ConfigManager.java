@@ -107,13 +107,16 @@ public class ConfigManager {
                 for (Setting setting : SettingManager.getAllSettingsFrom(module.getName())) {
                     if (setting instanceof BooleanSetting)
                         settingObject.add(setting.getName(), new JsonPrimitive(((BooleanSetting) setting).isOn()));
-                    if (setting instanceof NumberSetting)
+                    else if (setting instanceof NumberSetting)
                         settingObject.add(setting.getName(), new JsonPrimitive(((NumberSetting) setting).getNumber()));
-                    if (setting instanceof ColorSetting)
-                        settingObject.add(setting.getName(), new JsonPrimitive(((ColorSetting) setting).toInteger()));
-                    if (setting instanceof ModeSetting)
+                    else if (setting instanceof ColorSetting) {
+                        JsonObject colorObject = new JsonObject();
+                        colorObject.add("color", new JsonPrimitive(((ColorSetting) setting).toInteger()));
+                        colorObject.add("rainbow", new JsonPrimitive(((ColorSetting) setting).getRainbow()));
+                        settingObject.add(setting.getName(), colorObject);;
+                    } else if (setting instanceof ModeSetting)
                         settingObject.add(setting.getName(), new JsonPrimitive(((ModeSetting) setting).getMode()));
-                    if (setting instanceof KeybindSetting)
+                    else if (setting instanceof KeybindSetting)
                         settingObject.add(setting.getName(), new JsonPrimitive(((KeybindSetting) setting).getKey()));
                 }
                 moduleObject.add("Settings", settingObject);
@@ -166,6 +169,7 @@ public class ConfigManager {
     }
 
     public static void load() {
+        System.out.println("Loading config");
         try {
             checkMetadata();
             loadClientData();
@@ -251,20 +255,20 @@ public class ConfigManager {
                 for (Setting setting : SettingManager.getAllSettingsFrom(module.name)) {
                     JsonElement dataObject = settingObject.get(setting.getName());
                     try {
-                        if (dataObject != null && dataObject.isJsonPrimitive()) {
-                            if (setting instanceof BooleanSetting) {
+                        if (dataObject != null) {
+                            if (setting instanceof BooleanSetting)
                                 ((BooleanSetting) setting).setEnabled(dataObject.getAsBoolean());
-                            } else if (setting instanceof NumberSetting) {
+                            else if (setting instanceof NumberSetting)
                                 ((NumberSetting) setting).setNumber(dataObject.getAsDouble());
-                            } else if (setting instanceof KeybindSetting) {
+                            else if (setting instanceof KeybindSetting)
                                 ((KeybindSetting) setting).setKey(dataObject.getAsInt());
-                            } else if (setting instanceof ColorSetting) {
-                                ((ColorSetting) setting).fromInteger(dataObject.getAsInt());
-                            } else if (setting instanceof ModeSetting) {
+                            else if (setting instanceof ColorSetting) {
+                                ((ColorSetting) setting).setRainbow(dataObject.getAsJsonObject().get("rainbow").getAsBoolean());
+                                ((ColorSetting) setting).fromInteger(dataObject.getAsJsonObject().get("color").getAsInt());
+                            } else if (setting instanceof ModeSetting)
                                 ((ModeSetting) setting).setMode(dataObject.getAsString());
-                            }
                         }
-                    } catch (java.lang.NumberFormatException e) {
+                    } catch (Exception e) {
                         backup("Failed to load settings");
                         System.out.println(setting.getName() + " " + module.getName());
                         System.out.println(dataObject);
@@ -280,7 +284,7 @@ public class ConfigManager {
     }
 
     private static void loadStates() throws IOException {
-        String satesLocation = otherDir + otherDir;
+        String satesLocation = rootDir + otherDir;
 
         if (!Files.exists(Paths.get(satesLocation + "States" + ".json")))
             return;

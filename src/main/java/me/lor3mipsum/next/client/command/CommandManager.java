@@ -29,6 +29,7 @@ public class CommandManager {
         addCommand(new Say());
         addCommand(new MacroCmd());
         addCommand(new Nbt());
+        addCommand(new FriendCmd());
     }
 
     private static void addCommand(Command cmd) {

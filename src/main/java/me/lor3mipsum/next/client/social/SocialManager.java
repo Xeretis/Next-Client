@@ -19,7 +19,7 @@ public class SocialManager {
         return enemies;
     }
 
-    public static ArrayList<String> getFriendsNames() {
+    public static ArrayList<String> getFriendNames() {
         ArrayList<String> friendNames = new ArrayList<>();
 
         getFriends().forEach(friend -> friendNames.add(friend.getName()));
