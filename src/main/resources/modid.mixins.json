@@ -15,7 +15,8 @@
     "WorldRenderMixin",
     "TridentItemMixin",
     "EntityMixin",
-    "ClientConnectionMixin"
+    "ClientConnectionMixin",
+    "ClientPlayerInteractionManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

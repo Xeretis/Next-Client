@@ -13,6 +13,7 @@ import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
+import me.lor3mipsum.next.client.impl.modules.render.BreakIndicator;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
 import me.lor3mipsum.next.client.setting.SettingManager;
 
@@ -40,6 +41,7 @@ public class ModuleManager {
         addModule(new AirPlace());
         //Render
         addModule(new Fullbright());
+        addModule(new BreakIndicator());
         //Player
         addModule(new FastUse());
         //Client
