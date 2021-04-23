@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class KeyboardMixin {
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void onKey(long window, int key, int scancode, int i, int j, CallbackInfo info) {
-        if(key != GLFW.GLFW_KEY_UNKNOWN&& i != GLFW.GLFW_RELEASE && MinecraftClient.getInstance().player != null) {
+        if(key != GLFW.GLFW_KEY_UNKNOWN&& i != GLFW.GLFW_RELEASE && MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().currentScreen == null) {
             EventManager.call(new KeyEvent(key));
         }
     }
