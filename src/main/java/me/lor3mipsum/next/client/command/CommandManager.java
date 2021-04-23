@@ -28,6 +28,7 @@ public class CommandManager {
         addCommand(new ListCmd());
         addCommand(new Say());
         addCommand(new MacroCmd());
+        addCommand(new Nbt());
     }
 
     private static void addCommand(Command cmd) {
