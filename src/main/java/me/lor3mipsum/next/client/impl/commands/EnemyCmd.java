@@ -34,6 +34,12 @@ public class EnemyCmd extends Command {
             if (args.length != 2)
                 throw new CommandException("Usage: " + Next.prefix + alias + " <list/add/remove> [<add/remove ? enemy>]");
 
+            if (SocialManager.isEnemy(args[1]))
+                throw new CommandException(args[1] + " is already your enemy");
+
+            if (SocialManager.isFriend(args[1]))
+                throw new CommandException("Can't have " + args[1] + " as both an enemy and a friend");
+
             SocialManager.addEnemy(args[1]);
             ChatUtils.info("Successfully added (highlight)%s (default)as an enemy", args[1]);
         } else if (args[0].equalsIgnoreCase("remove")) {

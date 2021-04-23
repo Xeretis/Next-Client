@@ -9,6 +9,9 @@ import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.setting.Setting;
 import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.setting.SettingManager;
+import me.lor3mipsum.next.client.social.Enemy;
+import me.lor3mipsum.next.client.social.Friend;
+import me.lor3mipsum.next.client.social.SocialManager;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -51,6 +54,8 @@ public class ConfigManager {
         saveModules();
         saveStates();
         saveMacros();
+        saveFriends();
+        saveEnemies();
         saveClickGuiPositions();
 
     }
@@ -163,6 +168,42 @@ public class ConfigManager {
         fileOutputStreamWriter.close();
     }
 
+    private static void saveFriends() throws IOException {
+        registerFiles(otherDir, "Friends");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Friends" + ".json"), StandardCharsets.UTF_8);
+        JsonObject mainObject = new JsonObject();
+        JsonArray friendArray = new JsonArray();
+
+        for (Friend friend : SocialManager.getFriends()) {
+            friendArray.add(friend.getName());
+        }
+
+        mainObject.add("Friends", friendArray);
+        String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private static void saveEnemies() throws IOException {
+
+        registerFiles(otherDir, "Enemies");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Enemies" + ".json"), StandardCharsets.UTF_8);
+        JsonObject mainObject = new JsonObject();
+        JsonArray enemyArray = new JsonArray();
+
+        for (Enemy enemy : SocialManager.getEnemies()) {
+            enemyArray.add(enemy.getName());
+        }
+        mainObject.add("Enemies", enemyArray);
+        String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
     private static void saveClickGuiPositions() throws IOException {
         registerFiles(mainDir, "ClickGui");
         Next.INSTANCE.clickGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
@@ -176,6 +217,8 @@ public class ConfigManager {
             loadModules();
             loadStates();
             loadMacros();
+            loadFriends();
+            loadEnemies();
             loadClickGuiPositions();
         } catch (IOException e) {
             e.printStackTrace();
@@ -348,6 +391,47 @@ public class ConfigManager {
         else
             backup("Failed to load macro values");
 
+        inputStream.close();
+    }
+
+    private static void loadFriends() throws IOException {
+        String friendLocation = rootDir + otherDir;
+
+        if (!Files.exists(Paths.get(friendLocation + "Friends" + ".json"))) {
+            return;
+        }
+
+        InputStream inputStream = Files.newInputStream(Paths.get(friendLocation + "Friends" + ".json"));
+        JsonObject mainObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+
+        if (mainObject.get("Friends") == null) {
+            backup("Couldn't load friends");
+            return;
+        }
+
+        JsonArray friendObject = mainObject.get("Friends").getAsJsonArray();
+
+        friendObject.forEach(object -> SocialManager.addFriend(object.getAsString()));
+        inputStream.close();
+    }
+
+    private static void loadEnemies() throws IOException {
+        String enemyLocation = rootDir + otherDir;
+
+        if (!Files.exists(Paths.get(enemyLocation + "Enemies" + ".json"))) {
+            return;
+        }
+
+        InputStream inputStream = Files.newInputStream(Paths.get(enemyLocation + "Enemies" + ".json"));
+        JsonObject mainObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+
+        if (mainObject.get("Enemies") == null) {
+            return;
+        }
+
+        JsonArray enemyObject = mainObject.get("Enemies").getAsJsonArray();
+
+        enemyObject.forEach(object -> SocialManager.addEnemy(object.getAsString()));
         inputStream.close();
     }
 
