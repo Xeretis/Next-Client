@@ -23,7 +23,7 @@ public class Set extends Command {
 
         Module mod = Next.INSTANCE.moduleManager.getModule(args[0], false);
 
-        if (mod == null) throw new CommandException("The module '" + args[0] + "' does not exist");
+        if (mod == null) throw new CommandException("The module '" + args[0] + "' doesn't exist");
 
         Setting toSet = Next.INSTANCE.settingManager.get(mod.getName(), args[1]);
 
