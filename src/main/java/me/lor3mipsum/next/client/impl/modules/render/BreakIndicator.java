@@ -9,6 +9,7 @@ import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
 import me.lor3mipsum.next.client.utils.render.RenderUtils;
+import me.lor3mipsum.next.client.utils.render.WorldRenderUtils;
 import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import me.lor3mipsum.next.mixin.ClientPlayerInteractionManagerAccessor;
 import net.minecraft.block.BlockState;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class BreakIndicator extends Module {
 
     public NumberSetting lineWidth = new NumberSetting("LineWidth", 2.5, 0.1, 5.0, 0.1);
+    public BooleanSetting text = new BooleanSetting("DrawProgress", false);
     public ColorSetting startLine = new ColorSetting("StartLineColor", new Color(255, 50, 50, 255));
     public ColorSetting startSide = new ColorSetting("StartSideColor", new Color(255, 50, 50, 100));
     public ColorSetting endLine = new ColorSetting("EndLineColor", new Color(50, 255, 50, 255));
@@ -112,6 +114,8 @@ public class BreakIndicator extends Module {
                     (int) Math.round(startLine.getValue().getAlpha() + (endLine.getValue().getAlpha() - startLine.getValue().getAlpha()) * progress)
             );
 
+            if (text.isOn())
+                WorldRenderUtils.drawText(String.valueOf(Math.round(progress * 100)) + "%", pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5);
             RenderUtils.drawBoxBoth(new Box(x1, y1, z1, x2, y2, z2), QuadColor.single(currentSide.getRGB()), QuadColor.single(currentLine.getRGB()), (float) lineWidth.getNumber());
 
         });

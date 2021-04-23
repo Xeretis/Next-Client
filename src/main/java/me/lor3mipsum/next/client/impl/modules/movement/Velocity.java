@@ -8,7 +8,7 @@ import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
-import me.lor3mipsum.next.client.utils.FabricReflect;
+import me.lor3mipsum.next.client.utils.ReflectUtil;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.util.math.Vec3d;
@@ -56,9 +56,9 @@ public class Velocity extends Module{
                 double pvelY = (packet.getVelocityY() / 8000d - mc.player.getVelocity().y) * velY;
                 double pvelZ = (packet.getVelocityZ() / 8000d - mc.player.getVelocity().z) * velXZ;
 
-                FabricReflect.writeField(packet, (int) (pvelX * 8000 + mc.player.getVelocity().x * 8000), "field_12563", "velocityX");
-                FabricReflect.writeField(packet, (int) (pvelY * 8000 + mc.player.getVelocity().y * 8000), "field_12562", "velocityY");
-                FabricReflect.writeField(packet, (int) (pvelZ * 8000 + mc.player.getVelocity().z * 8000), "field_12561", "velocityZ");
+                ReflectUtil.writeField(packet, (int) (pvelX * 8000 + mc.player.getVelocity().x * 8000), "field_12563", "velocityX");
+                ReflectUtil.writeField(packet, (int) (pvelY * 8000 + mc.player.getVelocity().y * 8000), "field_12562", "velocityY");
+                ReflectUtil.writeField(packet, (int) (pvelZ * 8000 + mc.player.getVelocity().z * 8000), "field_12561", "velocityZ");
             }
         } else if (event.getPacket() instanceof ExplosionS2CPacket) {
             ExplosionS2CPacket packet = (ExplosionS2CPacket) event.getPacket();
@@ -66,9 +66,9 @@ public class Velocity extends Module{
             double velXZ = horizontal.getNumber() / 100;
             double velY = vertical.getNumber() / 100;
 
-            FabricReflect.writeField(event.getPacket(), (float) (packet.getPlayerVelocityX() * velXZ), "field_12176", "playerVelocityX");
-            FabricReflect.writeField(event.getPacket(), (float) (packet.getPlayerVelocityY() * velY), "field_12182", "playerVelocityY");
-            FabricReflect.writeField(event.getPacket(), (float) (packet.getPlayerVelocityZ() * velXZ), "field_12183", "playerVelocityZ");
+            ReflectUtil.writeField(event.getPacket(), (float) (packet.getPlayerVelocityX() * velXZ), "field_12176", "playerVelocityX");
+            ReflectUtil.writeField(event.getPacket(), (float) (packet.getPlayerVelocityY() * velY), "field_12182", "playerVelocityY");
+            ReflectUtil.writeField(event.getPacket(), (float) (packet.getPlayerVelocityZ() * velXZ), "field_12183", "playerVelocityZ");
         }
     }
 
