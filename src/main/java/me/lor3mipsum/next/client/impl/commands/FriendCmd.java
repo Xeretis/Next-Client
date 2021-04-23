@@ -48,7 +48,7 @@ public class FriendCmd extends Command {
             SocialManager.deleteFriend(args[1]);
             ChatUtils.info("Successfully removed (highlight)%s (default)from your friend list", args[1]);
         } else {
-            throw new CommandException("Usage: " + Next.prefix + alias + " <save/load>");
+            throw new CommandException("Usage: " + Next.prefix + alias + " <list/add/remove> [<add/remove ? enemy>]");
         }
     }
 }

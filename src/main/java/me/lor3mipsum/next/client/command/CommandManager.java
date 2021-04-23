@@ -30,6 +30,7 @@ public class CommandManager {
         addCommand(new MacroCmd());
         addCommand(new Nbt());
         addCommand(new FriendCmd());
+        addCommand(new EnemyCmd());
     }
 
     private static void addCommand(Command cmd) {
