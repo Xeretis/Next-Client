@@ -3,6 +3,7 @@ package me.lor3mipsum.next.client.config;
 
 import com.google.gson.*;
 import me.lor3mipsum.next.Next;
+import me.lor3mipsum.next.client.command.macro.Macro;
 import me.lor3mipsum.next.client.gui.clickgui.GuiConfig;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.setting.Setting;
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -22,12 +24,14 @@ public class ConfigManager {
     private static String backupDir;
     private static String mainDir;
     private static String moduleDir;
+    private static String otherDir;
 
     public static void init() {
         rootDir = Next.CLIENT_NAME + "/";
         backupDir = "Backups/";
         mainDir = "Main/";
         moduleDir = "Modules/";
+        otherDir = "Other/";
     }
 
     public static void save() throws IOException {
@@ -39,11 +43,14 @@ public class ConfigManager {
             Files.createDirectories(Paths.get(rootDir + mainDir));
         if (!Files.exists(Paths.get(rootDir + moduleDir)))
             Files.createDirectories(Paths.get(rootDir + moduleDir));
+        if (!Files.exists(Paths.get(rootDir + otherDir)))
+            Files.createDirectories(Paths.get(rootDir + otherDir));
 
         saveMetadata();
         saveClientData();
         saveModules();
         saveStates();
+        saveMacros();
         saveClickGuiPositions();
 
     }
@@ -120,19 +127,35 @@ public class ConfigManager {
     }
 
     private static void saveStates() throws IOException {
-        registerFiles(mainDir, "States");
+        registerFiles(otherDir, "States");
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "States" + ".json"), StandardCharsets.UTF_8);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "States" + ".json"), StandardCharsets.UTF_8);
         JsonObject moduleObject = new JsonObject();
         JsonObject enabledObject = new JsonObject();
 
-        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
-
+        for (Module module : Next.INSTANCE.moduleManager.getModules())
             enabledObject.add(module.getName(), new JsonPrimitive(module.getState()));
-        }
+
         moduleObject.add("Modules", enabledObject);
         String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private static void saveMacros() throws IOException {
+        registerFiles(otherDir, "Macros");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Macros" + ".json"), StandardCharsets.UTF_8);
+        JsonObject mainObject = new JsonObject();
+        JsonObject macroObject = new JsonObject();
+
+        for (Macro macro : Next.INSTANCE.macroManager.getMacros())
+            macroObject.add(String.valueOf(macro.key), new JsonPrimitive(macro.command));
+
+        mainObject.add("Macros", macroObject);
+        String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
         fileOutputStreamWriter.write(jsonString);
         fileOutputStreamWriter.close();
     }
@@ -148,6 +171,7 @@ public class ConfigManager {
             loadClientData();
             loadModules();
             loadStates();
+            loadMacros();
             loadClickGuiPositions();
         } catch (IOException e) {
             e.printStackTrace();
@@ -256,17 +280,17 @@ public class ConfigManager {
     }
 
     private static void loadStates() throws IOException {
-        String enabledLocation = rootDir + mainDir;
+        String satesLocation = otherDir + otherDir;
 
-        if (!Files.exists(Paths.get(enabledLocation + "States" + ".json")))
+        if (!Files.exists(Paths.get(satesLocation + "States" + ".json")))
             return;
 
-        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "States" + ".json"));
+        InputStream inputStream = Files.newInputStream(Paths.get(satesLocation + "States" + ".json"));
         JsonObject moduleObject;
         try {
             moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
         } catch(java.lang.IllegalStateException e) {
-            backup("Couldn't check version");
+            backup("Failed to load states");
             return;
         }
 
@@ -287,6 +311,39 @@ public class ConfigManager {
                     }
             }
         }
+        inputStream.close();
+    }
+
+    private static void loadMacros() throws IOException {
+        String macrosLocation = rootDir + otherDir;
+
+        if (!Files.exists(Paths.get(macrosLocation + "Macros" + ".json")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(macrosLocation + "Macros" + ".json"));
+        JsonObject mainObject;
+        try {
+            mainObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        } catch(java.lang.IllegalStateException e) {
+            backup("Failed to load macros");
+            return;
+        }
+
+        if (mainObject.get("Macros") == null)
+            return;
+
+        JsonObject macroObject = mainObject.get("Macros").getAsJsonObject();
+        if (macroObject != null)
+            for (Map.Entry<String, JsonElement> entry : macroObject.entrySet()) {
+                try {
+                    Next.INSTANCE.macroManager.addMacro(new Macro(Integer.parseInt(entry.getKey().toString()), entry.getValue().getAsString()));
+                } catch (Exception e) {
+                    backup("Failed to load macro value");
+                }
+            }
+        else
+            backup("Failed to load macro values");
+
         inputStream.close();
     }
 
