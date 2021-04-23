@@ -20,13 +20,6 @@ public class MacroManager {
         return macros;
     }
 
-    public List<Integer> getKeys() {
-        List<Integer> keys = new ArrayList<>();
-        for (Macro macro : macros)
-            keys.add(macro.key);
-        return keys;
-    }
-
     public void addMacro(Macro macro) {
         macros.add(macro);
     }

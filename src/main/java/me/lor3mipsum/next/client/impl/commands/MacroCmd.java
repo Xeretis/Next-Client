@@ -26,11 +26,8 @@ public class MacroCmd extends Command {
         if(args[0].equalsIgnoreCase("list")) {
             List<Macro> macros = Next.INSTANCE.macroManager.getMacros();
             if (macros.size() != 0) {
-                StringBuilder msg = new StringBuilder();
                 for (Macro macro : macros)
-                    msg.append(Utils.getKeyName(macro.key)).append(" - ").append(macro.command).append("\n");
-                msg = new StringBuilder(msg.substring(0, msg.length() - 1));
-                ChatUtils.info(msg.toString());
+                    ChatUtils.info(Utils.getKeyName(macro.key) + " - " + macro.command);
             } else
                 ChatUtils.info("No macros registered yet");
         } else if (args[0].equalsIgnoreCase("add")) {
@@ -41,9 +38,6 @@ public class MacroCmd extends Command {
 
             if (key == -2)
                 throw new CommandException("Unknown key: " + args[1]);
-
-            if (Next.INSTANCE.macroManager.getKeys().contains(key))
-                throw new CommandException("A macro is already registered for that key");
 
             String[] commandArray = Arrays.copyOfRange(args, 2, args.length);
             String command = String.join(" ", commandArray);
