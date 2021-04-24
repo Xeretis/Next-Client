@@ -48,6 +48,6 @@ public class Sprint extends Module {
 
     @Override
     public String getHudInfo() {
-        return "[" + Formatting.WHITE + mode.getMode() + Formatting.RESET + "]";
+        return "[" + Formatting.WHITE + mode.getMode() + Formatting.GRAY + "]";
     }
 }

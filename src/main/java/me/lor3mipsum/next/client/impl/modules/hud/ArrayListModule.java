@@ -8,7 +8,6 @@ import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.RenderEvent;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
-import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
 import me.lor3mipsum.next.client.module.Module;
@@ -23,7 +22,6 @@ import java.util.List;
 public class ArrayListModule extends HudModule {
     public BooleanSetting sortRight = new BooleanSetting("SortRight", false);
     public BooleanSetting sortUp = new BooleanSetting("SortUp", false);
-    public NumberSetting rainbowSpeed = new NumberSetting("RainbowSpeed", 0.2, 0.1,1, 0.1);
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     private ModuleList list = new ModuleList();
@@ -41,7 +39,7 @@ public class ArrayListModule extends HudModule {
     private void onRender(RenderEvent e) {
         list.activeModules.clear();
         for (Module module : Next.INSTANCE.moduleManager.getModules())
-            if(module.isOn()) list.activeModules.add(module);
+            if(module.isOn() && module.getDrawn()) list.activeModules.add(module);
         list.activeModules.sort(Comparator.comparing(module -> FontUtils.getStringWidth(module.getName() + Formatting.GRAY + " " + module.getHudInfo())));
     }
 
@@ -62,8 +60,8 @@ public class ArrayListModule extends HudModule {
 
         @Override
         public Color getItemColor(int index) {
-            Color c = color.getValue();
-            return Color.getHSBColor(c.RGBtoHSB(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue(), null)[0] + (color.getRainbow() ? (float) rainbowSpeed.getNumber() * index : 0), c.RGBtoHSB(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue(), null)[1], c.RGBtoHSB(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue(), null)[2]);
+            return color.getValue();
+            //return Color.getHSBColor(c.RGBtoHSB(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue(), null)[0] + (color.getRainbow() ? (float) rainbowSpeed.getNumber() * index : 0), c.RGBtoHSB(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue(), null)[1], c.RGBtoHSB(color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue(), null)[2]);
         }
 
         @Override

@@ -12,7 +12,7 @@ public abstract class HudModule extends Module {
     public Point position;
 
     public HudModule (String name, String description, Point defaultPos, Category category) {
-        super(name, description, category);
+        super(name, description, category, false, false);
         position = defaultPos;
     }
 

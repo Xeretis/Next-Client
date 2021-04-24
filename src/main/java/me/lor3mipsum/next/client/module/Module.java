@@ -13,22 +13,24 @@ import java.util.List;
 public abstract class Module implements Toggleable {
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
 
-    public Category category;
-    public String name;
-    public String description;
+    private Category category;
+    private String name;
+    private String description;
 
-    public boolean hidden;
-    public boolean state;
+    private boolean hidden;
+    private boolean state;
+    private boolean drawn;
 
     protected Module(String name, String description, Category moduleCategory) {
-        this(name, description, moduleCategory, false);
+        this(name, description, moduleCategory, false, true);
     }
 
-    protected Module(String name, String description, Category category, boolean hidden) {
+    protected Module(String name, String description, Category category, boolean hidden, boolean drawn) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.hidden = hidden;
+        this.drawn = drawn;
     }
 
     public String getName() {
@@ -53,6 +55,14 @@ public abstract class Module implements Toggleable {
 
     public boolean getState() {
         return state;
+    }
+
+    public boolean getDrawn() {
+        return drawn;
+    }
+
+    public void setDrawn(boolean drawn) {
+        this.drawn = drawn;
     }
 
     public void setState(boolean state) {

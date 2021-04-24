@@ -53,6 +53,7 @@ public class ConfigManager {
         saveClientData();
         saveModules();
         saveStates();
+        saveDrawns();
         saveMacros();
         saveFriends();
         saveEnemies();
@@ -151,6 +152,23 @@ public class ConfigManager {
         fileOutputStreamWriter.close();
     }
 
+    private static void saveDrawns() throws IOException {
+        registerFiles(otherDir, "Drawns");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Drawns" + ".json"), StandardCharsets.UTF_8);
+        JsonObject moduleObject = new JsonObject();
+        JsonObject drawnObject = new JsonObject();
+
+        for (Module module : Next.INSTANCE.moduleManager.getModules())
+            drawnObject.add(module.getName(), new JsonPrimitive(module.getDrawn()));
+
+        moduleObject.add("Modules", drawnObject);
+        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
     private static void saveMacros() throws IOException {
         registerFiles(otherDir, "Macros");
 
@@ -216,6 +234,7 @@ public class ConfigManager {
             loadClientData();
             loadModules();
             loadStates();
+            loadDrawns();
             loadMacros();
             loadFriends();
             loadEnemies();
@@ -295,7 +314,7 @@ public class ConfigManager {
                     return;
 
                 JsonObject settingObject = moduleObject.get("Settings").getAsJsonObject();
-                for (Setting setting : SettingManager.getAllSettingsFrom(module.name)) {
+                for (Setting setting : SettingManager.getAllSettingsFrom(module.getName())) {
                     JsonElement dataObject = settingObject.get(setting.getName());
                     try {
                         if (dataObject != null) {
@@ -356,6 +375,40 @@ public class ConfigManager {
                         backup("Failed to load state");
                         e.printStackTrace();
                     }
+            }
+        }
+        inputStream.close();
+    }
+
+    private static void loadDrawns() throws IOException {
+        String drawnsLocation = rootDir + otherDir;
+
+        if (!Files.exists(Paths.get(drawnsLocation + "Drawns" + ".json")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(drawnsLocation + "Drawns" + ".json"));
+        JsonObject drawnObject;
+        try {
+            drawnObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        } catch(java.lang.IllegalStateException e) {
+            backup("Failed to load drawns");
+            return;
+        }
+
+        if (drawnObject.get("Modules") == null)
+            return;
+
+        JsonObject settingObject = drawnObject.get("Modules").getAsJsonObject();
+        for (Module module : Next.INSTANCE.moduleManager.getModules()) {
+            JsonElement dataObject = settingObject.get(module.getName());
+
+            if (dataObject != null && dataObject.isJsonPrimitive()) {
+                try {
+                    module.setDrawn(dataObject.getAsBoolean());
+                } catch (NullPointerException e) {
+                    backup("Failed to load drawn");
+                    e.printStackTrace();
+                }
             }
         }
         inputStream.close();

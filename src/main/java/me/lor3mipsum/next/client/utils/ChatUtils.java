@@ -75,11 +75,11 @@ public class ChatUtils {
     }
 
     private static void moduleMessage(Formatting color, Module module, String msg, Object... args) {
-        sendMsg(0, module.name, PrefixType.Module, formatMsg(msg, color, args), color);
+        sendMsg(0, module.getName(), PrefixType.Module, formatMsg(msg, color, args), color);
     }
 
     private static void moduleMessage(Formatting color, Module module, Text msg) {
-        sendMsg(0, module.name, PrefixType.Module, msg);
+        sendMsg(0, module.getName(), PrefixType.Module, msg);
     }
 
     public static void moduleInfo(Module module, String msg, Object... args) {

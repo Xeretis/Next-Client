@@ -31,6 +31,7 @@ public class CommandManager {
         addCommand(new Nbt());
         addCommand(new FriendCmd());
         addCommand(new EnemyCmd());
+        addCommand(new Drawn());
     }
 
     private static void addCommand(Command cmd) {
