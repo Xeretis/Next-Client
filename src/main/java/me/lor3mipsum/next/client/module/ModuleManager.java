@@ -56,6 +56,9 @@ public class ModuleManager {
         addModule(new ArrayListModule());
         addModule(new Watermark());
         addModule(new PlayerModel());
+        addModule(new Totems());
+        addModule(new Crystals());
+        addModule(new Gapples());
     }
 
     public List<Module> getModules() {

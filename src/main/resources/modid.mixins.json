@@ -16,7 +16,9 @@
     "TridentItemMixin",
     "EntityMixin",
     "ClientConnectionMixin",
-    "ClientPlayerInteractionManagerAccessor"
+    "ClientPlayerInteractionManagerAccessor",
+    "CreativeInventoryScreenAccessor",
+    "HorseScreenHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
