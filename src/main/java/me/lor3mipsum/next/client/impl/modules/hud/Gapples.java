@@ -3,6 +3,7 @@ package me.lor3mipsum.next.client.impl.modules.hud;
 import com.lukflug.panelstudio.hud.HUDList;
 import com.lukflug.panelstudio.hud.ListComponent;
 import com.lukflug.panelstudio.theme.Theme;
+import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
@@ -14,6 +15,7 @@ import java.awt.*;
 
 public class Gapples extends HudModule {
 
+    public BooleanSetting sortRight = new BooleanSetting("SortRight", false);
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Gapples() {
@@ -52,7 +54,7 @@ public class Gapples extends HudModule {
 
         @Override
         public boolean sortRight() {
-            return false;
+            return sortRight.isOn();
         }
     }
 }

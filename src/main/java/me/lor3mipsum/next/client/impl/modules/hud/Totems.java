@@ -17,6 +17,7 @@ import java.awt.*;
 
 public class Totems extends HudModule {
 
+    public BooleanSetting sortRight = new BooleanSetting("SortRight", false);
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Totems() {
@@ -55,7 +56,7 @@ public class Totems extends HudModule {
 
         @Override
         public boolean sortRight() {
-            return false;
+            return sortRight.isOn();
         }
     }
 }

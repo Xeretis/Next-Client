@@ -62,6 +62,7 @@ public class ModuleManager {
         addModule(new Ping());
         addModule(new ArmorHud());
         addModule(new Time());
+        addModule(new Speed());
     }
 
     public List<Module> getModules() {
