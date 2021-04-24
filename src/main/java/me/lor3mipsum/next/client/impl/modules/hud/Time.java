@@ -6,27 +6,27 @@ import com.lukflug.panelstudio.theme.Theme;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
-import me.lor3mipsum.next.client.utils.player.InventoryUtils;
-import net.minecraft.item.Items;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.util.Formatting;
 
 import java.awt.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
-public class Crystals extends HudModule {
+public class Time extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
-    public Crystals() {
-        super("Crystals", "Shows you how many crystals you have in your inventory", new Point(40, 120), Category.HUD);
+    public Time() {
+        super("Time", "Shows you the time on the hud", new Point(-2,19), Category.HUD);
     }
 
     @Override
     public void populate (Theme theme) {
-        component = new ListComponent(getName(), theme.getPanelRenderer(), position, new CrystalsList());
+        component = new ListComponent(getName(), theme.getPanelRenderer(), position, new TimeList());
     }
 
-    private class CrystalsList implements HUDList {
-
-        public int totems = 0;
+    private class TimeList implements HUDList {
 
         @Override
         public int getSize() {
@@ -35,8 +35,8 @@ public class Crystals extends HudModule {
 
         @Override
         public String getItem(int index) {
-            totems = InventoryUtils.findItemWithCount(Items.END_CRYSTAL).count;
-            return "Crystals: " + Formatting.GRAY + totems;
+
+            return "Time: " + Formatting.GRAY + LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
         }
 
         @Override

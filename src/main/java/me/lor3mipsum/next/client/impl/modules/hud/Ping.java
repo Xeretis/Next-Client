@@ -15,7 +15,7 @@ public class Ping extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Ping() {
-        super("Ping", "Shows your ping on the hud.", new Point(-2,19), Category.HUD);
+        super("Ping", "Shows your ping on the hud", new Point(-2,19), Category.HUD);
     }
 
     @Override

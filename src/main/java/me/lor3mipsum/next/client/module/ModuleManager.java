@@ -61,6 +61,7 @@ public class ModuleManager {
         addModule(new Gapples());
         addModule(new Ping());
         addModule(new ArmorHud());
+        addModule(new Time());
     }
 
     public List<Module> getModules() {

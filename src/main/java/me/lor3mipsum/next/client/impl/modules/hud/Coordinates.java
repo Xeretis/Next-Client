@@ -54,7 +54,7 @@ public class Coordinates extends HudModule {
     }
 
     private String getFormattedCoords(double x, double y, double z) {
-        return "[" + Formatting.WHITE + round(x) + Formatting.RESET + ", " + Formatting.WHITE + round(y) + Formatting.RESET + ", " + Formatting.WHITE + round(z) + Formatting.RESET + "]";
+        return "[" + Formatting.GRAY + round(x) + Formatting.RESET + ", " + Formatting.GRAY + round(y) + Formatting.RESET + ", " + Formatting.GRAY + round(z) + Formatting.RESET + "]";
     }
 
     private String round(double input) {
