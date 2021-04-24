@@ -6,6 +6,7 @@ import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
+import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
 public class Sprint extends Module {
@@ -43,5 +44,10 @@ public class Sprint extends Module {
     @Override
     public void setKeybind(int keybind) {
         this.keybind.setKey(keybind);
+    }
+
+    @Override
+    public String getHudInfo() {
+        return "[" + Formatting.WHITE + mode.getMode() + Formatting.RESET + "]";
     }
 }

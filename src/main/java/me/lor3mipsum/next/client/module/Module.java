@@ -67,6 +67,10 @@ public abstract class Module implements Toggleable {
         }
     }
 
+    public String getHudInfo() {
+        return "";
+    }
+
     protected void onEnable() {
 
     }

@@ -9,6 +9,7 @@ import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
+import me.lor3mipsum.next.client.impl.modules.hud.ArrayListModule;
 import me.lor3mipsum.next.client.impl.modules.hud.Coordinates;
 import me.lor3mipsum.next.client.impl.modules.hud.Welcomer;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
@@ -54,6 +55,7 @@ public class ModuleManager {
         //Hud
         addModule(new Welcomer());
         addModule(new Coordinates());
+        addModule(new ArrayListModule());
     }
 
     public List<Module> getModules() {
