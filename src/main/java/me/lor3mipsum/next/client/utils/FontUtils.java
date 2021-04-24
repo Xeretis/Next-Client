@@ -12,6 +12,10 @@ public class FontUtils {
         return  mc.textRenderer.drawWithShadow(new MatrixStack(), text, x, y, color.getRGB());
     }
 
+    public static float drawStringWithShadow(MatrixStack matrix, String text, int x, int y, Color color) {
+        return  mc.textRenderer.drawWithShadow(matrix, text, x, y, color.getRGB());
+    }
+
     public static int getStringWidth(String string) {
             return mc.textRenderer.getWidth(string);
     }

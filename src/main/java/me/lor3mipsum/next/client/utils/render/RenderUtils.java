@@ -4,13 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.lor3mipsum.next.client.utils.render.color.LineColor;
 import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -21,6 +18,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
 
 public class RenderUtils {
+    public static void drawItem(ItemStack itemStack, int x, int y, boolean overlay) {
+        RenderSystem.disableLighting();
+        RenderSystem.disableDepthTest();
+        DiffuseLighting.enable();
+        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(itemStack, x, y);
+        if (overlay) MinecraftClient.getInstance().getItemRenderer().renderGuiItemOverlay(MinecraftClient.getInstance().textRenderer, itemStack, x, y, null);
+        DiffuseLighting.disable();
+        DiffuseLighting.disable();
+        RenderSystem.enableDepthTest();
+    }
+
     // -------------------- Fill + Outline Boxes --------------------
 
     public static void drawBoxBoth(BlockPos blockPos, QuadColor color, float lineWidth, Direction... excludeDirs) {

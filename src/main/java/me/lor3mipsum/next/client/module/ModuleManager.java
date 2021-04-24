@@ -60,6 +60,7 @@ public class ModuleManager {
         addModule(new Crystals());
         addModule(new Gapples());
         addModule(new Ping());
+        addModule(new ArmorHud());
     }
 
     public List<Module> getModules() {
