@@ -2,6 +2,8 @@ package me.lor3mipsum.next.client.utils;
 
 import com.google.common.hash.Hashing;
 import me.lor3mipsum.next.client.command.CommandException;
+import me.lor3mipsum.next.client.utils.world.Dimension;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -163,5 +165,13 @@ public class Utils {
             e.printStackTrace();
         }
         return "null";
+    }
+
+    public static Dimension getDimension() {
+        switch (MinecraftClient.getInstance().world.getRegistryKey().getValue().getPath()) {
+            case "the_nether": return Dimension.Nether;
+            case "the_end":    return Dimension.End;
+            default:           return Dimension.Overworld;
+        }
     }
 }
