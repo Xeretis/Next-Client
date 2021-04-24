@@ -25,7 +25,7 @@ public class Coordinates extends HudModule {
     private final String[] coordinateString = {"", ""};
 
     public Coordinates() {
-        super("Coordinates", "Shows you your coords", new Point(0, 480), Category.HUD);
+        super("Coordinates", "Shows you your coords", new Point(0, 515), Category.HUD);
     }
 
     @Override

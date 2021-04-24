@@ -20,14 +20,14 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ArrayListModule extends HudModule {
-    public BooleanSetting sortRight = new BooleanSetting("SortRight", false);
+    public BooleanSetting sortRight = new BooleanSetting("SortRight", true);
     public BooleanSetting sortUp = new BooleanSetting("SortUp", false);
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     private ModuleList list = new ModuleList();
 
     public ArrayListModule() {
-        super("ArrayList", "Renders active modules on your screen", new Point(960, 80), Category.HUD);
+        super("ArrayList", "Renders active modules on your screen", new Point(162, 222), Category.HUD);
     }
 
     @Override
