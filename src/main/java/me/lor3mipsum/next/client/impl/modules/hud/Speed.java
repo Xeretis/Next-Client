@@ -8,15 +8,12 @@ import me.lor3mipsum.next.client.impl.events.TickEvent;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
-import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.Formatting;
 
 import java.awt.*;
-import java.util.ArrayDeque;
-import java.util.Collection;
 
 public class Speed extends HudModule {
 
@@ -52,11 +49,10 @@ public class Speed extends HudModule {
     }
 
     private double calcSpeed(ClientPlayerEntity player, String unit) {
-        double tps = 20;
         double xDiff = player.getX() - player.prevX;
         double zDiff = player.getZ() - player.prevZ;
 
-        double speed = Math.hypot(xDiff, zDiff) * tps;
+        double speed = Math.hypot(xDiff, zDiff) * 20;
 
         switch (unit) {
             case KMH:

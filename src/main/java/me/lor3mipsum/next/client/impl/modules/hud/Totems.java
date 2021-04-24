@@ -3,8 +3,6 @@ package me.lor3mipsum.next.client.impl.modules.hud;
 import com.lukflug.panelstudio.hud.HUDList;
 import com.lukflug.panelstudio.hud.ListComponent;
 import com.lukflug.panelstudio.theme.Theme;
-import me.lor3mipsum.next.client.event.EventTarget;
-import me.lor3mipsum.next.client.impl.events.TickEvent;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.module.Category;

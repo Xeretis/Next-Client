@@ -7,7 +7,6 @@ import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.util.Formatting;
 
 import java.awt.*;
