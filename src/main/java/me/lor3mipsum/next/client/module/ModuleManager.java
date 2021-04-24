@@ -59,6 +59,7 @@ public class ModuleManager {
         addModule(new Totems());
         addModule(new Crystals());
         addModule(new Gapples());
+        addModule(new Ping());
     }
 
     public List<Module> getModules() {
