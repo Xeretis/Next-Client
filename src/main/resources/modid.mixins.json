@@ -13,7 +13,6 @@
     "ChatHudAccessor",
     "ClientPlayerEntityMixin",
     "WorldRenderMixin",
-    "TridentItemMixin",
     "EntityMixin",
     "ClientConnectionMixin",
     "ClientPlayerInteractionManagerAccessor",

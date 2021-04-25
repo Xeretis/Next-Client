@@ -1,13 +1,7 @@
 package me.lor3mipsum.next.client.impl.settings;
 
-import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.lukflug.panelstudio.settings.Toggleable;
 import me.lor3mipsum.next.client.setting.Setting;
-
-import java.util.List;
 
 public class BooleanSetting extends Setting implements Toggleable {
     public boolean enabled;

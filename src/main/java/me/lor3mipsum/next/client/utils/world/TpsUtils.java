@@ -9,15 +9,15 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 
 import java.util.Arrays;
 
-public class TickRateUtil {
-    public static TickRateUtil INSTANCE = new TickRateUtil();
+public class TpsUtils {
+    public static TpsUtils INSTANCE = new TpsUtils();
 
     private final float[] tickRates = new float[20];
     private int nextIndex = 0;
     private long timeLastTimeUpdate = -1;
     private long timeGameJoined;
 
-    private TickRateUtil() {
+    private TpsUtils() {
         EventManager.register(this);
     }
 

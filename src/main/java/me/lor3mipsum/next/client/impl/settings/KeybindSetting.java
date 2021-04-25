@@ -1,8 +1,5 @@
 package me.lor3mipsum.next.client.impl.settings;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import me.lor3mipsum.next.client.utils.Utils;
 import me.lor3mipsum.next.client.setting.Setting;
 

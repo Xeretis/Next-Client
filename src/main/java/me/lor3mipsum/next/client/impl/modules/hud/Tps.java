@@ -7,7 +7,7 @@ import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.HudModule;
-import me.lor3mipsum.next.client.utils.world.TickRateUtil;
+import me.lor3mipsum.next.client.utils.world.TpsUtils;
 import net.minecraft.util.Formatting;
 
 import java.awt.*;
@@ -34,7 +34,7 @@ public class Tps extends HudModule {
 
         @Override
         public String getItem(int index) {
-            return "TPS: " + Formatting.GRAY + String.format("%.1f", TickRateUtil.INSTANCE.getTickRate());
+            return "TPS: " + Formatting.GRAY + String.format("%.1f", TpsUtils.INSTANCE.getTickRate());
         }
 
         @Override

@@ -1,6 +1,5 @@
 package me.lor3mipsum.next.client.impl.settings;
 
-import com.google.common.collect.ImmutableList;
 import me.lor3mipsum.next.client.setting.Setting;
 
 import java.awt.*;
