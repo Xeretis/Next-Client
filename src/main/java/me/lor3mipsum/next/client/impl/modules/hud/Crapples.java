@@ -13,23 +13,22 @@ import net.minecraft.util.Formatting;
 
 import java.awt.*;
 
-public class Gapples extends HudModule {
-
+public class Crapples extends HudModule {
     public BooleanSetting sortRight = new BooleanSetting("SortRight", false);
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
-    public Gapples() {
-        super("Gapples", "Shows you how many gapples you have in your inventory", new Point(40, 140), Category.HUD);
+    public Crapples() {
+        super("Crapples", "Shows you how many crapples you have in your inventory", new Point(40, 160), Category.HUD);
     }
 
     @Override
     public void populate (Theme theme) {
-        component = new ListComponent(getName(), theme.getPanelRenderer(), position, new GapplesList());
+        component = new ListComponent(getName(), theme.getPanelRenderer(), position, new CrapplesList());
     }
 
-    private class GapplesList implements HUDList {
+    private class CrapplesList implements HUDList {
 
-        public int gapples = 0;
+        public int crapples = 0;
 
         @Override
         public int getSize() {
@@ -38,8 +37,8 @@ public class Gapples extends HudModule {
 
         @Override
         public String getItem(int index) {
-            gapples = InventoryUtils.findItemWithCount(Items.ENCHANTED_GOLDEN_APPLE).count;
-            return "Gapples: " + Formatting.GRAY + gapples;
+            crapples = InventoryUtils.findItemWithCount(Items.GOLDEN_APPLE).count;
+            return "Crapples: " + Formatting.GRAY + crapples;
         }
 
         @Override

@@ -28,7 +28,7 @@ public class Crystals extends HudModule {
 
     private class CrystalsList implements HUDList {
 
-        public int totems = 0;
+        public int crystals = 0;
 
         @Override
         public int getSize() {
@@ -37,8 +37,8 @@ public class Crystals extends HudModule {
 
         @Override
         public String getItem(int index) {
-            totems = InventoryUtils.findItemWithCount(Items.END_CRYSTAL).count;
-            return "Crystals: " + Formatting.GRAY + totems;
+            crystals = InventoryUtils.findItemWithCount(Items.END_CRYSTAL).count;
+            return "Crystals: " + Formatting.GRAY + crystals;
         }
 
         @Override

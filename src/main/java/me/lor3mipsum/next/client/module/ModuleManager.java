@@ -66,6 +66,7 @@ public class ModuleManager {
         addModule(new InventoryViewer());
         addModule(new Fps());
         addModule(new Tps());
+        addModule(new Crapples());
     }
 
     public List<Module> getModules() {
