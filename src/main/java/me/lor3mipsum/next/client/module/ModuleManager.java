@@ -63,6 +63,7 @@ public class ModuleManager {
         addModule(new ArmorHud());
         addModule(new Time());
         addModule(new Speed());
+        addModule(new InventoryViewer());
     }
 
     public List<Module> getModules() {

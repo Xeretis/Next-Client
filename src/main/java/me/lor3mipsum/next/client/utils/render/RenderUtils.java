@@ -29,6 +29,13 @@ public class RenderUtils {
         RenderSystem.enableDepthTest();
     }
 
+    public static void drawItem(ItemStack itemStack, int x, int y, double scale, boolean overlay) {
+        RenderSystem.pushMatrix();
+        RenderSystem.scaled(scale, scale, 1);
+        drawItem(itemStack, (int) (x / scale), (int) (y / scale), overlay);
+        RenderSystem.popMatrix();
+    }
+
     // -------------------- Fill + Outline Boxes --------------------
 
     public static void drawBoxBoth(BlockPos blockPos, QuadColor color, float lineWidth, Direction... excludeDirs) {
