@@ -13,9 +13,7 @@ public class CustomFOV extends Module {
     public NumberSetting fov = new NumberSetting("FOV", 100, 1, 170, 0.5);
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
-
-
-    private float prevFov;
+    private float prevFov = 110;
 
     public CustomFOV() {
         super("CustomFOV", "Allows you to set your fov higher or lower than what the options let you to", Category.RENDER);
