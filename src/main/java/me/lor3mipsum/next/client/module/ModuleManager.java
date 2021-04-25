@@ -65,6 +65,7 @@ public class ModuleManager {
         addModule(new Speed());
         addModule(new InventoryViewer());
         addModule(new Fps());
+        addModule(new Tps());
     }
 
     public List<Module> getModules() {

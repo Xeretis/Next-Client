@@ -1,13 +1,12 @@
 package me.lor3mipsum.next.client.impl.events;
 
 import me.lor3mipsum.next.client.event.events.Cancellable;
-import me.lor3mipsum.next.client.event.events.interfaces.IEvent;
 import net.minecraft.network.Packet;
 
-public class ReadPacketEvent extends Cancellable {
+public class SendPacketEvent extends Cancellable {
     private Packet<?> packet;
 
-    public ReadPacketEvent(Packet<?> packet) {
+    public SendPacketEvent(Packet<?> packet) {
         this.packet = packet;
     }
 

@@ -2,7 +2,7 @@ package me.lor3mipsum.next.client.impl.modules.movement;
 
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.PlayerPushedEvent;
-import me.lor3mipsum.next.client.impl.events.ReadPacketEvent;
+import me.lor3mipsum.next.client.impl.events.RecivePacketEvent;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
@@ -42,7 +42,7 @@ public class Velocity extends Module{
     }
 
     @EventTarget
-    public void readPacket(ReadPacketEvent event) {
+    public void readPacket(RecivePacketEvent event) {
         if (mc.player == null)
             return;
 

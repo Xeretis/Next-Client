@@ -174,4 +174,14 @@ public class Utils {
             default:           return Dimension.Overworld;
         }
     }
+
+    public static float clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    public static boolean canUpdate() {
+        return MinecraftClient.getInstance() != null && MinecraftClient.getInstance().world != null && MinecraftClient.getInstance().player != null;
+    }
 }
