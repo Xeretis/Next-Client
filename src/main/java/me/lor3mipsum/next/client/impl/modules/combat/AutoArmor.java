@@ -68,7 +68,7 @@ public class AutoArmor extends Module {
                 if (stack.getItem() instanceof ArmorItem
                         && (((ArmorItem) stack.getItem()).getSlotType().getEntitySlotId() == a)) {
                     int temp = getItemScore(stack, a);
-                    if (bestScore < temp || shouldSwitch) {
+                    if (bestScore < temp || (shouldSwitch && temp != 0)) {
                         bestScore = temp;
                         bestSlot = i;
                     }
