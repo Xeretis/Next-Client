@@ -97,8 +97,7 @@ public class AutoArmor extends Module {
     }
 
     private void getCurrentScore(ItemStack itemStack, int a) {
-        shouldSwitch = false;
-        if (antiBreak.isOn() && (itemStack.getMaxDamage() - itemStack.getDamage()) <= switchDurability.getNumber()) shouldSwitch = true;
+        shouldSwitch = antiBreak.isOn() && (itemStack.getMaxDamage() - itemStack.getDamage()) <= switchDurability.getNumber();
         currentBest = EnchantmentHelper.getLevel(a == 1 ? Enchantments.BLAST_PROTECTION : Enchantments.PROTECTION, itemStack);
         currentProt = EnchantmentHelper.getLevel(Enchantments.PROTECTION, itemStack);
         currentBlast = EnchantmentHelper.getLevel(Enchantments.BLAST_PROTECTION, itemStack);
