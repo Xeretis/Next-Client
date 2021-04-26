@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.client.impl.modules.movement;
 
+import com.lukflug.panelstudio.mc16.MinecraftGUI;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.ClientMoveEvent;
 import me.lor3mipsum.next.client.impl.events.SendPacketEvent;
@@ -85,7 +86,7 @@ public class NoSlow extends Module {
     }
 
     private boolean shouldInvMove(Screen screen) {
-        if (screen == null) {
+        if (screen == null || screen instanceof MinecraftGUI) {
             return false;
         }
 
