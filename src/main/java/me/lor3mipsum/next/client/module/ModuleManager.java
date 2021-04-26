@@ -16,6 +16,7 @@ import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
+import me.lor3mipsum.next.client.impl.modules.player.DeathCoords;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
 import me.lor3mipsum.next.client.impl.modules.render.BreakIndicator;
 import me.lor3mipsum.next.client.impl.modules.render.CustomFOV;
@@ -54,6 +55,7 @@ public class ModuleManager {
         addModule(new CustomFOV());
         //Player
         addModule(new FastUse());
+        addModule(new DeathCoords());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());
