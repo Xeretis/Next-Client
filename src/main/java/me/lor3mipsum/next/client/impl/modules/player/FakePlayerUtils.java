@@ -12,7 +12,7 @@ public class FakePlayerUtils {
     public static int ID;
 
     public static void spawnFakePlayer() {
-        FakePlayerEntity fakePlayer = new FakePlayerEntity("FakePlayer", true, mc.player.getHealth());
+        FakePlayerEntity fakePlayer = new FakePlayerEntity("FakePlayer#" + ID, true, mc.player.getHealth());
         players.put(fakePlayer, ID);
         ID++;
     }
