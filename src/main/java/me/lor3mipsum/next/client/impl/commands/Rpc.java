@@ -4,8 +4,6 @@ import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.command.Command;
 import me.lor3mipsum.next.client.command.CommandException;
 import me.lor3mipsum.next.client.utils.ChatUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
 import java.util.Arrays;
 

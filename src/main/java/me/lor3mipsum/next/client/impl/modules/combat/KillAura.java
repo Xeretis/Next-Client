@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.WaterCreatureEntity;
@@ -45,6 +46,7 @@ public class KillAura extends Module {
     public BooleanSetting autoSwitch = new BooleanSetting("AutoSwitch", false);
     public NumberSetting delay = new NumberSetting("Delay", 0, 0, 60, 1);
     public BooleanSetting autoDelay = new BooleanSetting("AutoDelay", true);
+    public BooleanSetting multiTarget = new BooleanSetting("MultiTarget", false);
     public BooleanSetting swing = new BooleanSetting("SwingHand", true);
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
@@ -72,7 +74,7 @@ public class KillAura extends Module {
         if (mc.player.isDead() || !mc.player.isAlive() || !itemInHand()) return;
 
         getEntities(entity -> {
-            if (!(entity instanceof LivingEntity)) return false;
+            if (!(entity instanceof LivingEntity) || entity instanceof ArmorStandEntity) return false;
             if (entity == mc.player || entity == mc.cameraEntity) return false;
             if ((entity instanceof LivingEntity && ((LivingEntity) entity).isDead()) || !entity.isAlive()) return false;
             if (entity.distanceTo(mc.player) > range.getNumber()) return false;
@@ -86,6 +88,9 @@ public class KillAura extends Module {
             }
             return true;
         }, priority.getMode().equals("Closest"), entityList);
+
+        if (!multiTarget.isOn() && !entityList.isEmpty())
+            entityList.subList(1, entityList.size()).clear();
 
         if (autoDelay.isOn() && mc.player.getAttackCooldownProgress(0.5f) < 1) {
             return;
