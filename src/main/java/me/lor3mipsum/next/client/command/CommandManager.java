@@ -32,6 +32,7 @@ public class CommandManager {
         addCommand(new FriendCmd());
         addCommand(new EnemyCmd());
         addCommand(new Drawn());
+        addCommand(new Rpc());
     }
 
     private static void addCommand(Command cmd) {

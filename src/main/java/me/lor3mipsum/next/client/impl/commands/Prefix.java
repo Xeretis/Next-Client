@@ -13,7 +13,7 @@ public class Prefix extends Command {
 
     @Override
     public void run(String alias, String[] args) {
-        if(args.length < 1)
+        if(args.length != 1)
             throw new CommandException("Usage: " + Next.prefix + alias + " <prefix>");
 
         Next.prefix = args[0];

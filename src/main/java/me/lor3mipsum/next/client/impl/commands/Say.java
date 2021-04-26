@@ -10,6 +10,7 @@ public class Say extends Command {
     public Say() {
         super("say", "Sends a message to the chat even if it starts with the prefix");
     }
+
     @Override
     public void run(String alias, String[] args) {
         if(args.length < 1)

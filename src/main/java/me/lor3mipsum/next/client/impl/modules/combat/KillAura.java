@@ -67,8 +67,6 @@ public class KillAura extends Module {
     @EventTarget
     private void onTick(TickEvent.Post event) {
 
-        System.out.println(entityList);
-
         entityList.clear();
 
         if (mc.player.isDead() || !mc.player.isAlive() || !itemInHand()) return;
@@ -87,7 +85,7 @@ public class KillAura extends Module {
                 if (!friends.isOn() && SocialManager.isFriend(entity.getEntityName())) return false;
             }
             return true;
-        }, priority.getMode() == "Closest", entityList);
+        }, priority.getMode().equals("Closest"), entityList);
 
         if (autoDelay.isOn() && mc.player.getAttackCooldownProgress(0.5f) < 1) {
             return;
@@ -129,8 +127,7 @@ public class KillAura extends Module {
     }
 
     private boolean itemInHand() {
-        if (onlySword.isOn() && !(mc.player.getMainHandStack().getItem() instanceof SwordItem)) return false;
-        return true;
+        return !onlySword.isOn() || mc.player.getMainHandStack().getItem() instanceof SwordItem;
     }
 
     private void getEntities(Predicate<Entity> isGood, boolean  closest, List<Entity> target) {
