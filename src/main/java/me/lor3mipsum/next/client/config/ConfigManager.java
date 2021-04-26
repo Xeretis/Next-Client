@@ -5,6 +5,7 @@ import com.google.gson.*;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.command.macro.Macro;
 import me.lor3mipsum.next.client.gui.clickgui.GuiConfig;
+import me.lor3mipsum.next.client.impl.commands.Rpc;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.setting.Setting;
 import me.lor3mipsum.next.client.module.Module;
@@ -57,6 +58,7 @@ public class ConfigManager {
         saveMacros();
         saveFriends();
         saveEnemies();
+        saveRpc();
         saveClickGuiPositions();
 
     }
@@ -222,6 +224,21 @@ public class ConfigManager {
         fileOutputStreamWriter.close();
     }
 
+    private static void saveRpc() throws IOException {
+        registerFiles(mainDir, "RPC");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "RPC" + ".json"), StandardCharsets.UTF_8);
+        JsonObject mainObject = new JsonObject();
+
+        mainObject.add("state", new JsonPrimitive(Rpc.stateText));
+        mainObject.add("details", new JsonPrimitive(Rpc.detailsText));
+
+        String jsonString = gson.toJson(new JsonParser().parse(mainObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
     private static void saveClickGuiPositions() throws IOException {
         registerFiles(mainDir, "ClickGui");
         Next.INSTANCE.clickGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
@@ -238,6 +255,7 @@ public class ConfigManager {
             loadMacros();
             loadFriends();
             loadEnemies();
+            loadRpc();
             loadClickGuiPositions();
         } catch (IOException e) {
             e.printStackTrace();
@@ -485,6 +503,26 @@ public class ConfigManager {
         JsonArray enemyObject = mainObject.get("Enemies").getAsJsonArray();
 
         enemyObject.forEach(object -> SocialManager.addEnemy(object.getAsString()));
+        inputStream.close();
+    }
+
+    private static void loadRpc() throws IOException {
+        String rpcLocation = rootDir + mainDir;
+
+        if (!Files.exists(Paths.get(rpcLocation + "RPC" + ".json"))) {
+            return;
+        }
+
+        InputStream inputStream = Files.newInputStream(Paths.get(rpcLocation + "RPC" + ".json"));
+        JsonObject mainObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+
+        try {
+            Rpc.stateText = mainObject.get("state").getAsString();
+            Rpc.detailsText = mainObject.get("details").getAsString();
+        } catch (Exception e) {
+            backup("Failed to load RPC");
+        }
+
         inputStream.close();
     }
 
