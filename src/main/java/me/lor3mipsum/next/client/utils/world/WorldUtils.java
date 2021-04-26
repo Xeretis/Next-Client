@@ -1,9 +1,8 @@
 package me.lor3mipsum.next.client.utils.world;
 
 import com.google.common.collect.Sets;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
+import me.lor3mipsum.next.mixininterface.IVec3d;
+import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -21,6 +20,8 @@ import java.util.Set;
 
 public class WorldUtils {
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
+
+    private static final Vec3d hitPos = new Vec3d(0, 0, 0);
 
     public static final Set<Block> RIGHTCLICKABLE_BLOCKS = Sets.newHashSet(
             Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.ENDER_CHEST,
@@ -72,102 +73,32 @@ public class WorldUtils {
         return true;
     }
 
-    public static boolean placeBlock(BlockPos pos, int slot, boolean forceLegit, boolean swingHand) {
-        return placeBlock(pos, slot, 1, forceLegit, swingHand);
-    }
+    public static boolean canPlace(BlockPos blockPos, boolean checkEntities,  boolean airplace) {
+        if (blockPos == null) return false;
 
-    public static boolean placeBlock(BlockPos pos, int slot, int rotateMode, boolean forceLegit, boolean swingHand) {
-        if (!World.isInBuildLimit(pos) || !isBlockEmpty(pos))
-            return false;
+        // Check y level
+        if (World.isOutOfBuildLimitVertically(blockPos)) return false;
 
-        if (slot != mc.player.inventory.selectedSlot && slot >= 0 && slot <= 8)
-            mc.player.inventory.selectedSlot = slot;
+        // Check if current block is replaceable
+        if (!mc.world.getBlockState(blockPos).getMaterial().isReplaceable()) return false;
 
-        for (Direction d : Direction.values()) {
-            if (!World.isInBuildLimit(pos.offset(d)))
-                continue;
+        if (checkEntities && !mc.world.canPlace(Blocks.STONE.getDefaultState(), blockPos, ShapeContext.absent())) return false;
 
-            Block neighborBlock = mc.world.getBlockState(pos.offset(d)).getBlock();
-
-            if (neighborBlock.getDefaultState().getMaterial().isReplaceable())
-                continue;
-
-            Vec3d vec = getLegitLookPos(pos.offset(d), d.getOpposite(), true, 5);
-
-            if (vec == null) {
-                if (forceLegit) {
+        if (!airplace) {
+            for (Direction d : Direction.values()) {
+                if (mc.world.getBlockState(blockPos.offset(d)).getMaterial().isReplaceable())
                     continue;
-                }
 
-                vec = getLegitLookPos(pos.offset(d), d.getOpposite(), false, 5);
-
-                if (vec == null) {
-                    continue;
-                }
+                return true;
             }
-
-            if (rotateMode == 1) {
-                facePosPacket(vec.x, vec.y, vec.z);
-            } else if (rotateMode == 2) {
-                facePos(vec.x, vec.y, vec.z);
-            }
-
-            if (RIGHTCLICKABLE_BLOCKS.contains(neighborBlock)) {
-                mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
-            }
-
-            if (swingHand) {
-                mc.player.swingHand(Hand.MAIN_HAND);
-            } else {
-                mc.player.networkHandler.sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
-            }
-
-            mc.interactionManager.interactBlock(
-                    mc.player, mc.world, Hand.MAIN_HAND, new BlockHitResult(Vec3d.of(pos), d.getOpposite(), pos.offset(d), false));
-
-            if (RIGHTCLICKABLE_BLOCKS.contains(neighborBlock))
-                mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public static boolean airPlaceBlock(BlockPos pos, int slot, boolean forceLegit, boolean swingHand) {
-        return airPlaceBlock(pos, slot, 1, forceLegit, swingHand);
-    }
-    public static boolean isBlockEmpty(BlockPos pos) {
-        if (!mc.world.getBlockState(pos).getMaterial().isReplaceable()) {
             return false;
-        }
-
-        Box box = new Box(pos);
-        for (Entity e : mc.world.getEntities()) {
-            if (e instanceof LivingEntity && box.intersects(e.getBoundingBox())) {
-                return false;
-            }
         }
 
         return true;
     }
 
-    public static boolean canPlaceBlock(BlockPos pos) {
-        if (pos.getY() < 0 || pos.getY() > 255 || !isBlockEmpty(pos))
-            return false;
-
-        for (Direction d : Direction.values()) {
-            if ((d == Direction.DOWN && pos.getY() == 0) || (d == Direction.UP && pos.getY() == 255)
-                    || mc.world.getBlockState(pos.offset(d)).getMaterial().isReplaceable()
-                    || mc.player.getPos().add(0, mc.player.getEyeHeight(mc.player.getPose()), 0).distanceTo(
-                    new Vec3d(pos.getX() + 0.5 + d.getOffsetX() * 0.5,
-                            pos.getY() + 0.5 + d.getOffsetY() * 0.5,
-                            pos.getZ() + 0.5 + d.getOffsetZ() * 0.5)) > 4.55)
-                continue;
-
-            return true;
-        }
-        return false;
+    public static boolean canPlace(BlockPos blockPos) {
+        return canPlace(blockPos, true, true);
     }
 
     public static boolean doesBoxTouchBlock(Box box, Block block) {
@@ -184,47 +115,72 @@ public class WorldUtils {
         return false;
     }
 
+    public static boolean place(BlockPos blockPos, Hand hand, int slot, int rotateMode, boolean swing, boolean checkEntities, boolean swap, boolean swapBack, boolean canAirplace) {
+        if (slot == -1 || !canPlace(blockPos, checkEntities, true)) return false;
 
-    public static boolean airPlaceBlock(BlockPos pos, int slot, int rotateMode, boolean forceLegit, boolean swingHand) {
-        if (!World.isInBuildLimit(pos) || !isBlockEmpty(pos))
-            return false;
+        Direction side = getPlaceSide(blockPos);
+        BlockPos neighbour;
+        Vec3d hitPos = rotateMode == 0 ? WorldUtils.hitPos : new Vec3d(0, 0, 0);
 
-        if (slot != mc.player.inventory.selectedSlot && slot >= 0 && slot <= 8)
-            mc.player.inventory.selectedSlot = slot;
-
-        for (Direction d : Direction.values()) {
-            if (!World.isInBuildLimit(pos.offset(d)))
-                continue;
-
-            Block neighborBlock = mc.world.getBlockState(pos.offset(d)).getBlock();
-            Vec3d vec = Vec3d.of(pos).add(0.5 + d.getOffsetX() * 0.5, 0.5 + d.getOffsetY() * 0.5, 0.5 + d.getOffsetZ() * 0.5);
-
-            if (rotateMode == 1) {
-                facePosPacket(vec.x, vec.y, vec.z);
-            } else if (rotateMode == 2) {
-                facePos(vec.x, vec.y, vec.z);
-            }
-
-            if (RIGHTCLICKABLE_BLOCKS.contains(neighborBlock)) {
-                mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
-            }
-
-            if (swingHand) {
-                mc.player.swingHand(Hand.MAIN_HAND);
-            } else {
-                mc.player.networkHandler.sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
-            }
-
-            mc.interactionManager.interactBlock(
-                    mc.player, mc.world, Hand.MAIN_HAND, new BlockHitResult(Vec3d.of(pos), d.getOpposite(), pos.offset(d), false));
-
-            if (RIGHTCLICKABLE_BLOCKS.contains(neighborBlock))
-                mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-
-            return true;
+        if (side == null && canAirplace) {
+            side = Direction.UP;
+            neighbour = blockPos;
+            ((IVec3d) hitPos).set(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+        } else {
+            if (side == null) return false;
+            neighbour = blockPos.offset(side.getOpposite());
+            // The Y is not 0.5 but 0.6 for allowing "antiAnchor" placement. This should not damage any other modules
+            ((IVec3d) hitPos).set(neighbour.getX() + 0.5 + side.getOffsetX() * 0.5, neighbour.getY() + 0.6 + side.getOffsetY() * 0.5, neighbour.getZ() + 0.5 + side.getOffsetZ() * 0.5);
         }
 
-        return false;
+        if (rotateMode == 1) {
+            facePosPacket(hitPos.x, hitPos.y, hitPos.z);
+        } else if (rotateMode == 2) {
+            facePos(hitPos.x, hitPos.y, hitPos.z);
+        }
+
+        place(slot, hitPos, hand, side, neighbour, swing, swap, swapBack);
+
+        return true;
+    }
+
+    private static Direction getPlaceSide(BlockPos blockPos) {
+        for (Direction side : Direction.values()) {
+            BlockPos neighbor = blockPos.offset(side);
+            Direction side2 = side.getOpposite();
+
+            BlockState state = mc.world.getBlockState(neighbor);
+
+            // Check if neighbour isn't empty
+            if (state.isAir() || RIGHTCLICKABLE_BLOCKS.contains(state.getBlock())) continue;
+
+            // Check if neighbour is a fluid
+            if (!state.getFluidState().isEmpty()) continue;
+
+            return side2;
+        }
+
+        return null;
+    }
+
+    public static boolean place(BlockPos blockPos, Hand hand, int slot, int rotateMode, boolean checkEntities, boolean canAirplace) {
+        return place(blockPos, hand, slot, rotateMode, true, checkEntities, true, true, canAirplace);
+    }
+
+    private static void place(int slot, Vec3d hitPos, Hand hand, Direction side, BlockPos neighbour, boolean swing, boolean swap, boolean swapBack) {
+        int preSlot = mc.player.inventory.selectedSlot;
+        if (swap) mc.player.inventory.selectedSlot = slot;
+
+        boolean wasSneaking = mc.player.input.sneaking;
+        mc.player.input.sneaking = false;
+
+        mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(hitPos, side, neighbour, false));
+        if (swing) mc.player.swingHand(hand);
+        else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
+
+        mc.player.input.sneaking = wasSneaking;
+
+        if (swapBack) mc.player.inventory.selectedSlot = preSlot;
     }
 
     public static Vec3d getLegitLookPos(BlockPos pos, Direction dir, boolean raycast, int res) {

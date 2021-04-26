@@ -11,6 +11,7 @@ import me.lor3mipsum.next.client.impl.modules.client.DiscordPresence;
 import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.combat.AutoArmor;
 import me.lor3mipsum.next.client.impl.modules.combat.KillAura;
+import me.lor3mipsum.next.client.impl.modules.combat.Surround;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
@@ -45,6 +46,7 @@ public class ModuleManager {
         //Combat
         addModule(new AutoArmor());
         addModule(new KillAura());
+        addModule(new Surround());
         //Movement
         addModule(new Sprint());
         addModule(new Velocity());

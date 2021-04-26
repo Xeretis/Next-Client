@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.mixininterface;
 
+import me.lor3mipsum.next.client.utils.misc.Vec3;
 import net.minecraft.util.math.Vec3i;
 
 public interface IVec3d {
@@ -7,6 +8,9 @@ public interface IVec3d {
 
     default void set(Vec3i vec) {
         set(vec.getX(), vec.getY(), vec.getZ());
+    }
+    default void set(Vec3 vec) {
+        set(vec.x, vec.y, vec.z);
     }
     void setXZ(double x, double z);
 

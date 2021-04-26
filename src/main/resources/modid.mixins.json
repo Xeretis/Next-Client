@@ -18,7 +18,8 @@
     "ClientPlayerInteractionManagerAccessor",
     "CreativeInventoryScreenAccessor",
     "HorseScreenHandlerAccessor",
-    "BlockHitResultAccessor"
+    "BlockHitResultAccessor",
+    "Vec3dMixin"
   ],
   "injectors": {
     "defaultRequire": 1
