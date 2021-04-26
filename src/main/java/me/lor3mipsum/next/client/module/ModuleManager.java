@@ -12,6 +12,7 @@ import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
 import me.lor3mipsum.next.client.impl.modules.combat.AutoArmor;
 import me.lor3mipsum.next.client.impl.modules.combat.KillAura;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
+import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
@@ -46,6 +47,7 @@ public class ModuleManager {
         addModule(new Velocity());
         //Exploit
         addModule(new AirPlace());
+        addModule(new BuildHeight());
         //Render
         addModule(new Fullbright());
         addModule(new BreakIndicator());

@@ -17,7 +17,8 @@
     "ClientConnectionMixin",
     "ClientPlayerInteractionManagerAccessor",
     "CreativeInventoryScreenAccessor",
-    "HorseScreenHandlerAccessor"
+    "HorseScreenHandlerAccessor",
+    "BlockHitResultAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
