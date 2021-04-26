@@ -33,6 +33,7 @@ public class CommandManager {
         addCommand(new EnemyCmd());
         addCommand(new Drawn());
         addCommand(new Rpc());
+        addCommand(new FakePlayer());
     }
 
     private static void addCommand(Command cmd) {

@@ -2,6 +2,7 @@ package me.lor3mipsum.next.client.impl.modules.combat;
 
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.TickEvent;
+import me.lor3mipsum.next.client.impl.modules.player.FakePlayerEntity;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
@@ -74,13 +75,13 @@ public class KillAura extends Module {
         if (mc.player.isDead() || !mc.player.isAlive() || !itemInHand()) return;
 
         getEntities(entity -> {
-            if (!(entity instanceof LivingEntity) || entity instanceof ArmorStandEntity) return false;
-            if (entity == mc.player || entity == mc.cameraEntity) return false;
-            if ((entity instanceof LivingEntity && ((LivingEntity) entity).isDead()) || !entity.isAlive()) return false;
             if (entity.distanceTo(mc.player) > range.getNumber()) return false;
             if (!players.isOn() && entity instanceof PlayerEntity) return false;
             if (!hostiles.isOn() && entity instanceof Monster) return false;
             if (!animals.isOn() && (entity instanceof AmbientEntity || entity instanceof WaterCreatureEntity || entity instanceof IronGolemEntity || entity instanceof SnowGolemEntity || entity instanceof PassiveEntity)) return false;
+            if (!(entity instanceof LivingEntity) || entity instanceof ArmorStandEntity) return false;
+            if ((entity instanceof LivingEntity && ((LivingEntity) entity).isDead()) || !entity.isAlive()) return false;
+            if (entity == mc.player || entity == mc.cameraEntity) return false;
             if (!ignoreWalls.isOn() && !PlayerUtils.canSeeEntity(entity)) return false;
             if (entity instanceof PlayerEntity) {
                 if (((PlayerEntity) entity).isCreative()) return false;
