@@ -14,6 +14,7 @@ import me.lor3mipsum.next.client.impl.modules.combat.KillAura;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
+import me.lor3mipsum.next.client.impl.modules.movement.Blink;
 import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
@@ -48,6 +49,7 @@ public class ModuleManager {
         addModule(new Sprint());
         addModule(new Velocity());
         addModule(new NoSlow());
+        addModule(new Blink());
         //Exploit
         addModule(new AirPlace());
         addModule(new BuildHeight());
