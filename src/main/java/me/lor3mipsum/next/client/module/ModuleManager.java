@@ -5,10 +5,7 @@ import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
 import me.lor3mipsum.next.client.impl.events.RenderEvent;
-import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
-import me.lor3mipsum.next.client.impl.modules.client.ColorMode;
-import me.lor3mipsum.next.client.impl.modules.client.DiscordPresence;
-import me.lor3mipsum.next.client.impl.modules.client.HudEditor;
+import me.lor3mipsum.next.client.impl.modules.client.*;
 import me.lor3mipsum.next.client.impl.modules.combat.AutoArmor;
 import me.lor3mipsum.next.client.impl.modules.combat.KillAura;
 import me.lor3mipsum.next.client.impl.modules.combat.Surround;
@@ -46,7 +43,7 @@ public class ModuleManager {
         //Combat
         addModule(new AutoArmor());
         addModule(new KillAura());
-        addModule(new Surround());
+        addModule(new CrystalAura());
         //Movement
         addModule(new Sprint());
         addModule(new Velocity());
