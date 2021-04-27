@@ -18,7 +18,7 @@ public class Crapples extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Crapples() {
-        super("Crapples", "Shows you how many crapples you have in your inventory", new Point(40, 160), Category.HUD);
+        super("Crapples", "Shows you how many crapples you have in your inventory", new Point(-2, 178), Category.HUD);
     }
 
     @Override

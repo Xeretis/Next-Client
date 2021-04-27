@@ -20,7 +20,7 @@ public class Time extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Time() {
-        super("Time", "Shows you the time on the hud", new Point(20,300), Category.HUD);
+        super("Time", "Shows you the time on the hud", new Point(957,19), Category.HUD);
     }
 
     @Override

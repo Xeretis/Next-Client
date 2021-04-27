@@ -19,7 +19,7 @@ public class Totems extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Totems() {
-        super("Totems", "Shows you how many totems you have in your inventory", new Point(40, 100), Category.HUD);
+        super("Totems", "Shows you how many totems you have in your inventory", new Point(-2, 121), Category.HUD);
     }
 
     @Override

@@ -17,11 +17,11 @@ import java.awt.*;
 
 public class ArmorHud extends HudModule {
     public BooleanSetting flipOrder = new BooleanSetting("Flip", false);
-    public ModeSetting orientation = new ModeSetting("Orientation", "Horizontal", "Vertical", "Horizontal");
+    public ModeSetting orientation = new ModeSetting("Orientation", "Vertical", "Vertical", "Horizontal");
     public NumberSetting scale = new NumberSetting("Scale", 1.5, 1, 5, 0.5);
 
     public ArmorHud() {
-        super("ArmorHud", "Renders the durability of your armor on your hud", new Point(100, 200), Category.HUD);
+        super("ArmorHud", "Renders the durability of your armor on your hud", new Point(927, 192), Category.HUD);
     }
 
     @Override

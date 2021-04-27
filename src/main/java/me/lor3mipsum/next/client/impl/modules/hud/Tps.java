@@ -17,7 +17,7 @@ public class Tps extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Tps() {
-        super("Tps", "Shows the server's tps on the hud", new Point(20,50), Category.HUD);
+        super("Tps", "Shows the server's tps on the hud", new Point(958,70), Category.HUD);
     }
 
     @Override

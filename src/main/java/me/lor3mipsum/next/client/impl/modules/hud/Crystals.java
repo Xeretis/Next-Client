@@ -18,7 +18,7 @@ public class Crystals extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Crystals() {
-        super("Crystals", "Shows you how many crystals you have in your inventory", new Point(40, 120), Category.HUD);
+        super("Crystals", "Shows you how many crystals you have in your inventory", new Point(-2, 140), Category.HUD);
     }
 
     @Override

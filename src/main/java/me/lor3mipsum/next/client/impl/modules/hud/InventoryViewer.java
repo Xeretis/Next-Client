@@ -17,7 +17,7 @@ public class InventoryViewer extends HudModule {
     public NumberSetting scale = new NumberSetting("Scale", 1.5, 0.1, 10, 0.1);
 
     public InventoryViewer() {
-        super("InventoryViewer", "Renders the contents of your inventory on your hud", new Point(150, 300), Category.HUD);
+        super("InventoryViewer", "Renders the contents of your inventory on your hud", new Point(572, 452), Category.HUD);
     }
 
     @Override

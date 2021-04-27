@@ -18,7 +18,7 @@ public class Fps extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255,255,255,255));
 
     public Fps() {
-        super("Fps", "Displays your fps", new Point(100, 50), Category.HUD);
+        super("Fps", "Displays your fps", new Point(958, 52), Category.HUD);
     }
 
     @Override

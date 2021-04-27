@@ -19,7 +19,7 @@ public class Gapples extends HudModule {
     public ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 255));
 
     public Gapples() {
-        super("Gapples", "Shows you how many gapples you have in your inventory", new Point(40, 140), Category.HUD);
+        super("Gapples", "Shows you how many gapples you have in your inventory", new Point(-2, 159), Category.HUD);
     }
 
     @Override

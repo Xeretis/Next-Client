@@ -28,7 +28,7 @@ public class Speed extends HudModule {
     private String speedString = "";
 
     public Speed() {
-        super("Speed", "Shows your speed on the hud", new Point(300,310), Category.HUD);
+        super("Speed", "Shows your speed on the hud", new Point(957,4), Category.HUD);
     }
 
     @Override

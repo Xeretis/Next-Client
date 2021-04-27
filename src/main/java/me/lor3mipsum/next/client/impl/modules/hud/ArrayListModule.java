@@ -27,7 +27,7 @@ public class ArrayListModule extends HudModule {
     private ModuleList list = new ModuleList();
 
     public ArrayListModule() {
-        super("ArrayList", "Renders active modules on your screen", new Point(162, 222), Category.HUD);
+        super("ArrayList", "Renders active modules on your screen", new Point(785, 310), Category.HUD);
     }
 
     @Override
