@@ -19,7 +19,8 @@
     "CreativeInventoryScreenAccessor",
     "HorseScreenHandlerAccessor",
     "BlockHitResultAccessor",
-    "Vec3dMixin"
+    "Vec3dMixin",
+    "ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

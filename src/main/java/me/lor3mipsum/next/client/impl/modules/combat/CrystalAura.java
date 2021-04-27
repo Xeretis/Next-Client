@@ -1,12 +1,18 @@
-package me.lor3mipsum.next.client.impl.modules.client;
+package me.lor3mipsum.next.client.impl.modules.combat;
 
+import me.lor3mipsum.next.client.event.EventTarget;
+import me.lor3mipsum.next.client.impl.events.EntityRemovedEvent;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
+import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 import me.lor3mipsum.next.client.module.Module;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CrystalAura extends Module{
 
@@ -44,8 +50,44 @@ public class CrystalAura extends Module{
 
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
+    private final ConcurrentHashMap<EndCrystalEntity, Integer> attacked_crystals = new ConcurrentHashMap<>();
+
+    private final Timer remove_visual_timer = new Timer();
+    private final Timer chain_timer = new Timer();
+
+    private String detail_name = null;
+    private int detail_hp = 0;
+
+    private BlockPos render_block_init;
+    private BlockPos render_block_old;
+
+    private double render_damage_value;
+
+    private float yaw;
+    private float pitch;
+
+    private boolean already_attacking = false;
+    private boolean place_timeout_flag = false;
+    private boolean is_rotating;
+    private boolean did_anything;
+    private boolean outline;
+    private boolean solid;
+
+    private int chain_step = 0;
+    private int current_chain_index = 0;
+    private int place_timeout;
+    private int break_timeout;
+    private int break_delay_counter;
+    private int place_delay_counter;
+
     public CrystalAura() {
         super("CrystalAura", "Yes", Category.COMBAT);
+    }
+
+    @EventTarget
+    private void onEntityRemoved(EntityRemovedEvent event) {
+        if(event.getEntity() instanceof EndCrystalEntity)
+            attacked_crystals.remove(event.getEntity());
     }
 
     @Override
@@ -56,5 +98,25 @@ public class CrystalAura extends Module{
     @Override
     public void setKeybind(int keybind) {
         this.keybind.setKey(keybind);
+    }
+
+    private class Timer {
+        private long time;
+
+        public Timer() {
+            this.time = -1L;
+        }
+
+        public boolean passed(final long ms) {
+            return this.getTime(System.nanoTime() - this.time) >= ms;
+        }
+
+        public void reset() {
+            this.time = System.nanoTime();
+        }
+
+        public long getTime(final long time) {
+            return time / 1000000L;
+        }
     }
 }
