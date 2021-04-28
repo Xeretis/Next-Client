@@ -4,6 +4,7 @@ import me.lor3mipsum.next.mixininterface.IVec3d;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
@@ -23,5 +24,17 @@ public class PlayerUtils {
         boolean canSeeEyes = mc.world.raycast(new RaycastContext(vec1, vec2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS;
 
         return canSeeFeet || canSeeEyes;
+    }
+
+    public static float[] calculateAngle(Vec3d target) {
+        Vec3d eyesPos = new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
+
+        double dX = target.x - eyesPos.x;
+        double dY = (target.y - eyesPos.y) * -1.0D;
+        double dZ = target.z - eyesPos.z;
+
+        double dist = MathHelper.sqrt(dX * dX + dZ * dZ);
+
+        return new float[]{(float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(dZ, dX)) - 90.0D), (float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(dY, dist)))};
     }
 }

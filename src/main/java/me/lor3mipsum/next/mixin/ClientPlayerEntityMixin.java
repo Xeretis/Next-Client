@@ -6,6 +6,7 @@ import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.command.CommandManager;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.impl.events.ClientMoveEvent;
+import me.lor3mipsum.next.client.impl.events.SendMovementPacketsEvent;
 import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ClientPlayerEntity.class)
+@Mixin(value = ClientPlayerEntity.class, priority = 1001)
 public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity {
     @Shadow
     public abstract void sendChatMessage(String string);
@@ -66,5 +67,25 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
         if (Next.INSTANCE.moduleManager.getModule(NoSlow.class).sneak.isOn() && Next.INSTANCE.moduleManager.getModule(NoSlow.class).isOn()) {
             info.setReturnValue(shouldLeaveSwimmingPose());
         }
+    }
+
+    @Inject(method = "sendMovementPackets", at = @At("HEAD"))
+    private void onSendMovementPacketsHead(CallbackInfo info) {
+        EventManager.call(new SendMovementPacketsEvent.Pre());
+    }
+
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 0))
+    private void onTickHasVehicleBeforeSendPackets(CallbackInfo info) {
+        EventManager.call(new SendMovementPacketsEvent.Pre());
+    }
+
+    @Inject(method = "sendMovementPackets", at = @At("TAIL"))
+    private void onSendMovementPacketsTail(CallbackInfo info) {
+        EventManager.call(new SendMovementPacketsEvent.Post());
+    }
+
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 1, shift = At.Shift.AFTER))
+    private void onTickHasVehicleAfterSendPackets(CallbackInfo info) {
+        EventManager.call(new SendMovementPacketsEvent.Post());
     }
 }

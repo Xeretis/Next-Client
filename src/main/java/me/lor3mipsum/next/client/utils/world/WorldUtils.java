@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.client.utils.world;
 
 import com.google.common.collect.Sets;
+import me.lor3mipsum.next.client.utils.player.Rotations;
 import me.lor3mipsum.next.mixininterface.IVec3d;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
@@ -115,12 +116,12 @@ public class WorldUtils {
         return false;
     }
 
-    public static boolean place(BlockPos blockPos, Hand hand, int slot, int rotateMode, boolean swing, boolean checkEntities, boolean swap, boolean swapBack, boolean canAirplace) {
+    public static boolean place(BlockPos blockPos, Hand hand, int slot, boolean rotate, boolean swing, boolean checkEntities, boolean swap, boolean swapBack, boolean canAirplace) {
         if (slot == -1 || !canPlace(blockPos, checkEntities, true)) return false;
 
         Direction side = getPlaceSide(blockPos);
         BlockPos neighbour;
-        Vec3d hitPos = rotateMode == 0 ? WorldUtils.hitPos : new Vec3d(0, 0, 0);
+        Vec3d hitPos = rotate ? new Vec3d(0, 0, 0) : WorldUtils.hitPos;
 
         if (side == null && canAirplace) {
             side = Direction.UP;
@@ -133,11 +134,10 @@ public class WorldUtils {
             ((IVec3d) hitPos).set(neighbour.getX() + 0.5 + side.getOffsetX() * 0.5, neighbour.getY() + 0.6 + side.getOffsetY() * 0.5, neighbour.getZ() + 0.5 + side.getOffsetZ() * 0.5);
         }
 
-        if (rotateMode == 1) {
-            facePosPacket(hitPos.x, hitPos.y, hitPos.z);
-        } else if (rotateMode == 2) {
-            facePos(hitPos.x, hitPos.y, hitPos.z);
-        }
+        if (rotate) {
+            Direction s = side;
+            Rotations.INSTANCE.rotate(Rotations.INSTANCE.getYaw(hitPos), Rotations.INSTANCE.getPitch(hitPos), 0, () -> place(slot, hitPos, hand, s, neighbour, swing, swap, swapBack));
+        } else place(slot, hitPos, hand, side, neighbour, swing, swap, swapBack);
 
         place(slot, hitPos, hand, side, neighbour, swing, swap, swapBack);
 
@@ -163,8 +163,8 @@ public class WorldUtils {
         return null;
     }
 
-    public static boolean place(BlockPos blockPos, Hand hand, int slot, int rotateMode, boolean checkEntities, boolean canAirplace) {
-        return place(blockPos, hand, slot, rotateMode, true, checkEntities, true, true, canAirplace);
+    public static boolean place(BlockPos blockPos, Hand hand, int slot, boolean rotate, boolean checkEntities, boolean canAirplace) {
+        return place(blockPos, hand, slot, rotate, true, checkEntities, true, true, canAirplace);
     }
 
     private static void place(int slot, Vec3d hitPos, Hand hand, Direction side, BlockPos neighbour, boolean swing, boolean swap, boolean swapBack) {
@@ -252,5 +252,13 @@ public class WorldUtils {
                 new PlayerMoveC2SPacket.LookOnly(
                         mc.player.yaw + MathHelper.wrapDegrees(yaw - mc.player.yaw),
                         mc.player.pitch + MathHelper.wrapDegrees(pitch - mc.player.pitch), mc.player.isOnGround()));
+    }
+
+    public static void facePosAuto(double x, double y, double z, int sr) {
+        if (sr == 0) {
+            facePosPacket(x, y, z);
+        } else {
+            facePos(x, y, z);
+        }
     }
 }

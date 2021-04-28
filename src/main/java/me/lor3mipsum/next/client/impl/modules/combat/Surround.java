@@ -27,7 +27,7 @@ public class Surround extends Module {
     public BooleanSetting jump = new BooleanSetting("DisableOnJump", true);
     public BooleanSetting airplace = new BooleanSetting("AirPlace", true);
     public BooleanSetting blockunder = new BooleanSetting("BlockUnder", true);
-    public ModeSetting rotate = new ModeSetting("Rotate", "None", "None", "Server", "Client");
+    public BooleanSetting rotate = new BooleanSetting("Rotate", true);
     public BooleanSetting keepFacing = new BooleanSetting("KeepFacing", false);
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
@@ -108,7 +108,7 @@ public class Surround extends Module {
 
                 if (!WorldUtils.canPlace(b, true, false)) {
                     if (WorldUtils.canPlace(b.down(), true, false)) {
-                        WorldUtils.place(b.down(), Hand.MAIN_HAND, obsidian, rotate.getMode() == "None" ? 0 : rotate.getMode() == "Server" ? 1 : 2, true, false);
+                        WorldUtils.place(b.down(), Hand.MAIN_HAND, obsidian, rotate.isOn(), true, false);
                         cap++;
 
                         if (cap >= (int) bpt.getNumber()) {
@@ -117,7 +117,7 @@ public class Surround extends Module {
                     }
                 }
 
-                if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.getMode() == "None" ? 0 : rotate.getMode() == "Server" ? 1 : 2, true, false)) {
+                if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.isOn(), true, false)) {
                     cap++;
                 }
             }
@@ -140,7 +140,7 @@ public class Surround extends Module {
 
         if (blockunder.isOn()) {
             if (mc.world.getBlockState(mc.player.getBlockPos().down()).getMaterial().isReplaceable()) {
-                WorldUtils.place(mc.player.getBlockPos().down(), Hand.MAIN_HAND, obsidian, rotate.getMode() == "None" ? 0 : rotate.getMode() == "Server" ? 1 : 2, true, true);
+                WorldUtils.place(mc.player.getBlockPos().down(), Hand.MAIN_HAND, obsidian, rotate.isOn(), true, true);
                 cap++;
             }
 
@@ -154,7 +154,7 @@ public class Surround extends Module {
                 return;
             }
 
-            if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.getMode() == "None" ? 0 : rotate.getMode() == "Server" ? 1 : 2, true, true)) {
+            if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.isOn(), true, true)) {
                 cap++;
             }
         }
