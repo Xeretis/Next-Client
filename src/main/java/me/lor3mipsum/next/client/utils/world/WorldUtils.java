@@ -60,20 +60,6 @@ public class WorldUtils {
     public static final Set<Material> FLUIDS = Sets.newHashSet(
             Material.WATER, Material.LAVA, Material.UNDERWATER_PLANT, Material.REPLACEABLE_UNDERWATER_PLANT);
 
-    public static boolean isBoxEmpty(Box box) {
-        for (int x = (int) Math.floor(box.minX); x < Math.ceil(box.maxX); x++) {
-            for (int y = (int) Math.floor(box.minY); y < Math.ceil(box.maxY); y++) {
-                for (int z = (int) Math.floor(box.minZ); z < Math.ceil(box.maxZ); z++) {
-                    if (!mc.world.getBlockState(new BlockPos(x, y, z)).getMaterial().isReplaceable()) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
     public static boolean canPlace(BlockPos blockPos, boolean checkEntities,  boolean airplace) {
         if (blockPos == null) return false;
 

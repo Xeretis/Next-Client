@@ -6,7 +6,6 @@ import me.lor3mipsum.next.client.impl.events.TickEvent;
 import me.lor3mipsum.next.client.impl.events.WorldRenderEvent;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
-import me.lor3mipsum.next.client.impl.settings.ModeSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.social.SocialManager;
@@ -19,7 +18,6 @@ import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import me.lor3mipsum.next.client.utils.world.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -31,14 +29,15 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import org.lwjgl.glfw.GLFW;
 import me.lor3mipsum.next.client.module.Module;
 
@@ -59,6 +58,7 @@ public class CrystalAura extends Module{
     public NumberSetting hitRange = new NumberSetting("HitRange", 5.2, 1, 6, 0.1);
     public NumberSetting placeRange = new NumberSetting("PlaceRange", 5.2, 1, 6, 0.1);
     public NumberSetting wallRange = new NumberSetting("WallRange", 3, 1, 6, 0.1);
+    public BooleanSetting raytrace = new BooleanSetting("RayTrace", false);
     public BooleanSetting antiWeakness = new BooleanSetting("AntiWeakness", true);
 
     public NumberSetting placeDelay = new NumberSetting("PlaceDelay", 0, 0, 10, 1);
@@ -93,24 +93,21 @@ public class CrystalAura extends Module{
     private int oldSlot = -1;
     private int breakCooldown = 0;
     private int placeCooldown = 0;
-    private HashMap<BlockPos, Integer> blackList = new HashMap<>();
 
     public CrystalAura() {
         super("CrystalAura", "Yes", Category.COMBAT);
+    }
+
+    @Override
+    public void onDisable() {
+        if (switchBack.isOn() && oldSlot != -1) mc.player.inventory.selectedSlot = oldSlot;
+        render = null;
     }
 
     @EventTarget
     private void onTick(TickEvent.Post event) {
         breakCooldown = Math.max(0, breakCooldown - 1);
         placeCooldown = Math.max(0, placeCooldown - 1);
-
-        for (Map.Entry<BlockPos, Integer> e: new HashMap<>(blackList).entrySet()) {
-            if (e.getValue() > 0) {
-                blackList.replace(e.getKey(), e.getValue() - 1);
-            } else {
-                blackList.remove(e.getKey());
-            }
-        }
 
         if((mc.player.isUsingItem() && (mc.player.getMainHandStack().getItem().isFood() || mc.player.getOffHandStack().getItem().isFood()) && stopWhileEating.isOn()
         || (mc.interactionManager.isBreakingBlock() && stopWhileMining.isOn())))
@@ -119,17 +116,13 @@ public class CrystalAura extends Module{
         //Break
         List<EndCrystalEntity> nearestCrystals = Streams.stream(mc.world.getEntities())
                 .filter(e -> (e instanceof EndCrystalEntity))
-                .map(e -> {
-                    blackList.remove(e.getBlockPos().down());
-                    return (EndCrystalEntity) e;
-                })
+                .map(e -> (EndCrystalEntity) e)
                 .sorted(Comparator.comparing(c -> mc.player.distanceTo(c)))
                 .collect(Collectors.toList());
 
         if (this.breaks.isOn() && !nearestCrystals.isEmpty() && breakCooldown <= 0) {
             if (antiWeakness.isOn() && mc.player.hasStatusEffect(StatusEffects.WEAKNESS)) {
-                this.oldSlot = mc.player.inventory.selectedSlot;
-                InventoryUtils.selectSlot(false, true, Comparator.comparing(i -> mc.player.inventory.getStack(i).getDamage()));
+                doWeaknessSwitch();
             }
 
             boolean end = false;
@@ -168,15 +161,17 @@ public class CrystalAura extends Module{
 
         //Place
         if (place.isOn() && placeCooldown <= 0) {
-            int crystalSlot = !autoSwitch.isOn()
-                    ? (mc.player.getMainHandStack().getItem() == Items.END_CRYSTAL ? mc.player.inventory.selectedSlot
-                    : mc.player.getOffHandStack().getItem() == Items.END_CRYSTAL ? 40
-                    : -1)
-                    : InventoryUtils.getSlot(true, i -> mc.player.inventory.getStack(i).getItem() == Items.END_CRYSTAL);
+            if (autoSwitch.isOn())
+                doSwitch();
 
-            if (crystalSlot == -1) {
+            Hand hand;
+
+            if(mc.player.getOffHandStack().getItem() == Items.END_CRYSTAL)
+                hand = Hand.OFF_HAND;
+            else if (mc.player.getMainHandStack().getItem() == Items.END_CRYSTAL)
+                hand = Hand.MAIN_HAND;
+            else
                 return;
-            }
 
             List<LivingEntity> targets = Streams.stream(mc.world.getEntities())
                     .filter(e -> !(e instanceof PlayerEntity && (friends.isOn() && SocialManager.isFriend(e.getName().getString())))
@@ -219,7 +214,6 @@ public class CrystalAura extends Module{
                     .sorted((b1, b2) -> Float.compare(b2.getValue(), b1.getValue()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
 
-            int oldSlot = mc.player.inventory.selectedSlot;
             for (Map.Entry<BlockPos, Float> e: placeBlocks.entrySet()) {
                 BlockPos block = e.getKey();
 
@@ -234,8 +228,6 @@ public class CrystalAura extends Module{
                     }
                 }
 
-                Hand hand = InventoryUtils.selectSlot(crystalSlot);
-
                 Vec3d finalVec = vec;
 
                 if (rotate.isOn()) {
@@ -248,11 +240,6 @@ public class CrystalAura extends Module{
                 render = block;
 
                 break;
-            }
-
-            if (autoSwitch.isOn()
-                    && switchBack.isOn()) {
-                mc.player.inventory.selectedSlot = oldSlot;
             }
 
             placeCooldown = (int) placeDelay.getNumber() + 1;
@@ -274,31 +261,30 @@ public class CrystalAura extends Module{
                 for (int z = -range; z <= range; z++) {
                     BlockPos basePos = mc.player.getBlockPos().add(x, y, z);
 
-                    if (!canPlace(basePos) || (blackList.containsKey(basePos) && place.isOn()))
+                    if (!canPlace(basePos))
                         continue;
 
-                    if (place.isOn()) {
-                        boolean allBad = true;
-                        for (Direction d: Direction.values()) {
-                            if (WorldUtils.getLegitLookPos(basePos, d, true, 5) != null) {
-                                allBad = false;
-                                break;
-                            }
-                        }
 
-                        if (allBad) {
-                            continue;
+                    boolean throughWalls = true;
+                    for (Direction d: Direction.values()) {
+                        if (WorldUtils.getLegitLookPos(basePos, d, true, 5) != null) {
+                            throughWalls = false;
+                            break;
                         }
                     }
+
+                    if (throughWalls && raytrace.isOn()) {
+                        continue;
+                    }
+
 
                     Vec3d pos = Vec3d.of(basePos).add(0.5, 1, 0.5);
 
                     if (mc.player.getPos().distanceTo(pos) <= placeRange.getNumber() + 0.25)
-//                        if (rayTraceCheck(new BlockPos(pos), false) != null)
-//                            poses.add(Vec3d.of(basePos).add(0.5, 1, 0.5));
-//                        else if ((pos.distanceTo(new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ())) <= wallRange.getNumber()))
-//                            poses.add(Vec3d.of(basePos).add(0.5, 1, 0.5));
-                        poses.add(Vec3d.of(basePos).add(0.5, 1, 0.5));
+                        if (!throughWalls)
+                            poses.add(Vec3d.of(basePos).add(0.5, 1, 0.5));
+                        else if (mc.player.getPos().distanceTo(pos) <= wallRange.getNumber())
+                            poses.add(Vec3d.of(basePos).add(0.5, 1, 0.5));
                 }
             }
         }
@@ -306,24 +292,26 @@ public class CrystalAura extends Module{
         return poses;
     }
 
-    private Direction rayTraceCheck(BlockPos pos, boolean forceReturn) {
-        Vec3d eyesPos = new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
-        for (Direction direction : Direction.values()) {
-            RaycastContext raycastContext = new RaycastContext(eyesPos, new Vec3d(pos.getX() + 0.5 + direction.getVector().getX() * 0.5,
-                    pos.getY() + 0.5 + direction.getVector().getY() * 0.5,
-                    pos.getZ() + 0.5 + direction.getVector().getZ() * 0.5), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player);
-            BlockHitResult result = mc.world.raycast(raycastContext);
-            if (result != null && result.getType() == HitResult.Type.BLOCK && result.getBlockPos().equals(pos)) {
-                return direction;
+    private void doWeaknessSwitch() {
+        if (mc.player != null && !(mc.player.getMainHandStack().getItem() instanceof ToolItem && mc.player.getOffHandStack().getItem() instanceof SwordItem)) {
+            int slot = InventoryUtils.findItemInHotbar(itemStack -> itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof SwordItem);
+            if (slot != -1 && slot < 9) {
+                oldSlot = mc.player.inventory.selectedSlot;
+                mc.player.inventory.selectedSlot = slot;
+                mc.player.networkHandler.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
             }
         }
-        if (forceReturn) { // When we're placing, we have to return a direction so we have a side to place against
-            if ((double) pos.getY() > eyesPos.y) {
-                return Direction.DOWN; // The player can never see the top of a block if they are under it
+    }
+
+    private void doSwitch() {
+        if (mc.player != null && mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL) {
+            int slot = InventoryUtils.findItemInHotbar(Items.END_CRYSTAL);
+            if (slot != -1 && slot < 9) {
+                oldSlot = mc.player.inventory.selectedSlot;
+                mc.player.inventory.selectedSlot = slot;
+                mc.player.networkHandler.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
             }
-            return Direction.UP;
         }
-        return null;
     }
 
     private boolean canPlace(BlockPos basePos) {
@@ -337,7 +325,7 @@ public class CrystalAura extends Module{
         if (!mc.world.isAir(placePos) || (oldPlace && !mc.world.isAir(placePos.up())))
             return false;
 
-        return mc.world.getOtherEntities((Entity) null, new Box(placePos).stretch(0, oldPlace ? 2 : 1, 0)).isEmpty();
+        return mc.world.getOtherEntities(null, new Box(placePos).stretch(0, oldPlace ? 2 : 1, 0)).isEmpty();
     }
 
     @Override
