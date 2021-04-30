@@ -125,8 +125,6 @@ public class WorldUtils {
             Rotations.INSTANCE.rotate(Rotations.INSTANCE.getYaw(hitPos), Rotations.INSTANCE.getPitch(hitPos), 0, () -> place(slot, hitPos, hand, s, neighbour, swing, swap, swapBack));
         } else place(slot, hitPos, hand, side, neighbour, swing, swap, swapBack);
 
-        place(slot, hitPos, hand, side, neighbour, swing, swap, swapBack);
-
         return true;
     }
 
@@ -202,49 +200,5 @@ public class WorldUtils {
         }
 
         return null;
-    }
-
-    public static void facePos(double x, double y, double z) {
-        double diffX = x - mc.player.getX();
-        double diffY = y - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()));
-        double diffZ = z - mc.player.getZ();
-
-        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
-
-        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
-        float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));
-
-        mc.player.yaw += MathHelper.wrapDegrees(yaw - mc.player.yaw);
-        mc.player.pitch += MathHelper.wrapDegrees(pitch - mc.player.pitch);
-    }
-
-    public static void facePosPacket(double x, double y, double z) {
-        double diffX = x - mc.player.getX();
-        double diffY = y - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()));
-        double diffZ = z - mc.player.getZ();
-
-        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
-
-        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
-        float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));
-
-        if (!mc.player.hasVehicle()) {
-            mc.player.headYaw = mc.player.yaw + MathHelper.wrapDegrees(yaw - mc.player.yaw);
-            mc.player.bodyYaw = mc.player.yaw + MathHelper.wrapDegrees(yaw - mc.player.yaw);
-            mc.player.renderPitch = mc.player.pitch + MathHelper.wrapDegrees(pitch - mc.player.pitch);
-        }
-
-        mc.player.networkHandler.sendPacket(
-                new PlayerMoveC2SPacket.LookOnly(
-                        mc.player.yaw + MathHelper.wrapDegrees(yaw - mc.player.yaw),
-                        mc.player.pitch + MathHelper.wrapDegrees(pitch - mc.player.pitch), mc.player.isOnGround()));
-    }
-
-    public static void facePosAuto(double x, double y, double z, int sr) {
-        if (sr == 0) {
-            facePosPacket(x, y, z);
-        } else {
-            facePos(x, y, z);
-        }
     }
 }
