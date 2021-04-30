@@ -46,14 +46,19 @@ public class ArmorHud extends HudModule {
                 RenderSystem.pushMatrix();
                 RenderSystem.scaled(scale.getNumber(), scale.getNumber(), 1);
 
-                if (orientation.getMode() == "Vertical") {
-                    armorX = this.position.x / scale.getNumber();
-                    armorY = this.position.y / scale.getNumber() + position * 18;
-                } else {
-                    armorX = this.position.x / scale.getNumber() + position * 18;
-                    armorY = this.position.y / scale.getNumber();
+                switch (orientation.getMode()) {
+                    case "Vertical":
+                        armorX = this.position.x / scale.getNumber();
+                        armorY = this.position.y / scale.getNumber() + position * 18;
+                        break;
+                    case "Horizontal":
+                        armorX = this.position.x / scale.getNumber() + position * 18;
+                        armorY = this.position.y / scale.getNumber();
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + orientation.getMode());
                 }
-
+                        
                 RenderUtils.drawItem(itemStack, (int) armorX, (int) armorY, (itemStack.isDamageable()));
 
                 RenderSystem.popMatrix();

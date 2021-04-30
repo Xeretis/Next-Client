@@ -187,21 +187,17 @@ public class CrystalAura extends Module{
             Map<BlockPos, Float> placeBlocks = new LinkedHashMap<>();
 
             for (Vec3d v: getCrystalPoses()) {
-                float playerDamg = DamageUtils.getExplosionDamage(v, 6f, mc.player);
+                float playerDmg = DamageUtils.getExplosionDamage(v, 6f, mc.player);
 
                 if (DamageUtils.willExplosionKill(v, 6f, mc.player)) {
                     continue;
                 }
 
                 for (LivingEntity e: targets) {
-                    if (DamageUtils.willExplosionPop(v, 6f, mc.player) && !DamageUtils.willExplosionPopOrKill(v, 6f, e)) {
-                        continue;
-                    }
+                    float targetDmg = DamageUtils.getExplosionDamage(v, 6f, e);
 
-                    float targetDamg = DamageUtils.getExplosionDamage(v, 6f, e);
-
-                    if (targetDamg >= minDmg.getNumber()) {
-                        float ratio = playerDamg == 0 ? targetDamg : targetDamg / playerDamg;
+                    if (targetDmg >= minDmg.getNumber()) {
+                        float ratio = playerDmg == 0 ? targetDmg : targetDmg / playerDmg;
 
                         if (ratio > safetyRatio.getNumber()) {
                             placeBlocks.put(new BlockPos(v).down(), ratio);
