@@ -20,7 +20,8 @@
     "HorseScreenHandlerAccessor",
     "BlockHitResultAccessor",
     "Vec3dMixin",
-    "ClientWorldMixin"
+    "ClientWorldMixin",
+    "SoundSystemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
