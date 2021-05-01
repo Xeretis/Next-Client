@@ -85,8 +85,6 @@ public class CrystalAura extends Module{
     public BooleanSetting switchBack = new BooleanSetting("SwitchBack", true);
     public BooleanSetting antiSuicide = new BooleanSetting("AntiSuicide", true);
 
-    public BooleanSetting newPlace = new BooleanSetting("NewPlace", true);
-
     public BooleanSetting stopWhileMining = new BooleanSetting("StopWhileMining", false);
     public BooleanSetting stopWhileEating = new BooleanSetting("StopWhileEating", false);
 
