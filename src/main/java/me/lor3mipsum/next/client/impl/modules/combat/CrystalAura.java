@@ -18,6 +18,8 @@ import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import me.lor3mipsum.next.client.utils.world.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -48,6 +50,7 @@ public class CrystalAura extends Module{
 
     public BooleanSetting place = new BooleanSetting("Place", true);
     public BooleanSetting breaks = new BooleanSetting("Break", true);
+    public BooleanSetting keepPos = new BooleanSetting("KeepPos", false);
     //public NumberSetting breakAttempts = new NumberSetting("BreakAttempts", 2, 1, 6, 1);
 
     public BooleanSetting players = new BooleanSetting("Players", true);
@@ -154,9 +157,6 @@ public class CrystalAura extends Module{
             if (!fastMode.isOn() && end) {
                 return;
             }
-        } else if (this.oldSlot != -1) {
-            mc.player.inventory.selectedSlot = this.oldSlot;
-            this.oldSlot = -1;
         }
 
         //Place
@@ -321,7 +321,15 @@ public class CrystalAura extends Module{
         if (!mc.world.isAir(placePos) || (oldPlace && !mc.world.isAir(placePos.up())))
             return false;
 
-        return mc.world.getOtherEntities(null, new Box(placePos).stretch(0, oldPlace ? 2 : 1, 0)).isEmpty();
+        if (keepPos.isOn()) {
+            boolean onlyCrystal = true;
+            for (Entity e : mc.world.getOtherEntities(null, new Box(placePos).stretch(0, oldPlace ? 2 : 1, 0)))
+                if (!(e instanceof EndCrystalEntity))
+                    onlyCrystal = false;
+            return onlyCrystal;
+        } else
+            return mc.world.getOtherEntities(null, new Box(placePos).stretch(0, oldPlace ? 2 : 1, 0)).isEmpty();
+
     }
 
     @Override
