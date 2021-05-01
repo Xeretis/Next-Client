@@ -38,6 +38,7 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stat;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -98,6 +99,7 @@ public class CrystalAura extends Module{
     private BlockPos placePos, breakPos;
     private me.lor3mipsum.next.client.utils.misc.Timer lastPlaceOrBreak = new me.lor3mipsum.next.client.utils.misc.Timer();
     private int oldSlot = -1;
+    private LivingEntity lastTarget = null;
 
     public CrystalAura() {
         super("CrystalAura", "Yes", Category.COMBAT);
@@ -302,6 +304,7 @@ public class CrystalAura extends Module{
                         }
 
                         target = entity;
+                        lastTarget = entity;
                     }
                 }
             }
@@ -511,4 +514,8 @@ public class CrystalAura extends Module{
         this.keybind.setKey(keybind);
     }
 
+    @Override
+    public String getHudInfo() {
+        return "[" + Formatting.WHITE + lastTarget.getName().getString() + Formatting.GRAY + "]";
+    }
 }
