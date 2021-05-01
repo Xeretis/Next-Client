@@ -4,14 +4,12 @@ import com.google.common.collect.Streams;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.*;
-import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
-import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
-import me.lor3mipsum.next.client.impl.settings.ModeSetting;
-import me.lor3mipsum.next.client.impl.settings.NumberSetting;
+import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.social.SocialManager;
 import me.lor3mipsum.next.client.utils.player.*;
 import me.lor3mipsum.next.client.utils.render.RenderUtils;
+import me.lor3mipsum.next.client.utils.render.WorldRenderUtils;
 import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import me.lor3mipsum.next.client.utils.world.WorldUtils;
 import net.minecraft.block.BlockState;
@@ -48,7 +46,9 @@ import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 import me.lor3mipsum.next.client.module.Module;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -88,6 +88,13 @@ public class CrystalAura extends Module{
 
     public BooleanSetting stopWhileMining = new BooleanSetting("StopWhileMining", false);
     public BooleanSetting stopWhileEating = new BooleanSetting("StopWhileEating", false);
+
+    public ColorSetting placeColor = new ColorSetting("PlaceSideColor", Color.GREEN);
+    public ColorSetting placeLineColor = new ColorSetting("PlaceLineColor", Color.GREEN);
+    public ColorSetting breakColor = new ColorSetting("BreakSideColor", Color.RED);
+    public ColorSetting breakLineColor = new ColorSetting("BreakLineColor", Color.RED);
+
+    public BooleanSetting renderDmg = new BooleanSetting("RenderDmg", false);
 
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
@@ -463,12 +470,19 @@ public class CrystalAura extends Module{
     @EventTarget
     public void onRender(WorldRenderEvent.Post event) {
         BlockPos pos = placePos;
+        Color sideColor = placeColor.getValue();
+        Color lineColor = placeLineColor.getValue();
 
-        if (pos == null)
+        if (pos == null) {
             pos = breakPos;
+            sideColor = breakColor.getValue();
+            lineColor = breakLineColor.getValue();
+        }
 
         if (pos != null)
-            RenderUtils.drawBoxBoth(pos, QuadColor.single(255, 255, 255, 100), 2.5f);
+            RenderUtils.drawBoxBoth(pos, QuadColor.single(sideColor.getRGB()), QuadColor.single(lineColor.getRGB()), 2.5f);
+        if (renderDmg.isOn())
+            WorldRenderUtils.drawText(String.valueOf(Math.round(CrystalUtil.calculateDamage(pos.add(0, 1, 0), 6f, lastTarget))), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5);
     }
 
     private void doWeaknessSwitch() {
