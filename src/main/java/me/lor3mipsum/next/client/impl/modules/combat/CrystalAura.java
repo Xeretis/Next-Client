@@ -516,6 +516,9 @@ public class CrystalAura extends Module{
 
     @Override
     public String getHudInfo() {
-        return "[" + Formatting.WHITE + lastTarget.getName().getString() + Formatting.GRAY + "]";
+        if (lastTarget != null)
+            return "[" + Formatting.WHITE + lastTarget.getName().getString() + Formatting.GRAY + "]";
+        else
+            return "";
     }
 }
