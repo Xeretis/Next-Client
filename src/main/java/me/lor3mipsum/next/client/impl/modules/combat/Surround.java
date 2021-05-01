@@ -19,6 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+
 public class Surround extends Module {
     public NumberSetting bpt = new NumberSetting("BPT", 4, 1, 20, 1);
     public BooleanSetting keep = new BooleanSetting("StayOn", true);
@@ -167,6 +169,24 @@ public class Surround extends Module {
         if (!keep.isOn()) {
             setState(false);
         }
+    }
+
+    public boolean isSurrounded() {
+        ArrayList<BlockPos> surroundBlocks = new ArrayList<>();
+        surroundBlocks.add(mc.player.getBlockPos().north());
+        surroundBlocks.add(mc.player.getBlockPos().south());
+        surroundBlocks.add(mc.player.getBlockPos().east());
+        surroundBlocks.add(mc.player.getBlockPos().west());
+
+        for (BlockPos l_Pos : surroundBlocks)
+        {
+            if (mc.world.getBlockState(l_Pos).getMaterial().isReplaceable())
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override

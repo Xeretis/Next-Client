@@ -148,15 +148,19 @@ public class CrystalUtil {
         return true;
     }
 
-    public static List<BlockPos> findCrystalBlocks(ClientPlayerEntity player, float range) {
+    public static List<BlockPos> findCrystalBlocks(ClientPlayerEntity player, float range, Entity playerPredict) {
         List<BlockPos> positions = new ArrayList<>();
-        positions.addAll(getSphere(GetPlayerPosFloored(player), range, (int) range, false, true, 0)
+        positions.addAll(getSphere(GetPlayerPosFloored(player), range, (int) range, false, true, 0, playerPredict)
                 .stream().filter(CrystalUtil::canPlaceCrystal).collect(Collectors.toList()));
         return positions;
     }
 
-    public static List<BlockPos> getSphere(BlockPos pos, float r, int h, boolean hollow, boolean sphere, int plusY) {
+    public static List<BlockPos> getSphere(BlockPos pos, float r, int h, boolean hollow, boolean sphere, int plusY, Entity playerPredict) {
         List<BlockPos> circleblocks = new ArrayList<>();
+
+        if(playerPredict != null)
+            pos = pos.add(playerPredict.getVelocity().x, playerPredict.getVelocity().y, playerPredict.getVelocity().z);
+
         int cx = pos.getX();
         int cy = pos.getY();
         int cz = pos.getZ();

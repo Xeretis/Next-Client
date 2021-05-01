@@ -1,11 +1,9 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
 import com.google.common.collect.Streams;
+import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
-import me.lor3mipsum.next.client.impl.events.EntityRemovedEvent;
-import me.lor3mipsum.next.client.impl.events.PlaySoundEvent;
-import me.lor3mipsum.next.client.impl.events.TickEvent;
-import me.lor3mipsum.next.client.impl.events.WorldRenderEvent;
+import me.lor3mipsum.next.client.impl.events.*;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
@@ -72,8 +70,9 @@ public class CrystalAura extends Module{
     public BooleanSetting antiWeakness = new BooleanSetting("AntiWeakness", true);
     public ModeSetting breakMode = new ModeSetting("BreakMode", "Always", "Always", "Smart");
     public NumberSetting facePlaceHp = new NumberSetting("FacePlaceHp", 10, 0, 36, 1);
+    public BooleanSetting predict = new BooleanSetting("SelfPredict", true);
     public BooleanSetting multiplace = new BooleanSetting("Multiplace", false);
-    public ModeSetting cancel = new ModeSetting("Cancel", "Sound", "Sound", "Hit", "None");
+    public BooleanSetting cancel = new BooleanSetting("SoundCancel", true);
 
     public NumberSetting delay = new NumberSetting("Delay", 0, 0, 10, 1);
 
@@ -259,7 +258,7 @@ public class CrystalAura extends Module{
 
         remainingTicks = (int) delay.getNumber();
 
-        final List<BlockPos> cachedCrystalBlocks = CrystalUtil.findCrystalBlocks(mc.player, (float)placeRange.getNumber()).stream().filter(pos -> VerifyCrystalBlocks(pos)).collect(Collectors.toList());
+        final List<BlockPos> cachedCrystalBlocks = CrystalUtil.findCrystalBlocks(mc.player, (float)placeRange.getNumber(), predict.isOn() ? mc.player : null).stream().filter(pos -> VerifyCrystalBlocks(pos)).collect(Collectors.toList());
 
         LivingEntity target = null;
 
@@ -368,11 +367,6 @@ public class CrystalAura extends Module{
             mc.player.swingHand(Hand.MAIN_HAND);
             addAttackedCrystal(crystal);
 
-            if (cancel.getMode() == "Hit") {
-                mc.world.removeEntity(crystal.getEntityId());
-                placedCrystals.removeIf(p_Pos -> Vec3d.of(p_Pos) == crystal.getPos().add(0, -1, 0));
-            }
-
             //If we are not multiplacing return here, we have something to do for this tick.
             if (!multiplace.isOn()) {
                 return;
@@ -395,6 +389,10 @@ public class CrystalAura extends Module{
             if (selectedPos == null) {
                 remainingTicks = 0;
                 return;
+            }
+
+            if (predict.isOn()) {
+
             }
 
             if (autoSwitch.isOn() && (mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL || mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL))
@@ -448,7 +446,7 @@ public class CrystalAura extends Module{
             return;
         }
 
-        if(event.sound.getCategory().getName().equals(SoundCategory.BLOCKS.getName()) && event.sound.getId().getPath().equals("entity.generic.explode") && cancel.getMode() == "Sound") {
+        if(event.sound.getCategory().getName().equals(SoundCategory.BLOCKS.getName()) && event.sound.getId().getPath().equals("entity.generic.explode") && cancel.isOn()) {
             for (Entity e : mc.world.getEntities()) {
                 if (e instanceof EndCrystalEntity) {
                     if (e.getPos().distanceTo(new Vec3d(event.sound.getX(), event.sound.getY(), event.sound.getZ())) <= 6.0) {
@@ -498,6 +496,10 @@ public class CrystalAura extends Module{
         if((mc.player.isUsingItem() && (mc.player.getMainHandStack().getItem().isFood() || mc.player.getOffHandStack().getItem().isFood()) && stopWhileEating.isOn()
                 || (mc.interactionManager.isBreakingBlock() && stopWhileMining.isOn())))
             return true;
+
+        if (Next.INSTANCE.moduleManager.getModule(Surround.class).isOn() && !Next.INSTANCE.moduleManager.getModule(Surround.class).isSurrounded())
+            return true;
+
         return false;
     }
 
