@@ -1,6 +1,5 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
-import com.google.common.collect.Streams;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.*;
@@ -9,38 +8,30 @@ import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.social.SocialManager;
 import me.lor3mipsum.next.client.utils.player.*;
 import me.lor3mipsum.next.client.utils.render.RenderUtils;
-import me.lor3mipsum.next.client.utils.render.WorldRenderUtils;
 import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import me.lor3mipsum.next.client.utils.world.WorldUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.AmbientEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.stat.Stat;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
@@ -51,7 +42,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class CrystalAura extends Module{
@@ -67,24 +57,25 @@ public class CrystalAura extends Module{
     public NumberSetting hitRange = new NumberSetting("HitRange", 5.2, 1, 6, 0.1);
     public NumberSetting placeRange = new NumberSetting("PlaceRange", 5.2, 1, 6, 0.1);
     public NumberSetting wallRange = new NumberSetting("WallRange", 3, 1, 6, 0.1);
-    public BooleanSetting raytrace = new BooleanSetting("RayTrace", false);
+
+    public NumberSetting facePlaceHp = new NumberSetting("FacePlaceHp", 10, 0, 36, 1);
+    public BooleanSetting multiPlace = new BooleanSetting("MultiPlace", false);
+
     public BooleanSetting antiWeakness = new BooleanSetting("AntiWeakness", true);
     public ModeSetting breakMode = new ModeSetting("BreakMode", "Always", "Always", "Smart");
-    public NumberSetting facePlaceHp = new NumberSetting("FacePlaceHp", 10, 0, 36, 1);
-    public BooleanSetting predict = new BooleanSetting("SelfPredict", true);
-    public BooleanSetting multiplace = new BooleanSetting("Multiplace", false);
     public BooleanSetting cancel = new BooleanSetting("SoundCancel", true);
-
-    public NumberSetting delay = new NumberSetting("Delay", 0, 0, 10, 1);
 
     public NumberSetting minDmg = new NumberSetting("MinDmg", 8, 0, 36, 1);
     public NumberSetting maxSelfDmg = new NumberSetting("MaxSelfDmg", 6, 0, 36, 1);
 
+    public NumberSetting delay = new NumberSetting("Delay", 0, 0, 10, 1);
+    public BooleanSetting antiSuicide = new BooleanSetting("AntiSuicide", true);
+    public BooleanSetting raytrace = new BooleanSetting("RayTrace", false);
     public BooleanSetting rotate = new BooleanSetting("Rotate", true);
+    public BooleanSetting resetRotation = new BooleanSetting("ResetRotation", true);
 
     public BooleanSetting autoSwitch = new BooleanSetting("AutoSwitch", true);
     public BooleanSetting switchBack = new BooleanSetting("SwitchBack", true);
-    public BooleanSetting antiSuicide = new BooleanSetting("AntiSuicide", true);
 
     public BooleanSetting stopWhileMining = new BooleanSetting("StopWhileMining", false);
     public BooleanSetting stopWhileEating = new BooleanSetting("StopWhileEating", false);
@@ -93,19 +84,21 @@ public class CrystalAura extends Module{
     public ColorSetting placeLineColor = new ColorSetting("PlaceLineColor", Color.GREEN);
     public ColorSetting breakColor = new ColorSetting("BreakSideColor", Color.RED);
     public ColorSetting breakLineColor = new ColorSetting("BreakLineColor", Color.RED);
-
-    public BooleanSetting renderDmg = new BooleanSetting("RenderDmg", false);
+    public NumberSetting lineWidth = new NumberSetting("LineWidth", 2.5, 0, 5.0, 0.1);
 
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
-    public static me.lor3mipsum.next.client.utils.misc.Timer removeVisualTimer = new me.lor3mipsum.next.client.utils.misc.Timer();
     public static List<BlockPos> placedCrystals = new CopyOnWriteArrayList<>();
     private ConcurrentHashMap<EndCrystalEntity, Integer> attackedCrystals = new ConcurrentHashMap<>();
     private List<BlockPos> placeLocations = new CopyOnWriteArrayList<>();
-    private int remainingTicks;
     private BlockPos placePos, breakPos;
+
     private me.lor3mipsum.next.client.utils.misc.Timer lastPlaceOrBreak = new me.lor3mipsum.next.client.utils.misc.Timer();
+    public static me.lor3mipsum.next.client.utils.misc.Timer removeVisualTimer = new me.lor3mipsum.next.client.utils.misc.Timer();
+    private int remainingTicks;
+
     private int oldSlot = -1;
+
     private LivingEntity lastTarget = null;
 
     public CrystalAura() {
@@ -124,6 +117,10 @@ public class CrystalAura extends Module{
         placePos = null;
         breakPos = null;
         if (switchBack.isOn() && oldSlot != -1) mc.player.inventory.selectedSlot = oldSlot;
+        if (resetRotation.isOn()) {
+            mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(mc.player.yaw, mc.player.pitch, mc.player.isOnGround()));
+            Rotations.INSTANCE.setCamRotation(mc.player.yaw, mc.player.pitch);
+        }
     }
 
     @EventTarget
@@ -149,27 +146,23 @@ public class CrystalAura extends Module{
         }
 
         if (breakMode.getMode() == "Smart") {
-            float selfDamage = CrystalUtil.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, mc.player);
+            float selfDamage = CrystalUtils.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, mc.player);
             if (selfDamage > maxSelfDmg.getNumber() || (antiSuicide.isOn() && selfDamage >= mc.player.getHealth() + mc.player.getAbsorptionAmount())) {
                 return false;
             }
 
-            //Finds the best position for most damage
             for (AbstractClientPlayerEntity player : mc.world.getPlayers()) {
-                //Ignore if the player is us, a friend, dead, or has no health (the dead variable is sometimes delayed)
                 if (player == mc.player ||(!friends.isOn() && SocialManager.isFriend(player.getName().getString())) || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
                     continue;
                 }
 
-                //Store this as a variable for faceplace per player
                 double minDamage = minDmg.getNumber();
 
-                //Check if players health + gap health is less than or equal to faceplace, then we activate faceplacing
                 if (player.getHealth() + player.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
                     minDamage = 1f;
                 }
 
-                float calculatedDamage = CrystalUtil.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, player);
+                float calculatedDamage = CrystalUtils.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, player);
                 if (calculatedDamage > minDamage) {
                     return true;
                 }
@@ -192,13 +185,11 @@ public class CrystalAura extends Module{
         }
     }
 
-    private boolean VerifyCrystalBlocks(BlockPos pos) {
-        //Check distance
+    public boolean VerifyCrystalBlocks(BlockPos pos) {
         if (mc.player.getPos().distanceTo(Vec3d.of(pos)) > placeRange.getNumber() * placeRange.getNumber()) {
             return false;
         }
 
-        //Check walls range
         boolean throughWalls = true;
         for (Direction d: Direction.values()) {
             if (WorldUtils.getLegitLookPos(pos, d, true, 5) != null) {
@@ -216,20 +207,16 @@ public class CrystalAura extends Module{
             }
         }
 
-        //Check self damage
-        float selfDamage = CrystalUtil.calculateDamage(pos, 6f, mc.player);
+        float selfDamage = CrystalUtils.calculateDamage(pos, 6f, mc.player);
 
-        //Make sure self damage is not greater than maxselfdamage
         if (selfDamage > maxSelfDmg.getNumber()) {
             return false;
         }
 
-        //No suicide, verify self damage won't kill us
         if (antiSuicide.isOn() && selfDamage >= mc.player.getHealth()+mc.player.getAbsorptionAmount()) {
             return false;
         }
 
-        //Its an ok position.
         return true;
     }
 
@@ -242,6 +229,10 @@ public class CrystalAura extends Module{
         if (lastPlaceOrBreak.hasPassed(500)) {
             placePos = null;
             breakPos = null;
+            if (resetRotation.isOn()) {
+                mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(mc.player.yaw, mc.player.pitch, mc.player.isOnGround()));
+                Rotations.INSTANCE.setCamRotation(mc.player.yaw, mc.player.pitch);
+            }
         }
 
         if (removeVisualTimer.hasPassed(1000)) {
@@ -265,14 +256,13 @@ public class CrystalAura extends Module{
 
         remainingTicks = (int) delay.getNumber();
 
-        final List<BlockPos> cachedCrystalBlocks = CrystalUtil.findCrystalBlocks(mc.player, (float)placeRange.getNumber(), predict.isOn() ? mc.player : null).stream().filter(pos -> VerifyCrystalBlocks(pos)).collect(Collectors.toList());
+        final List<BlockPos> cachedCrystalBlocks = CrystalUtils.INSTANCE.crystalBlocks;
 
         LivingEntity target = null;
 
         if (!cachedCrystalBlocks.isEmpty()) {
             float damage = 0f;
 
-            //Iterate through all entities, and crystal positions to find the best position for most damage
             for (Entity entity2 : mc.world.getEntities()) {
                 LivingEntity entity = null;
                 try {
@@ -281,28 +271,23 @@ public class CrystalAura extends Module{
                     continue;
                 }
 
-                //Ignore if the player is us, dead, or has no health (the dead variable is sometimes delayed)
                 if (entity == mc.player || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
                     continue;
                 }
 
-                //continue if the entity isnt accepted type
                 if (entity instanceof PlayerEntity && !players.isOn() || entity instanceof PlayerEntity && (!friends.isOn() && SocialManager.isFriend(entity.getName().getString())) || entity instanceof Monster && !hostiles.isOn()
                         || (entity instanceof AmbientEntity || entity instanceof WaterCreatureEntity || entity instanceof IronGolemEntity || entity instanceof SnowGolemEntity || entity instanceof PassiveEntity) && !animals.isOn()) {
                     continue;
                 }
 
-                //Store this as a variable for faceplace per playerolemEntity || e instanceof SnowGolemEntity || e instanceof PassiveEntity) && animals.isOn())
                 double minDamage = minDmg.getNumber();
 
-                //Check if players health + gap health is less than or equal to faceplace, then we activate faceplacing
                 if (entity.getHealth() + entity.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
                     minDamage = 1f;
                 }
 
-                //Iterate through all valid crystal blocks for this player, and calculate the damages.
                 for (BlockPos pos : cachedCrystalBlocks) {
-                    float calculatedDamage = CrystalUtil.calculateDamage(pos, 6f, entity);
+                    float calculatedDamage = CrystalUtils.calculateDamage(pos, 6f, entity);
 
                     if (calculatedDamage >= minDamage && calculatedDamage > damage) {
                         damage = calculatedDamage;
@@ -317,33 +302,25 @@ public class CrystalAura extends Module{
             }
 
             if (target != null) {
-                //The player could have died during this code run, wait till next tick for doing more calculations.
                 if (target.isDead() || target.getHealth() <= 0.0f) {
                     return;
                 }
 
-                //Ensure we have place locations
                 if (!placeLocations.isEmpty()) {
-                    //Store this as a variable for faceplace per player
                     double minDamage = minDmg.getNumber();
 
-                    //Check if players health + gap health is less than or equal to faceplace, then we activate faceplacing
                     if (target.getHealth() + target.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
                         minDamage = 1f;
                     }
 
-                    //Iterate this again, we need to remove some values that are useless, since we iterated all players
                     for (BlockPos pos : placeLocations) {
-                        //Make sure the position will still deal enough damage to the player
-                        float calculatedDamage = CrystalUtil.calculateDamage(pos, 6f, target);
+                        float calculatedDamage = CrystalUtils.calculateDamage(pos, 6f, target);
 
-                        //Remove if this doesnt
                         if (calculatedDamage < minDamage) {
                             placeLocations.remove(pos);
                         }
                     }
 
-                    //At this point, the place locations list is in asc order, we need to reverse it to get to desc
                     Collections.reverse(placeLocations);
                 }
             }
@@ -364,7 +341,6 @@ public class CrystalAura extends Module{
             placePos = null;
             lastPlaceOrBreak.reset();
 
-            //Rotate to crystal
             if (rotate.isOn()) {
                 float[] rotation = PlayerUtils.calculateAngle(crystal.getPos());
                 Rotations.INSTANCE.rotate(rotation[0], rotation[1], 30, () -> mc.interactionManager.attackEntity(mc.player, crystal));
@@ -375,32 +351,23 @@ public class CrystalAura extends Module{
             mc.player.swingHand(Hand.MAIN_HAND);
             addAttackedCrystal(crystal);
 
-            //If we are not multiplacing return here, we have something to do for this tick.
-            if (!multiplace.isOn()) {
+            if (!multiPlace.isOn()) {
                 return;
             }
         }
 
-        //Verify the placeTimer is ready, selectedPosition is not 0,0,0 and the event isn't already cancelled
         if (!placeLocations.isEmpty() && place.isOn()) {
-            //Iterate through available place locations
             BlockPos selectedPos = null;
             for (BlockPos pos : placeLocations) {
-                // verify we can still place crystals at this location, if we can't we try next location
-                if (CrystalUtil.canPlaceCrystal(pos)) {
+                if (CrystalUtils.canPlaceCrystalAt(pos)) {
                     selectedPos = pos;
                     break;
                 }
             }
 
-            //Nothing found... this is bad, wait for next tick to correct it
             if (selectedPos == null) {
                 remainingTicks = 0;
                 return;
-            }
-
-            if (predict.isOn()) {
-
             }
 
             if (autoSwitch.isOn() && (mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL || mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL))
@@ -480,9 +447,7 @@ public class CrystalAura extends Module{
         }
 
         if (pos != null)
-            RenderUtils.drawBoxBoth(pos, QuadColor.single(sideColor.getRGB()), QuadColor.single(lineColor.getRGB()), 2.5f);
-        if (renderDmg.isOn())
-            WorldRenderUtils.drawText(String.valueOf(Math.round(CrystalUtil.calculateDamage(pos.add(0, 1, 0), 6f, lastTarget))), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5);
+            RenderUtils.drawBoxBoth(pos, QuadColor.single(sideColor.getRGB()), QuadColor.single(lineColor.getRGB()), (float) lineWidth.getNumber());
     }
 
     private void doWeaknessSwitch() {

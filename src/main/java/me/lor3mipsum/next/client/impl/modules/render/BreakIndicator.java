@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class BreakIndicator extends Module {
 
-    public NumberSetting lineWidth = new NumberSetting("LineWidth", 2.5, 0.1, 5.0, 0.1);
+    public NumberSetting lineWidth = new NumberSetting("LineWidth", 2.5, 0, 5.0, 0.1);
     public BooleanSetting text = new BooleanSetting("DrawProgress", false);
     public ColorSetting startLine = new ColorSetting("StartLineColor", new Color(255, 50, 50, 255));
     public ColorSetting startSide = new ColorSetting("StartSideColor", new Color(255, 50, 50, 100));

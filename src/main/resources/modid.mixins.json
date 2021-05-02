@@ -21,7 +21,8 @@
     "BlockHitResultAccessor",
     "Vec3dMixin",
     "ClientWorldMixin",
-    "SoundSystemMixin"
+    "SoundSystemMixin",
+    "WorldChunkMixin"
   ],
   "injectors": {
     "defaultRequire": 1
