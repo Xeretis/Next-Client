@@ -1,12 +1,9 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
 import me.lor3mipsum.next.client.event.EventTarget;
-import me.lor3mipsum.next.client.impl.commands.FakePlayer;
 import me.lor3mipsum.next.client.impl.events.ClientMoveEvent;
 import me.lor3mipsum.next.client.impl.events.SendPacketEvent;
 import me.lor3mipsum.next.client.impl.events.TickEvent;
-import me.lor3mipsum.next.client.impl.events.TookDamageEvent;
-import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
@@ -22,7 +19,6 @@ import org.lwjgl.glfw.GLFW;
 public class Freecam extends Module {
 
     public NumberSetting speed = new NumberSetting("Speed", 0.5, 0, 3, 0.1);
-    public BooleanSetting damage = new BooleanSetting("DamageDisable", false);
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
     public FakePlayerEntity dummy;
@@ -78,12 +74,6 @@ public class Freecam extends Module {
         }
 
         super.onDisable();
-    }
-
-    @EventTarget
-    private void onTookDamage(TookDamageEvent event) {
-        if (damage.isOn())
-            setState(false);
     }
 
     @EventTarget

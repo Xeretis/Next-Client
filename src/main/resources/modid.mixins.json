@@ -35,8 +35,7 @@
     "PickaxeItemAccessor",
     "ShovelItemAccessor",
     "ClientPlayerInteractionManagerMixin",
-    "PlayerMoveC2SPacketAccessor",
-    "LivingEntityMixin"
+    "PlayerMoveC2SPacketAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
