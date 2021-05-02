@@ -22,7 +22,14 @@
     "Vec3dMixin",
     "ClientWorldMixin",
     "SoundSystemMixin",
-    "WorldChunkMixin"
+    "WorldChunkMixin",
+    "ParticleManagerMixin",
+    "GameRendererMixin",
+    "BossBarHudMixin",
+    "CameraMixin",
+    "ChunkSkyLightProviderMixin",
+    "BackgroundRendererMixin",
+    "InGameOverlayRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
