@@ -153,27 +153,27 @@ public class CrystalAura extends Module{
                 return false;
             }
 
-            for (Entity player : mc.world.getEntities()) {
-                if (!(player instanceof LivingEntity)) continue;
+            for (Entity entity : mc.world.getEntities()) {
+                if (!(entity instanceof LivingEntity)) continue;
 
-                LivingEntity entity = (LivingEntity) player;
+                LivingEntity livingEntity = (LivingEntity) entity;
 
-                if (player == mc.player || player == mc.cameraEntity || (Next.INSTANCE.moduleManager.getModule(Freecam.class).isOn() && player == Next.INSTANCE.moduleManager.getModule(Freecam.class).dummy) || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
+                if (livingEntity == mc.player || (Next.INSTANCE.moduleManager.getModule(Freecam.class).isOn() && livingEntity == Next.INSTANCE.moduleManager.getModule(Freecam.class).dummy) || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
                     continue;
                 }
 
-                if (entity instanceof PlayerEntity && !players.isOn() || entity instanceof PlayerEntity && (!friends.isOn() && SocialManager.isFriend(entity.getName().getString())) || entity instanceof Monster && !hostiles.isOn()
-                        || (entity instanceof AmbientEntity || entity instanceof WaterCreatureEntity || entity instanceof IronGolemEntity || entity instanceof SnowGolemEntity || entity instanceof PassiveEntity) && !animals.isOn()) {
+                if (livingEntity instanceof PlayerEntity && !players.isOn() || livingEntity instanceof PlayerEntity && (!friends.isOn() && SocialManager.isFriend(livingEntity.getName().getString())) || livingEntity instanceof Monster && !hostiles.isOn()
+                        || (livingEntity instanceof AmbientEntity || livingEntity instanceof WaterCreatureEntity || livingEntity instanceof IronGolemEntity || livingEntity instanceof SnowGolemEntity || livingEntity instanceof PassiveEntity) && !animals.isOn()) {
                     continue;
                 }
 
                 double minDamage = minDmg.getNumber();
 
-                if (entity.getHealth() + entity.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
+                if (livingEntity.getHealth() + livingEntity.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
                     minDamage = 1f;
                 }
 
-                float calculatedDamage = CrystalUtils.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, entity);
+                float calculatedDamage = CrystalUtils.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, livingEntity);
                 if (calculatedDamage > minDamage) {
                     return true;
                 }
