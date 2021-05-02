@@ -34,7 +34,8 @@
     "HoeItemAccessor",
     "PickaxeItemAccessor",
     "ShovelItemAccessor",
-    "ClientPlayerInteractionManagerMixin"
+    "ClientPlayerInteractionManagerMixin",
+    "PlayerMoveC2SPacketAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -14,6 +14,7 @@ import me.lor3mipsum.next.client.impl.modules.movement.Blink;
 import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
+import me.lor3mipsum.next.client.impl.modules.player.AntiHunger;
 import me.lor3mipsum.next.client.impl.modules.player.AutoTool;
 import me.lor3mipsum.next.client.impl.modules.player.DeathCoords;
 import me.lor3mipsum.next.client.impl.modules.player.FastUse;
@@ -64,6 +65,7 @@ public class ModuleManager {
         addModule(new FastUse());
         addModule(new DeathCoords());
         addModule(new AutoTool());
+        addModule(new AntiHunger());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());
