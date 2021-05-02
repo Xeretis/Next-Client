@@ -48,6 +48,7 @@ public class ModuleManager {
         addModule(new Surround());
         addModule(new Offhand());
         addModule(new AutoTotem());
+        addModule(new AntiAnvil());
         //Movement
         addModule(new Sprint());
         addModule(new Velocity());

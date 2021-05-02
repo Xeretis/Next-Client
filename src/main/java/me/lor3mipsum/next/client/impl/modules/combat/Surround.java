@@ -110,7 +110,7 @@ public class Surround extends Module {
 
                 if (!WorldUtils.canPlace(b, true, false)) {
                     if (WorldUtils.canPlace(b.down(), true, false)) {
-                        WorldUtils.place(b.down(), Hand.MAIN_HAND, obsidian, rotate.isOn(), true, false);
+                        WorldUtils.place(b.down(), Hand.MAIN_HAND, obsidian, rotate.isOn(), 100, true, false);
                         cap++;
 
                         if (cap >= (int) bpt.getNumber()) {
@@ -119,7 +119,7 @@ public class Surround extends Module {
                     }
                 }
 
-                if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.isOn(), true, false)) {
+                if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.isOn(), 100, true, false)) {
                     cap++;
                 }
             }
@@ -142,7 +142,7 @@ public class Surround extends Module {
 
         if (blockunder.isOn()) {
             if (mc.world.getBlockState(mc.player.getBlockPos().down()).getMaterial().isReplaceable()) {
-                WorldUtils.place(mc.player.getBlockPos().down(), Hand.MAIN_HAND, obsidian, rotate.isOn(), true, true);
+                WorldUtils.place(mc.player.getBlockPos().down(), Hand.MAIN_HAND, obsidian, rotate.isOn(), 100, true, true);
                 cap++;
             }
 
@@ -156,7 +156,7 @@ public class Surround extends Module {
                 return;
             }
 
-            if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.isOn(), true, true)) {
+            if (WorldUtils.place(b, Hand.MAIN_HAND, obsidian, rotate.isOn(), 100, true, true)) {
                 cap++;
             }
         }

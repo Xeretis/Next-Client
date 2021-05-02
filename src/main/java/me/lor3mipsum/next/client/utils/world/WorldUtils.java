@@ -102,7 +102,7 @@ public class WorldUtils {
         return false;
     }
 
-    public static boolean place(BlockPos blockPos, Hand hand, int slot, boolean rotate, boolean swing, boolean checkEntities, boolean swap, boolean swapBack, boolean canAirplace) {
+    public static boolean place(BlockPos blockPos, Hand hand, int slot, boolean rotate, int priority, boolean swing, boolean checkEntities, boolean swap, boolean swapBack, boolean canAirplace) {
         if (slot == -1 || !canPlace(blockPos, checkEntities, true)) return false;
 
         Direction side = getPlaceSide(blockPos);
@@ -122,7 +122,7 @@ public class WorldUtils {
 
         if (rotate) {
             Direction s = side;
-            Rotations.INSTANCE.rotate(Rotations.INSTANCE.getYaw(hitPos), Rotations.INSTANCE.getPitch(hitPos), 0, () -> place(slot, hitPos, hand, s, neighbour, swing, swap, swapBack));
+            Rotations.INSTANCE.rotate(Rotations.INSTANCE.getYaw(hitPos), Rotations.INSTANCE.getPitch(hitPos), priority, () -> place(slot, hitPos, hand, s, neighbour, swing, swap, swapBack));
         } else place(slot, hitPos, hand, side, neighbour, swing, swap, swapBack);
 
         return true;
@@ -147,8 +147,8 @@ public class WorldUtils {
         return null;
     }
 
-    public static boolean place(BlockPos blockPos, Hand hand, int slot, boolean rotate, boolean checkEntities, boolean canAirplace) {
-        return place(blockPos, hand, slot, rotate, true, checkEntities, true, true, canAirplace);
+    public static boolean place(BlockPos blockPos, Hand hand, int slot, boolean rotate, int priority, boolean checkEntities, boolean canAirplace) {
+        return place(blockPos, hand, slot, rotate, priority, true, checkEntities, true, true, canAirplace);
     }
 
     private static void place(int slot, Vec3d hitPos, Hand hand, Direction side, BlockPos neighbour, boolean swing, boolean swap, boolean swapBack) {
