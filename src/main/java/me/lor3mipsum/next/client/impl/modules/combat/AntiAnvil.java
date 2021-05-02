@@ -31,10 +31,6 @@ public class AntiAnvil extends Module {
 
     @EventTarget
     private void onTick(TickEvent.Post event) {
-        if (InventoryUtils.findItemInHotbar(Items.OBSIDIAN) == -1) {
-            ChatUtils.moduleError(this, "No obsidian found in hotbar");
-            setState(false);
-        }
         for (int i = 2; i <= mc.interactionManager.getReachDistance() + 2; i++) {
             if (mc.world.getBlockState(mc.player.getBlockPos().add(0, i, 0)).getBlock() == Blocks.ANVIL && mc.world.getBlockState(mc.player.getBlockPos().add(0, i - 1, 0)).isAir()) {
                 if (WorldUtils.place(
