@@ -6,10 +6,7 @@ import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.KeyEvent;
 import me.lor3mipsum.next.client.impl.events.RenderEvent;
 import me.lor3mipsum.next.client.impl.modules.client.*;
-import me.lor3mipsum.next.client.impl.modules.combat.AutoArmor;
-import me.lor3mipsum.next.client.impl.modules.combat.CrystalAura;
-import me.lor3mipsum.next.client.impl.modules.combat.KillAura;
-import me.lor3mipsum.next.client.impl.modules.combat.Surround;
+import me.lor3mipsum.next.client.impl.modules.combat.*;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
@@ -46,6 +43,8 @@ public class ModuleManager {
         addModule(new KillAura());
         addModule(new CrystalAura());
         addModule(new Surround());
+        addModule(new Offhand());
+        addModule(new AutoTotem());
         //Movement
         addModule(new Sprint());
         addModule(new Velocity());
