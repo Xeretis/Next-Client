@@ -152,18 +152,27 @@ public class CrystalAura extends Module{
                 return false;
             }
 
-            for (AbstractClientPlayerEntity player : mc.world.getPlayers()) {
-                if (player == mc.player ||(!friends.isOn() && SocialManager.isFriend(player.getName().getString())) || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
+            for (Entity player : mc.world.getEntities()) {
+                if (!(player instanceof LivingEntity)) continue;
+
+                LivingEntity entity = (LivingEntity) player;
+
+                if (player == mc.player || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
+                    continue;
+                }
+
+                if (entity instanceof PlayerEntity && !players.isOn() || entity instanceof PlayerEntity && (!friends.isOn() && SocialManager.isFriend(entity.getName().getString())) || entity instanceof Monster && !hostiles.isOn()
+                        || (entity instanceof AmbientEntity || entity instanceof WaterCreatureEntity || entity instanceof IronGolemEntity || entity instanceof SnowGolemEntity || entity instanceof PassiveEntity) && !animals.isOn()) {
                     continue;
                 }
 
                 double minDamage = minDmg.getNumber();
 
-                if (player.getHealth() + player.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
+                if (entity.getHealth() + entity.getAbsorptionAmount() <= facePlaceHp.getNumber()) {
                     minDamage = 1f;
                 }
 
-                float calculatedDamage = CrystalUtils.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, player);
+                float calculatedDamage = CrystalUtils.calculateDamage(new Vec3d(e.getX(), e.getY(), e.getZ()), 6f, entity);
                 if (calculatedDamage > minDamage) {
                     return true;
                 }
