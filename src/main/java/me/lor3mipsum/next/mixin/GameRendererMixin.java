@@ -33,7 +33,7 @@ public class GameRendererMixin {
     }
 
     @Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F", ordinal = 0),
-            require = 0 /* TODO: meteor */)
+            require = 0)
     private float nauseaWobble(float delta, float first, float second) {
         if (!(Next.INSTANCE.moduleManager.getModule(NoRender.class).isOn() && Next.INSTANCE.moduleManager.getModule(NoRender.class).wobble.isOn())) {
             return MathHelper.lerp(delta, first, second);

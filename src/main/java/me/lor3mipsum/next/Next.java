@@ -19,7 +19,7 @@ import java.util.List;
 public class Next implements ModInitializer {
 
 	public static final String CLIENT_NAME = "Next";
-	public static final double CLIENT_VERSION = 1.0;
+	public static final double CLIENT_VERSION = 1.1;
 	public static final int GUI_KEY = GLFW.GLFW_KEY_RIGHT_SHIFT;
 
 	public static String prefix = ".";
