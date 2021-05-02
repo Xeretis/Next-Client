@@ -1,4 +1,4 @@
-package me.lor3mipsum.next.client.impl.modules.player;
+package me.lor3mipsum.next.client.utils.player;
 
 import net.minecraft.client.MinecraftClient;
 

@@ -29,7 +29,12 @@
     "CameraMixin",
     "ChunkSkyLightProviderMixin",
     "BackgroundRendererMixin",
-    "InGameOverlayRendererMixin"
+    "InGameOverlayRendererMixin",
+    "AxeItemAccessor",
+    "HoeItemAccessor",
+    "PickaxeItemAccessor",
+    "ShovelItemAccessor",
+    "ClientPlayerInteractionManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

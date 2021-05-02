@@ -3,7 +3,7 @@ package me.lor3mipsum.next.client.impl.commands;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.command.Command;
 import me.lor3mipsum.next.client.command.CommandException;
-import me.lor3mipsum.next.client.impl.modules.player.FakePlayerUtils;
+import me.lor3mipsum.next.client.utils.player.FakePlayerUtils;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 
 public class FakePlayer extends Command {
