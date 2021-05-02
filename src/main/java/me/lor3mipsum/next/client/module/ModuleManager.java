@@ -9,6 +9,7 @@ import me.lor3mipsum.next.client.impl.modules.client.*;
 import me.lor3mipsum.next.client.impl.modules.combat.*;
 import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
+import me.lor3mipsum.next.client.impl.modules.exploit.NoEntityTrace;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
 import me.lor3mipsum.next.client.impl.modules.movement.Blink;
 import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
@@ -68,6 +69,7 @@ public class ModuleManager {
         addModule(new DeathCoords());
         addModule(new AutoTool());
         addModule(new AntiHunger());
+        addModule(new NoEntityTrace());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());
