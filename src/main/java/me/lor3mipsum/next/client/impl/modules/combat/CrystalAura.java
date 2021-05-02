@@ -391,7 +391,7 @@ public class CrystalAura extends Module{
             Direction dir = Direction.UP;
 
             if (rotate.isOn()) {
-                float[] rotation = PlayerUtils.calculateAngle(vec.add(0.5, 1.0, 0.5));
+                float[] rotation = PlayerUtils.calculateAngle(Vec3d.of(selectedPos).add(0.5, 1.0, 0.5));
 
                 Vec3d finalVec = vec;
                 BlockPos finalSelectedPos = selectedPos;
