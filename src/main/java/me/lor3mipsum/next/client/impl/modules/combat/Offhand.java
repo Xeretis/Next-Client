@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 public class Offhand extends Module {
 
     public NumberSetting health = new NumberSetting("Health", 14, 0, 36, 1);
-    public ModeSetting mode = new ModeSetting("Mode", "Totem", "Totem", "Gap", "Crap", "Crystal");
+    public ModeSetting mode = new ModeSetting("Mode", "Crystal", "Gap", "Crap", "Crystal");
     public BooleanSetting elytra = new BooleanSetting("DisableOnElytra", true);
     public BooleanSetting inInv = new BooleanSetting("InInv", false);
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
@@ -46,9 +46,6 @@ public class Offhand extends Module {
     private Item getItem() {
         Item item;
         switch (mode.getMode()) {
-            case "Totem":
-                item = Items.TOTEM_OF_UNDYING;
-                break;
             case "Crystal":
                 item = Items.END_CRYSTAL;
                 break;
