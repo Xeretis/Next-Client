@@ -4,6 +4,7 @@ import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.config.ConfigManager;
 import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.impl.events.TickEvent;
+import me.lor3mipsum.next.client.impl.modules.player.Freecam;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,6 +43,8 @@ public abstract class MinecraftClientMixin {
                 System.err.println("Failed to save settings: ");
                 e.printStackTrace();
             }
+
+            Next.INSTANCE.moduleManager.getModule(Freecam.class).setState(false);
         }
     }
 

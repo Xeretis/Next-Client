@@ -15,10 +15,7 @@ import me.lor3mipsum.next.client.impl.modules.movement.Blink;
 import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
 import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
 import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
-import me.lor3mipsum.next.client.impl.modules.player.AntiHunger;
-import me.lor3mipsum.next.client.impl.modules.player.AutoTool;
-import me.lor3mipsum.next.client.impl.modules.player.DeathCoords;
-import me.lor3mipsum.next.client.impl.modules.player.FastUse;
+import me.lor3mipsum.next.client.impl.modules.player.*;
 import me.lor3mipsum.next.client.impl.modules.render.BreakIndicator;
 import me.lor3mipsum.next.client.impl.modules.render.CustomFOV;
 import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
@@ -70,6 +67,7 @@ public class ModuleManager {
         addModule(new AutoTool());
         addModule(new AntiHunger());
         addModule(new NoEntityTrace());
+        addModule(new Freecam());
         //Client
         addModule(new ClickGuiModule());
         addModule(new ColorMode());

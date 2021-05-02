@@ -12,8 +12,9 @@ import net.minecraft.item.Items;
 import org.lwjgl.glfw.GLFW;
 
 public class FastUse extends Module {
-    public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
+
     public ModeSetting mode = new ModeSetting("Mode", "Exp", "Exp", "Blocks", "Both", "All");
+    public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
     public FastUse() {
         super("FastUse", "You can use stuff faster with this", Category.PLAYER);

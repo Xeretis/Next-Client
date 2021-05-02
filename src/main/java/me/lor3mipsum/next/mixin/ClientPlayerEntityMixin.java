@@ -8,6 +8,7 @@ import me.lor3mipsum.next.client.event.EventManager;
 import me.lor3mipsum.next.client.impl.events.ClientMoveEvent;
 import me.lor3mipsum.next.client.impl.events.SendMovementPacketsEvent;
 import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
+import me.lor3mipsum.next.client.impl.modules.player.Freecam;
 import me.lor3mipsum.next.client.utils.ChatUtils;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -59,6 +60,13 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
             super.move(event.type, event.vec3d);
             this.autoJump((float) (this.getX() - double_1), (float) (this.getZ() - double_2));
             info.cancel();
+        }
+    }
+
+    @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)
+    protected void pushOutOfBlocks(double x, double d, CallbackInfo ci) {
+        if (Next.INSTANCE.moduleManager.getModule(Freecam.class).isOn()) {
+            ci.cancel();
         }
     }
 

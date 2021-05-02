@@ -3,6 +3,7 @@ package me.lor3mipsum.next.client.impl.modules.combat;
 import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.*;
+import me.lor3mipsum.next.client.impl.modules.player.Freecam;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.social.SocialManager;
@@ -157,7 +158,7 @@ public class CrystalAura extends Module{
 
                 LivingEntity entity = (LivingEntity) player;
 
-                if (player == mc.player || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
+                if (player == mc.player || player == mc.cameraEntity || (Next.INSTANCE.moduleManager.getModule(Freecam.class).isOn() && player == Next.INSTANCE.moduleManager.getModule(Freecam.class).dummy) || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
                     continue;
                 }
 
@@ -281,7 +282,7 @@ public class CrystalAura extends Module{
                     continue;
                 }
 
-                if (entity == mc.player || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
+                if (entity == mc.player || (Next.INSTANCE.moduleManager.getModule(Freecam.class).isOn() && entity == Next.INSTANCE.moduleManager.getModule(Freecam.class).dummy) || mc.player.isDead() || (mc.player.getHealth() + mc.player.getAbsorptionAmount()) <= 0.0f) {
                     continue;
                 }
 

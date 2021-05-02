@@ -1,7 +1,9 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
+import me.lor3mipsum.next.Next;
 import me.lor3mipsum.next.client.event.EventTarget;
 import me.lor3mipsum.next.client.impl.events.TickEvent;
+import me.lor3mipsum.next.client.impl.modules.player.Freecam;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.impl.settings.ModeSetting;
@@ -77,7 +79,7 @@ public class KillAura extends Module {
             if (!animals.isOn() && (entity instanceof AmbientEntity || entity instanceof WaterCreatureEntity || entity instanceof IronGolemEntity || entity instanceof SnowGolemEntity || entity instanceof PassiveEntity)) return false;
             if (!(entity instanceof LivingEntity) || entity instanceof ArmorStandEntity) return false;
             if ((entity instanceof LivingEntity && ((LivingEntity) entity).isDead()) || !entity.isAlive()) return false;
-            if (entity == mc.player || entity == mc.cameraEntity) return false;
+            if (entity == mc.player || entity == mc.cameraEntity || (Next.INSTANCE.moduleManager.getModule(Freecam.class).isOn() && entity == Next.INSTANCE.moduleManager.getModule(Freecam.class).dummy)) return false;
             if (!ignoreWalls.isOn() && !PlayerUtils.canSeeEntity(entity)) return false;
             if (entity instanceof PlayerEntity) {
                 if (((PlayerEntity) entity).isCreative()) return false;
