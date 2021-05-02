@@ -23,6 +23,12 @@ public class AntiAnvil extends Module {
         super("AntiAnvil", "Prevents you being anviled", Category.COMBAT);
     }
 
+    @Override
+    public void onEnable() {
+        if (InventoryUtils.findItemInHotbar(Items.OBSIDIAN) == -1)
+            ChatUtils.moduleError(this, "No obsidian found in hotbar, you may wanna get some of that");
+    }
+
     @EventTarget
     private void onTick(TickEvent.Post event) {
         if (InventoryUtils.findItemInHotbar(Items.OBSIDIAN) == -1) {
