@@ -49,6 +49,7 @@ public class ModuleManager {
         addModule(new Offhand());
         addModule(new AutoTotem());
         addModule(new AntiAnvil());
+        addModule(new Criticals());
         //Movement
         addModule(new Sprint());
         addModule(new Velocity());
