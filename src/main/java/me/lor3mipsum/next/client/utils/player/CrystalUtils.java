@@ -52,12 +52,14 @@ public class CrystalUtils {
 
         BlockPos placePos = blockpos.up();
 
-        if (!mc.world.isAir(placePos))
+        boolean oldPlace = Next.INSTANCE.moduleManager.getModule(CrystalAura.class).oldPlace.isOn();
+
+        if (!mc.world.isAir(placePos) || (oldPlace && !mc.world.isAir(placePos.up())))
             return false;
 
         ArrayList<Entity> entities = new ArrayList<>();
 
-        entities.addAll(mc.world.getOtherEntities(null, new Box(blockpos.add(0, 1, 0))));
+        entities.addAll(mc.world.getOtherEntities(null, new Box(blockpos).stretch(0, oldPlace ? 2 : 1, 0)));
         for (Entity entity : entities) {
             if (entity.isAlive()) {
                 return false;

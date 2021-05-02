@@ -60,6 +60,7 @@ public class CrystalAura extends Module{
 
     public NumberSetting facePlaceHp = new NumberSetting("FacePlaceHp", 10, 0, 36, 1);
     public BooleanSetting multiPlace = new BooleanSetting("MultiPlace", false);
+    public BooleanSetting oldPlace = new BooleanSetting("OldPlace", false);
 
     public BooleanSetting antiWeakness = new BooleanSetting("AntiWeakness", true);
     public ModeSetting breakMode = new ModeSetting("BreakMode", "Always", "Always", "Smart");
