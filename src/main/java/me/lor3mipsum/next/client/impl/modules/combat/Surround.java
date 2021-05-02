@@ -27,6 +27,7 @@ public class Surround extends Module {
     public BooleanSetting center = new BooleanSetting("Center", true);
     public BooleanSetting echest = new BooleanSetting("EChest", false);
     public BooleanSetting jump = new BooleanSetting("DisableOnJump", true);
+    public BooleanSetting yChange = new BooleanSetting("YChangeDisable", false);
     public BooleanSetting airplace = new BooleanSetting("AirPlace", true);
     public BooleanSetting blockunder = new BooleanSetting("BlockUnder", true);
     public BooleanSetting rotate = new BooleanSetting("Rotate", true);
@@ -61,7 +62,7 @@ public class Surround extends Module {
 
     @EventTarget
     private void onTick(TickEvent.Post event) {
-        if (jump.isOn() && mc.options.keyJump.isPressed()) {
+        if ((jump.isOn() && (mc.options.keyJump.isPressed() || mc.player.input.jumping)) || (yChange.isOn() && mc.player.prevY < mc.player.getY())) {
             setState(false);
             return;
         }
