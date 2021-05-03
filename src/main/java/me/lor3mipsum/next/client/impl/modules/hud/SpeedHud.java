@@ -15,7 +15,7 @@ import net.minecraft.util.Formatting;
 
 import java.awt.*;
 
-public class Speed extends HudModule {
+public class SpeedHud extends HudModule {
 
     public ModeSetting spUnit = new ModeSetting("Unit", KMH, KMH, BPS, MPH);
     public BooleanSetting sortRight = new BooleanSetting("SortRight", true);
@@ -27,8 +27,8 @@ public class Speed extends HudModule {
 
     private String speedString = "";
 
-    public Speed() {
-        super("Speed", "Shows your speed on the hud", new Point(957,4), Category.HUD);
+    public SpeedHud() {
+        super("SpeedHud", "Shows your speed on the hud", new Point(957,4), Category.HUD);
     }
 
     @Override

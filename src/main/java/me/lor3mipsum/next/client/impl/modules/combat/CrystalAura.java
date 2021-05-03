@@ -11,7 +11,6 @@ import me.lor3mipsum.next.client.utils.player.*;
 import me.lor3mipsum.next.client.utils.render.RenderUtils;
 import me.lor3mipsum.next.client.utils.render.color.QuadColor;
 import me.lor3mipsum.next.client.utils.world.WorldUtils;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;

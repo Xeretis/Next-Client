@@ -11,10 +11,7 @@ import me.lor3mipsum.next.client.impl.modules.exploit.AirPlace;
 import me.lor3mipsum.next.client.impl.modules.exploit.BuildHeight;
 import me.lor3mipsum.next.client.impl.modules.exploit.NoEntityTrace;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
-import me.lor3mipsum.next.client.impl.modules.movement.Blink;
-import me.lor3mipsum.next.client.impl.modules.movement.NoSlow;
-import me.lor3mipsum.next.client.impl.modules.movement.Sprint;
-import me.lor3mipsum.next.client.impl.modules.movement.Velocity;
+import me.lor3mipsum.next.client.impl.modules.movement.*;
 import me.lor3mipsum.next.client.impl.modules.player.*;
 import me.lor3mipsum.next.client.impl.modules.render.BreakIndicator;
 import me.lor3mipsum.next.client.impl.modules.render.CustomFOV;
@@ -53,6 +50,7 @@ public class ModuleManager {
         addModule(new Velocity());
         addModule(new NoSlow());
         addModule(new Blink());
+        addModule(new SpeedModule());
         //Exploit
         addModule(new AirPlace());
         addModule(new BuildHeight());
@@ -85,7 +83,7 @@ public class ModuleManager {
         addModule(new Ping());
         addModule(new ArmorHud());
         addModule(new Time());
-        addModule(new Speed());
+        addModule(new SpeedHud());
         addModule(new InventoryViewer());
         addModule(new Fps());
         addModule(new Tps());
