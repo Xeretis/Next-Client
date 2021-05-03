@@ -72,8 +72,6 @@ public class Freecam extends Module {
         if (riding != null && mc.world.getEntityById(riding.getEntityId()) != null) {
             mc.player.startRiding(riding);
         }
-
-        super.onDisable();
     }
 
     @EventTarget
