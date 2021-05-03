@@ -32,77 +32,77 @@ public class SpeedModule extends Module {
         if (mc.options.keySneak.isPressed() && sneak.isOn())
             return;
 
-        if (mode.getMode() == "Strafe") {
-            if ((mc.player.forwardSpeed != 0 || mc.player.sidewaysSpeed != 0) /*&& mc.player.isOnGround()*/) {
-                if (!mc.player.isSprinting()) {
-                    mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_SPRINTING));
+        switch (mode.getMode()) {
+            case "Strafe":
+                if ((mc.player.forwardSpeed != 0 || mc.player.sidewaysSpeed != 0) /*&& mc.player.isOnGround()*/) {
+                    if (!mc.player.isSprinting()) {
+                        mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_SPRINTING));
+                    }
+
+                    mc.player.setVelocity(new Vec3d(0, mc.player.getVelocity().y, 0));
+                    mc.player.updateVelocity((float) strafe.getNumber() / 10,
+                            new Vec3d(mc.player.sidewaysSpeed, 0, mc.player.forwardSpeed));
+
+                    double vel = Math.abs(mc.player.getVelocity().getX()) + Math.abs(mc.player.getVelocity().getZ());
+
+                    if (mc.player.isOnGround()) {
+                        mc.player.updateVelocity(vel >= 0.3 ? 0.0f : 0.15f, new Vec3d(mc.player.sidewaysSpeed, 0, mc.player.forwardSpeed));
+                        mc.player.jump();
+                    }
                 }
+                break;
+            case "OnGround":
+                if (mc.options.keyJump.isPressed() || mc.player.fallDistance > 0.25)
+                    return;
 
-                mc.player.setVelocity(new Vec3d(0, mc.player.getVelocity().y, 0));
-                mc.player.updateVelocity((float) strafe.getNumber() / 10,
-                        new Vec3d(mc.player.sidewaysSpeed, 0, mc.player.forwardSpeed));
-
-                double vel = Math.abs(mc.player.getVelocity().getX()) + Math.abs(mc.player.getVelocity().getZ());
-
-                if (mc.player.isOnGround()) {
-                    mc.player.updateVelocity(vel >= 0.3 ? 0.0f : 0.15f, new Vec3d(mc.player.sidewaysSpeed, 0, mc.player.forwardSpeed));
-                    mc.player.jump();
-                }
-            }
-
-            /* OnGround */
-        } else if (mode.getMode() == "OnGround") {
-            if (mc.options.keyJump.isPressed() || mc.player.fallDistance > 0.25)
-                return;
-
-            double speeds = 0.85 + speed.getNumber() / 30;
-
-            if (jumping && mc.player.getY() >= mc.player.prevY + 0.399994D) {
-                mc.player.setVelocity(mc.player.getVelocity().x, -0.9, mc.player.getVelocity().z);
-                mc.player.setPos(mc.player.getX(), mc.player.prevY, mc.player.getZ());
-                jumping = false;
-            }
-
-            if (mc.player.forwardSpeed != 0.0F && !mc.player.horizontalCollision) {
-                if (mc.player.verticalCollision) {
-                    mc.player.setVelocity(mc.player.getVelocity().x * speeds, mc.player.getVelocity().y, mc.player.getVelocity().z * speeds);
-                    jumping = true;
-                    mc.player.jump();
-                    // 1.0379
-                }
+                double speeds = 0.85 + speed.getNumber() / 30;
 
                 if (jumping && mc.player.getY() >= mc.player.prevY + 0.399994D) {
-                    mc.player.setVelocity(mc.player.getVelocity().x, -100, mc.player.getVelocity().z);
+                    mc.player.setVelocity(mc.player.getVelocity().x, -0.9, mc.player.getVelocity().z);
+                    mc.player.setPos(mc.player.getX(), mc.player.prevY, mc.player.getZ());
                     jumping = false;
                 }
 
-            }
+                if (mc.player.forwardSpeed != 0.0F && !mc.player.horizontalCollision) {
+                    if (mc.player.verticalCollision) {
+                        mc.player.setVelocity(mc.player.getVelocity().x * speeds, mc.player.getVelocity().y, mc.player.getVelocity().z * speeds);
+                        jumping = true;
+                        mc.player.jump();
+                        // 1.0379
+                    }
 
-            /* MiniHop */
-        } else if (mode.getMode() == "MiniHop") {
-            if (mc.player.horizontalCollision || mc.options.keyJump.isPressed() || mc.player.forwardSpeed == 0)
-                return;
+                    if (jumping && mc.player.getY() >= mc.player.prevY + 0.399994D) {
+                        mc.player.setVelocity(mc.player.getVelocity().x, -100, mc.player.getVelocity().z);
+                        jumping = false;
+                    }
 
-            double speeds = 0.9 + speed.getNumber() / 30;
+                }
+                break;
+            case "MiniHop":
+                if (mc.player.horizontalCollision || mc.options.keyJump.isPressed() || mc.player.forwardSpeed == 0)
+                    return;
 
-            if (mc.player.isOnGround()) {
-                mc.player.jump();
-            } else if (mc.player.getVelocity().y > 0) {
-                mc.player.setVelocity(mc.player.getVelocity().x * speeds, -1, mc.player.getVelocity().z * speeds);
-                mc.player.input.movementSideways += 1.5F;
-            }
+                double speedss = 0.9 + speed.getNumber() / 30;
 
-            /* Bhop */
-        } else if (mode.getMode() == "BHop") {
-            if (mc.player.forwardSpeed > 0 && mc.player.isOnGround()) {
-                double speeds = 0.65 + speed.getNumber() / 30;
+                if (mc.player.isOnGround()) {
+                    mc.player.jump();
+                } else if (mc.player.getVelocity().y > 0) {
+                    mc.player.setVelocity(mc.player.getVelocity().x * speedss, -1, mc.player.getVelocity().z * speedss);
+                    mc.player.input.movementSideways += 1.5F;
+                }
+                break;
+            case "BHop":
+                if (mc.player.forwardSpeed > 0 && mc.player.isOnGround()) {
+                    double speedsss = 0.65 + speed.getNumber() / 30;
 
-                mc.player.jump();
-                mc.player.setVelocity(mc.player.getVelocity().x * speeds, 0.255556, mc.player.getVelocity().z * speeds);
-                mc.player.sidewaysSpeed += 3.0F;
-                mc.player.jump();
-                mc.player.setSprinting(true);
-            }
+                    mc.player.jump();
+                    mc.player.setVelocity(mc.player.getVelocity().x * speedsss, 0.255556, mc.player.getVelocity().z * speedsss);
+                    mc.player.sidewaysSpeed += 3.0F;
+                    mc.player.jump();
+                    mc.player.setSprinting(true);
+                }
+                break;
+
         }
     }
 
