@@ -145,7 +145,7 @@ public class Nametags extends Module {
                 for (int i = 0; i < e.getHealth(); i++)
                     health += Formatting.GREEN + "|";
                 /* - Add Red Empty Health (Remove Based on absorption amount) */
-                for (int i = 0; i < MathHelper.clamp(e.getAbsorptionAmount(), 0, e.getMaxHealth() - e.getHealth()); i++)
+                for (int i = 0; i < e.getAbsorptionAmount(); i++)
                     health += Formatting.YELLOW + "|";
                 /* - Add Yellow Absorption Health */
                 for (int i = 0; i < e.getMaxHealth() - (e.getHealth() + e.getAbsorptionAmount()); i++)
