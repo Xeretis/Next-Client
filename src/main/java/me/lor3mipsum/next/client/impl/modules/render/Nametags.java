@@ -115,12 +115,12 @@ public class Nametags extends Module {
     }
 
     private void addPlayerNameHealthLine(List<String> lines, PlayerEntity player, Formatting color, boolean addName, boolean addHealth, boolean addPing, boolean addGm, boolean addDist) {
-        PlayerListEntry playerEntry = mc.player.networkHandler.getPlayerListEntry(mc.player.getGameProfile().getId());
+        PlayerListEntry playerListEntry = mc.getNetworkHandler().getPlayerListEntry(player.getUuid());
 
-        String pingText = addPing && playerEntry != null ? Formatting.GOLD.toString() + playerEntry.getLatency() + "ms" : "";
+        String pingText = addPing && playerListEntry != null ? Formatting.GOLD.toString() + playerListEntry.getLatency() + "ms" : "";
         String nameText = addName ? color + player.getName().getString() : "";
-        String gmText = addGm && playerEntry != null ?
-                Formatting.GRAY + "[" + playerEntry.getGameMode().toString().substring(0, playerEntry.getGameMode() == GameMode.SPECTATOR ? 2 : 1) + "]" : "";
+        String gmText = addGm && playerListEntry != null ?
+                Formatting.GRAY + "[" + playerListEntry.getGameMode().toString().substring(0, playerListEntry.getGameMode() == GameMode.SPECTATOR ? 2 : 1) + "]" : "";
 
         double dist = Math.round(mc.player.distanceTo(player) * 10.0) / 10.0;
         String distText = addDist ? getDistanceColor(dist) + String.valueOf(dist) + "m" : "";
