@@ -29,6 +29,7 @@ public class SpeedModule extends Module {
 
     @EventTarget
     public void onTick(TickEvent.Post event) {
+
         if (mc.options.keySneak.isPressed() && sneak.isOn())
             return;
 

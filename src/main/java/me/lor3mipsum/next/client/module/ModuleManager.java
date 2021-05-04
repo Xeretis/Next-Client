@@ -13,10 +13,7 @@ import me.lor3mipsum.next.client.impl.modules.exploit.NoEntityTrace;
 import me.lor3mipsum.next.client.impl.modules.hud.*;
 import me.lor3mipsum.next.client.impl.modules.movement.*;
 import me.lor3mipsum.next.client.impl.modules.player.*;
-import me.lor3mipsum.next.client.impl.modules.render.BreakIndicator;
-import me.lor3mipsum.next.client.impl.modules.render.CustomFOV;
-import me.lor3mipsum.next.client.impl.modules.render.Fullbright;
-import me.lor3mipsum.next.client.impl.modules.render.NoRender;
+import me.lor3mipsum.next.client.impl.modules.render.*;
 import me.lor3mipsum.next.client.setting.SettingManager;
 
 import java.util.ArrayList;
@@ -59,6 +56,7 @@ public class ModuleManager {
         addModule(new BreakIndicator());
         addModule(new CustomFOV());
         addModule(new NoRender());
+        addModule(new ItemViewModel());
         //Player
         addModule(new FastUse());
         addModule(new DeathCoords());

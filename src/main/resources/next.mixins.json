@@ -35,7 +35,8 @@
     "PickaxeItemAccessor",
     "ShovelItemAccessor",
     "ClientPlayerInteractionManagerMixin",
-    "PlayerMoveC2SPacketAccessor"
+    "PlayerMoveC2SPacketAccessor",
+    "ItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
