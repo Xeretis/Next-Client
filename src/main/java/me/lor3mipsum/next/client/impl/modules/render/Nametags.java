@@ -138,23 +138,23 @@ public class Nametags extends Module {
     }
 
     private String getHealthText(LivingEntity e) {
-        if (hpMode.getMode() == "Bar") {
-            /* Health bar */
-            String health = "";
-            /* - Add Green Normal Health */
-            for (int i = 0; i < e.getHealth(); i++)
-                health += Formatting.GREEN + "|";
-            /* - Add Red Empty Health (Remove Based on absorption amount) */
-            for (int i = 0; i < MathHelper.clamp(e.getAbsorptionAmount(), 0, e.getMaxHealth() - e.getHealth()); i++)
-                health += Formatting.YELLOW + "|";
-            /* - Add Yellow Absorption Health */
-            for (int i = 0; i < e.getMaxHealth() - (e.getHealth() + e.getAbsorptionAmount()); i++)
-                health += Formatting.RED + "|";
+        switch (hpMode.getMode()) {
+            case "Bar":
+                String health = "";
+                /* - Add Green Normal Health */
+                for (int i = 0; i < e.getHealth(); i++)
+                    health += Formatting.GREEN + "|";
+                /* - Add Red Empty Health (Remove Based on absorption amount) */
+                for (int i = 0; i < MathHelper.clamp(e.getAbsorptionAmount(), 0, e.getMaxHealth() - e.getHealth()); i++)
+                    health += Formatting.YELLOW + "|";
+                /* - Add Yellow Absorption Health */
+                for (int i = 0; i < e.getMaxHealth() - (e.getHealth() + e.getAbsorptionAmount()); i++)
+                    health += Formatting.RED + "|";
 
-            return health;
+                return health;
+            default:
+                return getHealthColor(e).toString() + (int) (e.getHealth() + e.getAbsorptionAmount());
         }
-
-        return getHealthColor(e).toString() + (int) (e.getHealth() + e.getAbsorptionAmount());
     }
 
     private Formatting getHealthColor(LivingEntity entity) {

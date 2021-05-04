@@ -59,9 +59,11 @@ public class Freecam extends Module {
 
     @Override
     public void onDisable() {
+
         mc.chunkCullingEnabled = true;
 
-        dummy.despawn();
+        if (dummy != null)
+            dummy.despawn();
         mc.player.noClip = false;
         mc.player.abilities.flying = prevFlying;
         mc.player.abilities.setFlySpeed(prevFlySpeed);
