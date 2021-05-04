@@ -36,7 +36,9 @@
     "ShovelItemAccessor",
     "ClientPlayerInteractionManagerMixin",
     "PlayerMoveC2SPacketAccessor",
-    "ItemRendererMixin"
+    "ItemRendererMixin",
+    "EntityRendererMixin",
+    "EntityRendererDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

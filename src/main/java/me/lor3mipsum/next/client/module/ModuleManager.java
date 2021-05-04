@@ -57,6 +57,7 @@ public class ModuleManager {
         addModule(new CustomFOV());
         addModule(new NoRender());
         addModule(new ItemViewModel());
+        addModule(new Nametags());
         //Player
         addModule(new FastUse());
         addModule(new DeathCoords());
