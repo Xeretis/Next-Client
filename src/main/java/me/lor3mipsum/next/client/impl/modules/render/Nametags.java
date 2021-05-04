@@ -120,7 +120,7 @@ public class Nametags extends Module {
         String pingText = addPing && playerListEntry != null ? Formatting.GOLD.toString() + playerListEntry.getLatency() + "ms" : "";
         String nameText = addName ? color + player.getName().getString() : "";
         String gmText = addGm && playerListEntry != null ?
-                Formatting.GRAY + "[" + playerListEntry.getGameMode().toString().substring(0, playerListEntry.getGameMode() == GameMode.SPECTATOR ? 2 : 1) + "]" : "";
+                Formatting.GRAY + " [" + playerListEntry.getGameMode().toString().substring(0, playerListEntry.getGameMode() == GameMode.SPECTATOR ? 2 : 1) + "]" : "";
 
         double dist = Math.round(mc.player.distanceTo(player) * 10.0) / 10.0;
         String distText = addDist ? getDistanceColor(dist) + String.valueOf(dist) + "m" : "";
