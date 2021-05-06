@@ -27,11 +27,13 @@ dependencies {
 	include "com.github.Vatuu:discord-rpc:${project.discord_rpc_version}"
 	include "com.github.ZeroMemes:Alpine:${project.alpine_version}"
 	include "org.yaml:snakeyaml:${project.snakeyaml_version}"
+	include "org.reflections:reflections:${project.reflections_version}"
 
 	//implementations
 	modImplementation "com.github.Vatuu:discord-rpc:${project.discord_rpc_version}"
 	modImplementation "com.github.ZeroMemes:Alpine:${project.alpine_version}"
 	modImplementation "org.yaml:snakeyaml:${project.snakeyaml_version}"
+	modImplementation "org.reflections:reflections:${project.reflections_version}"
 
 	//runtime
 	modRuntime "com.terraformersmc:modmenu:${project.mod_menu_version}"
