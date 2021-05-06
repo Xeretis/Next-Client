@@ -36,6 +36,7 @@ public class ModuleManager implements Listenable {
         for (Class<? extends Module> moduleClass : featureClasses) {
             if (moduleClass.isAnnotationPresent(Mod.class)) {
                 Module loadedFeature = moduleClass.newInstance();
+                Main.settingManager.registerObject(loadedFeature.getName(), loadedFeature);
                 modules.add(loadedFeature);
             }
         }
