@@ -8,7 +8,16 @@
   "client": [
     "KeyboardMixin",
     "ClientConnectionMixin",
-    "ParticleManagerMixin"
+    "ParticleManagerMixin",
+    "WorldRendererMixin",
+    "EntityRendererMixin",
+    "EntityRendererDispatcherMixin",
+    "BlockEntityRenderDispatcherMixin",
+    "InGameHudMixin",
+    "GameRendererMixin",
+    "ScreenMixin",
+    "BossBarHudMixin",
+    "MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

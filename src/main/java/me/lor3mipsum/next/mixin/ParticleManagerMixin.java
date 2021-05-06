@@ -15,35 +15,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ParticleManager.class)
 public class ParticleManagerMixin {
     @Inject(method = "addParticle(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
-    public void addParticle(Particle particle, CallbackInfo ci) {
+    public void addParticle(Particle particle, CallbackInfo info) {
         ParticleNormalEvent event = new ParticleNormalEvent(particle);
 
         Main.EVENT_BUS.post(event);
 
         if (event.isCancelled()) {
-            ci.cancel();
+            info.cancel();
         }
     }
 
     @Inject(method = "addEmitter(Lnet/minecraft/entity/Entity;Lnet/minecraft/particle/ParticleEffect;)V", at = @At("HEAD"), cancellable = true)
-    public void addEmitter(Entity entity, ParticleEffect particleEffect, CallbackInfo ci) {
+    public void addEmitter(Entity entity, ParticleEffect particleEffect, CallbackInfo info) {
         ParticleEmitterEvent event = new ParticleEmitterEvent(particleEffect);
 
         Main.EVENT_BUS.post(event);
 
         if (event.isCancelled()) {
-            ci.cancel();
+            info.cancel();
         }
     }
 
     @Inject(method = "addEmitter(Lnet/minecraft/entity/Entity;Lnet/minecraft/particle/ParticleEffect;I)V", at = @At("HEAD"), cancellable = true)
-    public void addEmitter_(Entity entity, ParticleEffect particleEffect, int maxAge, CallbackInfo ci) {
+    public void addEmitter_(Entity entity, ParticleEffect particleEffect, int maxAge, CallbackInfo info) {
         ParticleEmitterEvent event = new ParticleEmitterEvent(particleEffect);
 
         Main.EVENT_BUS.post(event);
 
         if (event.isCancelled()) {
-            ci.cancel();
+            info.cancel();
         }
     }
 }
