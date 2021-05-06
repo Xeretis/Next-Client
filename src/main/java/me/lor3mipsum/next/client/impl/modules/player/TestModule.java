@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.util.client.ChatUtils;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
@@ -11,6 +12,7 @@ public class TestModule extends Module {
     @Override
     public void onEnable() {
         Main.LOG.info("TestModule enabled");
+        ChatUtils.sendMessage("hey");
     }
 
     @Override
