@@ -1,7 +1,7 @@
 package me.lor3mipsum.next.mixin;
 
 import me.lor3mipsum.next.Main;
-import me.lor3mipsum.next.api.event.game.PlaySoundEvent;
+import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundSystem;
 import org.spongepowered.asm.mixin.Mixin;

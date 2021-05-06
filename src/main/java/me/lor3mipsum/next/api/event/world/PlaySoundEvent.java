@@ -1,4 +1,4 @@
-package me.lor3mipsum.next.api.event.game;
+package me.lor3mipsum.next.api.event.world;
 
 import me.lor3mipsum.next.api.event.NextEvent;
 import net.minecraft.client.sound.SoundInstance;

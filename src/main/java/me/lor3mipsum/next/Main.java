@@ -17,6 +17,8 @@ public class Main implements ModInitializer {
 
 	public static ModuleManager moduleManager;
 
+	public static String prefix = ".";
+
 	@Override
 	public void onInitialize() {
 		LOG.info("Initializing the client");
