@@ -12,7 +12,7 @@ public class TestModule extends Module {
     @Override
     public void onEnable() {
         Main.LOG.info("TestModule enabled");
-        ChatUtils.sendMessage("hey");
+        ChatUtils.moduleInfo(this, "hey");
     }
 
     @Override
