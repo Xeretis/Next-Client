@@ -4,6 +4,7 @@ import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.entity.EntityDestroyEvent;
 import me.lor3mipsum.next.api.event.game.GameJoinedEvent;
 import me.lor3mipsum.next.api.event.game.GameLeftEvent;
+import me.lor3mipsum.next.api.event.network.ContainerSlotUpdateEvent;
 import me.lor3mipsum.next.api.event.network.PlaySoundPacketEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -11,6 +12,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -49,5 +51,10 @@ public class ClientPlayNetworkHandlerMixin {
     @Inject(method = "onEntitiesDestroy", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;removeEntity(I)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onEntityDestroy(EntitiesDestroyS2CPacket packet, CallbackInfo info, int i, int j) {
         Main.EVENT_BUS.post(new EntityDestroyEvent(client.world.getEntityById(j)));
+    }
+
+    @Inject(method = "onScreenHandlerSlotUpdate", at = @At("TAIL"))
+    private void onContainerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo info) {
+        Main.EVENT_BUS.post(new ContainerSlotUpdateEvent(packet));
     }
 }

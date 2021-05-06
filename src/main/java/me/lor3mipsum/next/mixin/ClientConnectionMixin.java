@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.mixin;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.event.network.ConnectToServerEvent;
 import me.lor3mipsum.next.api.event.network.PacketReciveEvent;
 import me.lor3mipsum.next.api.event.network.PacketSendEvent;
 import me.lor3mipsum.next.api.event.network.PacketSentEvent;
@@ -11,6 +12,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.net.InetAddress;
 
 @Mixin(ClientConnection.class)
 public class ClientConnectionMixin {
@@ -37,5 +41,10 @@ public class ClientConnectionMixin {
     @Inject(method = "send(Lnet/minecraft/network/Packet;)V", at = @At("TAIL"))
     private void onSendPacketTail(Packet<?> packet, CallbackInfo info) {
         Main.EVENT_BUS.post(new PacketSentEvent(packet));
+    }
+
+    @Inject(method = "connect", at = @At("HEAD"))
+    private static void onConnect(InetAddress address, int port, boolean shouldUseNativeTransport, CallbackInfoReturnable<ClientConnection> info) {
+        Main.EVENT_BUS.post(new ConnectToServerEvent());
     }
 }
