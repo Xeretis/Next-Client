@@ -55,7 +55,7 @@ public class SettingManager {
 
         if (found == null) return null;
 
-        return found.stream().filter(val -> name.equalsIgnoreCase(name)).findFirst().orElse(null);
+        return found.stream().filter(val -> val.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     public Setting get(Class<? extends Module> module, String name) {
@@ -63,6 +63,6 @@ public class SettingManager {
 
         if (found == null) return null;
 
-        return found.stream().filter(val -> name.equalsIgnoreCase(name)).findFirst().orElse(null);
+        return found.stream().filter(val -> val.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 }

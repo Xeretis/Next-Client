@@ -1,6 +1,5 @@
 package me.lor3mipsum.next;
 
-import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.SettingManager;
 import me.zero.alpine.bus.EventBus;
