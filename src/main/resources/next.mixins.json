@@ -25,7 +25,9 @@
     "ItemStackMixin",
     "MouseMixin",
     "WorldChunkMixin",
-    "ClientPlayNetworkHandlerMixin"
+    "ClientPlayNetworkHandlerMixin",
+    "ClientWorldMixin",
+    "LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
