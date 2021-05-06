@@ -7,7 +7,8 @@
   ],
   "client": [
     "KeyboardMixin",
-    "ClientConnectionMixin"
+    "ClientConnectionMixin",
+    "ParticleManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
