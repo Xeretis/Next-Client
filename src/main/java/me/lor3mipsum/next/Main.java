@@ -8,11 +8,14 @@ import org.apache.logging.log4j.LogManager;
 
 public class Main implements ModInitializer {
 
+	public static Main INSTANCE;
+
 	public static final Logger LOG = LogManager.getLogger("Next");
 	public static final EventBus EVENT_BUS = new EventManager();
 
 	@Override
 	public void onInitialize() {
+		INSTANCE = new Main();
 		LOG.info("Initializing the client");
 	}
 }
