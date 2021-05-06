@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.event.client.KeyEvent;
+import me.lor3mipsum.next.api.util.client.KeyboardUtils;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
+import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
+import me.zero.alpine.listener.Listener;
+import net.minecraft.client.MinecraftClient;
 import org.reflections.Reflections;
 
 import java.util.Set;
@@ -60,4 +65,13 @@ public class ModuleManager implements Listenable {
     public Module getModule(String name, boolean caseSensitive) {
         return modules.stream().filter(mod -> !caseSensitive && name.equalsIgnoreCase(mod.getName()) || name.equals(mod.getName())).findFirst().orElse(null);
     }
+
+    @EventHandler
+    private Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (event.action == KeyboardUtils.KeyAction.Repeat || event.action == KeyboardUtils.KeyAction.Release) return;
+        if (MinecraftClient.getInstance().currentScreen == null)
+            for(Module mod : modules)
+                if (mod.getBind() == event.key)
+                    mod.toggle();
+    });
 }
