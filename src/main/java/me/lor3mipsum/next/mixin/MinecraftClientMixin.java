@@ -17,8 +17,7 @@ public class MinecraftClientMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             info.cancel();
-        }
     }
 }

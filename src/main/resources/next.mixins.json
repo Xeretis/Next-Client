@@ -17,7 +17,8 @@
     "GameRendererMixin",
     "ScreenMixin",
     "BossBarHudMixin",
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "SoundSystemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

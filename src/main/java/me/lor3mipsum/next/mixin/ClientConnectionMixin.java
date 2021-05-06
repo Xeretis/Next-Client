@@ -20,7 +20,8 @@ public class ClientConnectionMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) info.cancel();
+        if (event.isCancelled())
+            info.cancel();
     }
 
     @Inject(at = @At("HEAD"), method = "send(Lnet/minecraft/network/Packet;)V", cancellable = true)
@@ -29,7 +30,8 @@ public class ClientConnectionMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) info.cancel();
+        if (event.isCancelled())
+            info.cancel();
     }
 
     @Inject(method = "send(Lnet/minecraft/network/Packet;)V", at = @At("TAIL"))

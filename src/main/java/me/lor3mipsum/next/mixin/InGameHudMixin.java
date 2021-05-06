@@ -24,8 +24,7 @@ public class InGameHudMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             info.cancel();
-        }
     }
 }

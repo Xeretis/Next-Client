@@ -20,9 +20,8 @@ public class ParticleManagerMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             info.cancel();
-        }
     }
 
     @Inject(method = "addEmitter(Lnet/minecraft/entity/Entity;Lnet/minecraft/particle/ParticleEffect;)V", at = @At("HEAD"), cancellable = true)
@@ -31,9 +30,8 @@ public class ParticleManagerMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             info.cancel();
-        }
     }
 
     @Inject(method = "addEmitter(Lnet/minecraft/entity/Entity;Lnet/minecraft/particle/ParticleEffect;I)V", at = @At("HEAD"), cancellable = true)
@@ -42,8 +40,7 @@ public class ParticleManagerMixin {
 
         Main.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             info.cancel();
-        }
     }
 }
