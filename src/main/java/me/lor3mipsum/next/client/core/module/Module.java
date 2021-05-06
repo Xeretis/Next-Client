@@ -1,6 +1,8 @@
 package me.lor3mipsum.next.client.core.module;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.event.module.ModuleDisableEvent;
+import me.lor3mipsum.next.api.event.module.ModuleEnableEvent;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.zero.alpine.listener.Listenable;
 import net.minecraft.client.MinecraftClient;
@@ -35,10 +37,12 @@ public class Module implements Listenable {
         if (enabled) {
             this.enabled = true;
             Main.EVENT_BUS.subscribe(this);
+            Main.EVENT_BUS.post(new ModuleEnableEvent(this));
             onEnable();
         } else {
             this.enabled = false;
             Main.EVENT_BUS.unsubscribe(this);
+            Main.EVENT_BUS.post(new ModuleDisableEvent(this));
             onDisable();
         }
     }
