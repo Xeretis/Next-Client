@@ -83,10 +83,6 @@ public class NextGui extends MinecraftHUDGUI {
 
         theme = new NextTheme(new NextColorScheme(true),FONT_HEIGHT,3,5,": " + Formatting.GRAY);
 
-        for(Setting s : Main.settingManager.getAllSettingsFrom(clickGuiModule.getClass()))
-            System.out.println(s.getName());
-        System.out.println(Main.moduleManager.getModulesInCategory(Category.CLIENT));
-
         client = () -> Arrays.stream(Category.values()).sorted(Comparator.comparing(Category::toString)).map(category -> new ICategory() {
             @Override
             public String getDisplayName() {
@@ -574,8 +570,7 @@ public class NextGui extends MinecraftHUDGUI {
 
                 @Override
                 public boolean hasHSBModel() {
-                    //TODO: Different types
-                    return false;
+                    return Main.moduleManager.getModule(ClickGuiModule.class).colorMode.getValue() == ClickGuiModule.ColorMode.HSB;
                 }
 
                 @Override

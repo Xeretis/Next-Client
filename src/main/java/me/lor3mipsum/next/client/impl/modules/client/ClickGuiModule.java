@@ -15,8 +15,8 @@ import org.lwjgl.glfw.GLFW;
 @Mod(name = "ClickGui", description = "What you are currently looking at", category = Category.CLIENT, bind = GLFW.GLFW_KEY_RIGHT_SHIFT)
 public class ClickGuiModule extends Module {
     public enum DescriptionMode {
-        Fixed,
-        Mouse
+        Mouse,
+        Fixed
     }
 
     public enum ScrollMode {
@@ -24,10 +24,16 @@ public class ClickGuiModule extends Module {
         Screen
     }
 
+    public enum ColorMode {
+        RGB,
+        HSB
+    }
+
     public IntegerSetting animationSpeed = new IntegerSetting("Animation Speed", 10, 0, 100);
     public IntegerSetting scrollSpeed = new IntegerSetting("Scroll Speed", 10, 0, 100);
     public EnumSetting<ScrollMode> scrollMode = new EnumSetting<ScrollMode>("Scroll Mode", ScrollMode.Container);
     public EnumSetting<DescriptionMode> descriptionMode = new EnumSetting<>("Desc Mode", DescriptionMode.Mouse);
+    public EnumSetting<ColorMode> colorMode = new EnumSetting<>("Color Mode", ColorMode.RGB);
     public BooleanSetting csgoLayout = new BooleanSetting("CSGO Layout", false);
 
     public SettingSeparator colorSep = new SettingSeparator("Colors");
