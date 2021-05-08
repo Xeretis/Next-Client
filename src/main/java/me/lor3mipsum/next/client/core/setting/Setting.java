@@ -54,4 +54,8 @@ public abstract class Setting<T> {
     public Object getDefault() {
         return defaultVal;
     }
+
+    public boolean getVisible() {
+        return visible;
+    }
 }

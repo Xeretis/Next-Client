@@ -10,8 +10,8 @@ import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
 import org.lwjgl.glfw.GLFW;
 
-@Mod(name = "TestModule", description = "Test description", category = Category.PLAYER, bind = GLFW.GLFW_KEY_R)
-public class TestModule extends Module {
+@Mod(name = "TestModule2", description = "Test description", category = Category.PLAYER, bind = GLFW.GLFW_KEY_R)
+public class TestModule2 extends Module {
     public enum TestEnum {
         Val1,
         Val2,

@@ -4,33 +4,33 @@ import me.lor3mipsum.next.client.core.setting.Setting;
 
 import java.util.function.Predicate;
 
-public class NumberSetting<T extends Number> extends Setting<T> {
-    private T min;
-    private T max;
+public class IntegerSetting extends Setting<Integer> {
+    private int min;
+    private int max;
 
-    public NumberSetting(String name, T defaultVal, T min, T max) {
+    public IntegerSetting(String name, int defaultVal, int min, int max) {
         super(name, defaultVal);
         this.min = min;
         this.max = max;
     }
 
-    public NumberSetting(String name, T defaultVal, T min, T max, boolean visible) {
+    public IntegerSetting(String name, int defaultVal,int min, int max, boolean visible) {
         super(name, defaultVal, visible);
         this.min = min;
         this.max = max;
     }
 
-    public NumberSetting(String name, T defaultVal, T min, T max, boolean visible, Predicate<T> validator) {
+    public IntegerSetting(String name, int defaultVal, int min, int max, boolean visible, Predicate<Integer> validator) {
         super(name, defaultVal, visible, validator);
         this.min = min;
         this.max = max;
     }
 
-    public T getMin() {
+    public int getMin() {
         return min;
     }
 
-    public T getMax() {
+    public int getMax() {
         return max;
     }
 }

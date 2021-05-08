@@ -51,6 +51,14 @@ public class Module implements Listenable {
         setEnabled(!enabled);
     }
 
+    public void setDrawn(boolean drawn) {
+        this.drawn = drawn;
+    }
+
+    public void setBind(int bind) {
+        this.bind = bind;
+    }
+
     //Getters
     public String getName() {
         return name;

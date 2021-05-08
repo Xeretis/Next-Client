@@ -1,5 +1,6 @@
 package me.lor3mipsum.next;
 
+import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.SettingManager;
 import me.zero.alpine.bus.EventBus;
@@ -16,7 +17,8 @@ public class Main implements ModInitializer {
 	public static final EventBus EVENT_BUS = new EventManager();
 
 	public static ModuleManager moduleManager;
-	public  static SettingManager settingManager;
+	public static SettingManager settingManager;
+	public static NextGui clickGui;
 
 	public static String prefix = ".";
 
@@ -29,5 +31,8 @@ public class Main implements ModInitializer {
 
 		moduleManager = new ModuleManager();
 		LOG.info("Initialized the module manager");
+
+		clickGui = new NextGui();
+		LOG.info("Initialized the clickgui");
 	}
 }

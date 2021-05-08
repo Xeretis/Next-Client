@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.client.core.setting;
 
 import me.lor3mipsum.next.client.core.module.Module;
+import me.lor3mipsum.next.client.core.module.annotation.Mod;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -32,6 +33,10 @@ public class SettingManager {
         settingMap.put(name, values);
     }
 
+    public void registerSetting(String name, Setting value) {
+        settingMap.get(name).add(value);
+    }
+
     public List<Setting> getAllSettingsFrom(String name) {
         for (Map.Entry<String, List<Setting>> stringListEntry : settingMap.entrySet()) {
             if (stringListEntry.getKey().equalsIgnoreCase(name)) return stringListEntry.getValue();
@@ -41,7 +46,7 @@ public class SettingManager {
 
     public List<Setting> getAllSettingsFrom(Class<? extends Module> module) {
         for (Map.Entry<String, List<Setting>> stringListEntry : settingMap.entrySet()) {
-            if (stringListEntry.getKey().equalsIgnoreCase(module.getName())) return stringListEntry.getValue();
+            if (stringListEntry.getKey().equalsIgnoreCase(module.getAnnotation(Mod.class).name())) return stringListEntry.getValue();
         }
         return null;
     }
