@@ -37,11 +37,12 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class NextGui extends MinecraftHUDGUI {
-    public static final int WIDTH = 100, HEIGHT = 12, FONT_HEIGHT = 9, DISTANCE = 10, HUD_BORDER = 2;
+    public static final int WIDTH = 120, HEIGHT = 12, FONT_HEIGHT = 9, DISTANCE = 10, HUD_BORDER = 2;
 
     public static IClient client;
     public static GUIInterface guiInterface;
@@ -184,6 +185,23 @@ public class NextGui extends MinecraftHUDGUI {
             }
         });
 
+        IntFunction<IResizable> resizable =  width -> new IResizable() {
+            Dimension size = new Dimension(width, 320);
+
+            @Override
+            public Dimension getSize() {
+                return new Dimension(size);
+            }
+
+            @Override
+            public void setSize(Dimension size) {
+                this.size.width = size.width;
+                this.size.height = size.height;
+//                if (size.width < 75) this.size.width = 75;
+//                if (size.height<50) this.size.height = 50;
+            }
+        };
+
         //HUD
 
         //GUI
@@ -234,6 +252,11 @@ public class NextGui extends MinecraftHUDGUI {
             }
         }, false, () -> !clickGuiModule.csgoLayout.getValue(), title -> title) {
             @Override
+            protected IResizable getResizable (int width) {
+                return resizable.apply(width);
+            }
+
+            @Override
             protected IScrollSize getScrollSize(IResizable size) {
                 return new IScrollSize() {
                     @Override
@@ -252,7 +275,7 @@ public class NextGui extends MinecraftHUDGUI {
 
             @Override
             public IComponent getColorComponent (IColorSetting setting, Supplier<Animation> animation, ThemeTuple theme, int colorLevel, boolean isContainer) {
-                return new NextColorComponent((IColorSetting)setting,animation.get(),new ThemeTuple(theme.theme,theme.logicalLevel,colorLevel));
+                return new NextColorComponent(setting,animation.get(),new ThemeTuple(theme.theme,theme.logicalLevel,colorLevel));
             }
 
         };
@@ -260,7 +283,12 @@ public class NextGui extends MinecraftHUDGUI {
         classicPanelLayout.populateGUI(classicPanelAdder,generator,client,theme);
 
         PopupTuple colorPopup=new PopupTuple(new CenteredPositioner(()->new Rectangle(new Point(0,0),guiInterface.getWindowSize())),true,new IScrollSize() {});
-        IComponentAdder horizontalCSGOAdder=new PanelAdder(gui,true,()->clickGuiModule.csgoLayout.getValue(),title->title);
+        IComponentAdder horizontalCSGOAdder=new PanelAdder(gui,true,()->clickGuiModule.csgoLayout.getValue(),title->title) {
+            @Override
+            protected IResizable getResizable (int width) {
+                return resizable.apply(width);
+            }
+        };
         ILayout horizontalCSGOLayout=new CSGOLayout(new Labeled("Next Client",null,()->true),new Point(100,100),480,WIDTH,animation,"Enabled",true,true,2, ChildUtil.ChildMode.DOWN,colorPopup) {
             @Override
             public int getScrollHeight (Context context, int componentHeight) {
@@ -295,7 +323,7 @@ public class NextGui extends MinecraftHUDGUI {
             return new IBooleanSetting() {
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " + setting.getName();
                 }
 
                 @Override
@@ -324,7 +352,7 @@ public class NextGui extends MinecraftHUDGUI {
             return new INumberSetting() {
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " +  setting.getName();
                 }
 
                 @Override
@@ -366,7 +394,7 @@ public class NextGui extends MinecraftHUDGUI {
             return new INumberSetting() {
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " +  setting.getName();
                 }
 
                 @Override
@@ -408,7 +436,7 @@ public class NextGui extends MinecraftHUDGUI {
             return new INumberSetting() {
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " +  setting.getName();
                 }
 
                 @Override
@@ -452,7 +480,7 @@ public class NextGui extends MinecraftHUDGUI {
 
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " +  setting.getName();
                 }
 
                 @Override
@@ -501,7 +529,7 @@ public class NextGui extends MinecraftHUDGUI {
             return new IColorSetting() {
                 @Override
                 public String getDisplayName() {
-                    return Formatting.BOLD + setting.getName();
+                    return "> " + setting.getName();
                 }
 
                 @Override
@@ -574,7 +602,7 @@ public class NextGui extends MinecraftHUDGUI {
 
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " +  setting.getName();
                 }
             };
         } else if (setting instanceof KeyBindSetting) {
@@ -596,7 +624,7 @@ public class NextGui extends MinecraftHUDGUI {
 
                 @Override
                 public String getDisplayName() {
-                    return setting.getName();
+                    return "> " +  setting.getName();
                 }
             };
         }

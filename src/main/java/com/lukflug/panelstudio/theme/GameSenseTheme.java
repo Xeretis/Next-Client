@@ -91,16 +91,6 @@ public class GameSenseTheme extends ThemeBase {
 	public <T> IPanelRenderer<T> getPanelRenderer (Class<T> type, int logicalLevel, int graphicalLevel) {
 		return new IPanelRenderer<T>() {
 			@Override
-			public int getLeft() {
-				return graphicalLevel==0?1:0;
-			}
-			
-			@Override
-			public int getRight() {
-				return graphicalLevel==0?1:0;
-			}
-			
-			@Override
 			public void renderPanelOverlay(Context context, boolean focus, T state, boolean open) {
 				if (graphicalLevel==0) {
 					Color color=scheme.getColor("Outline Color");

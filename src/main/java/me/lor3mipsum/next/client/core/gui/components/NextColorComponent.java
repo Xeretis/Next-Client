@@ -35,7 +35,7 @@ public class NextColorComponent extends VerticalContainer {
         super(setting,theme.getContainerRenderer(false));
         this.setting=setting;
         this.theme=theme.theme;
-        addComponent(new ToggleSwitch(new Labeled("Rainbow",null,()->setting.allowsRainbow()),new IToggleable() {
+        addComponent(new ToggleSwitch(new Labeled("  > Rainbow",null,()->setting.allowsRainbow()),new IToggleable() {
             @Override
             public boolean isOn() {
                 return setting.getRainbow();
@@ -85,13 +85,13 @@ public class NextColorComponent extends VerticalContainer {
         public String getTitle() {
             switch (value) {
                 case 0:
-                    return (setting.hasHSBModel()?"Hue":"Red");
+                    return (setting.hasHSBModel()?"  > Hue":"  > Red");
                 case 1:
-                    return (setting.hasHSBModel()?"Saturation":"Green");
+                    return (setting.hasHSBModel()?"  > Saturation":"  > Green");
                 case 2:
-                    return (setting.hasHSBModel()?"Brightness":"Blue");
+                    return (setting.hasHSBModel()?"  > Brightness":"  > Blue");
                 case 3:
-                    return (setting.hasHSBModel()?"Opacity":"Alpha");
+                    return (setting.hasHSBModel()?"  > Opacity":"  > Alpha");
             }
             return "";
         }

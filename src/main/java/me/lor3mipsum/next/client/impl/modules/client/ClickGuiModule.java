@@ -5,6 +5,7 @@ import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
+import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.lor3mipsum.next.client.impl.settings.EnumSetting;
@@ -23,11 +24,13 @@ public class ClickGuiModule extends Module {
         Screen
     }
 
-    public IntegerSetting animationSpeed = new IntegerSetting("AnimSpeed", 10, 0, 100);
-    public IntegerSetting scrollSpeed = new IntegerSetting("ScrollSpeed", 10, 0, 100);
-    public EnumSetting<ScrollMode> scrollMode = new EnumSetting<ScrollMode>("Scroll", ScrollMode.Container);
-    public EnumSetting<DescriptionMode> descriptionMode = new EnumSetting<>("Desc", DescriptionMode.Mouse);
+    public IntegerSetting animationSpeed = new IntegerSetting("Animation Speed", 10, 0, 100);
+    public IntegerSetting scrollSpeed = new IntegerSetting("Scroll Speed", 10, 0, 100);
+    public EnumSetting<ScrollMode> scrollMode = new EnumSetting<ScrollMode>("Scroll Mode", ScrollMode.Container);
+    public EnumSetting<DescriptionMode> descriptionMode = new EnumSetting<>("Desc Mode", DescriptionMode.Mouse);
     public BooleanSetting csgoLayout = new BooleanSetting("CSGO Layout", false);
+
+    public SettingSeparator colorSep = new SettingSeparator("Colors");
 
     @Override
     public void onEnable() {

@@ -23,11 +23,11 @@ public class TestModule extends Module {
     public DoubleSetting du = new DoubleSetting("Du", 5.0, 6.0, 7.0);
     public FloatSetting fu = new FloatSetting("Fu", 15f, 14f, 16f);
 
-    public SettingSeparator su = new SettingSeparator();
+    public SettingSeparator su = new SettingSeparator("Setting Separator");
 
     public EnumSetting<TestEnum> en = new EnumSetting<TestEnum>("En", TestEnum.Val1);
     public EnumSetting<TestEnum> in = new EnumSetting<TestEnum>("In", TestEnum.Val1, false);
-    public StringSetting st = new StringSetting("St", "");
+    public StringSetting st = new StringSetting("String", "");
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
 

@@ -23,7 +23,7 @@ public class TestModule2 extends Module {
     public DoubleSetting du = new DoubleSetting("Du", 5.0, 6.0, 7.0);
     public FloatSetting fu = new FloatSetting("Fu", 15f, 14f, 16f);
 
-    public SettingSeparator su = new SettingSeparator();
+    public SettingSeparator su = new SettingSeparator("");
 
     public EnumSetting<TestEnum> en = new EnumSetting<TestEnum>("En", TestEnum.Val1);
     public EnumSetting<TestEnum> in = new EnumSetting<TestEnum>("In", TestEnum.Val1, false);

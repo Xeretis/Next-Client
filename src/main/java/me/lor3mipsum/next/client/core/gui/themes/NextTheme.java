@@ -21,12 +21,13 @@ public class NextTheme extends ThemeBase {
         this.padding=padding;
         this.scroll=scroll;
         this.separator=separator;
-        scheme.createSetting(this,"Main Color","The color for panel outlines.",false,true,new Color(255,0,0),false);
-        scheme.createSetting(this,"Enabled Color","The main color for enabled components.",true,true,new Color(255,0,0,150),false);
-        scheme.createSetting(this,"Disabled Color","The main color for disabled modules.",false,true,new Color(0,0,0),false);
-        scheme.createSetting(this,"Settings Color","The background color for settings.",false,true,new Color(30,30,30),false);
-        scheme.createSetting(this,"Font Color","The main color for text.",false,true,new Color(255,255,255),false);
-        scheme.createSetting(this,"Highlight Color","The color for highlighted text.",false,true,new Color(0,0,255),false);
+        scheme.createSetting(this,"Main Color",null,false,true,new Color(100, 240, 252, 255),false);
+        scheme.createSetting(this,"Enabled Color",null,false,true,new Color(100, 240, 252, 255),false);
+        scheme.createSetting(this,"Disabled Color",null,false,true,new Color(59, 59, 59, 255),false);
+        scheme.createSetting(this,"Settings Color",null,false,true,new Color(100, 100, 100, 255),false);
+        scheme.createSetting(this,"Font Color",null,false,true,new Color(255,255,255),false);
+        scheme.createSetting(this,"Highlight Color",null,false,true,new Color(0,0,255),false);
+        scheme.createSetting(this,"Hover Color",null,true,true,new Color(0, 0, 0, 30),false);
     }
 
     protected void fillBaseRect (Context context, boolean focus, boolean active, int logicalLevel, int graphicalLevel, Color colorState) {
@@ -38,7 +39,7 @@ public class NextTheme extends ThemeBase {
     }
 
     protected void renderOverlay (Context context) {
-        Color color=context.isHovered()?new Color(255,255,255,64):new Color(0,0,0,0);
+        Color color=context.isHovered()?scheme.getColor("Hover Color"):new Color(0,0,0,0);
         context.getInterface().fillRect(context.getRect(),color,color,color,color);
     }
 
@@ -106,7 +107,8 @@ public class NextTheme extends ThemeBase {
 
                 if (graphicalLevel==0 && open) {
                     Color color= scheme.getColor("Main Color");
-                    context.getInterface().fillRect(new Rectangle(context.getPos().x,context.getPos().y+context.getSize().height,context.getSize().width,3),color,color,color,color);
+//                    context.setHeight(context.getSize().height+3);
+//                    context.getInterface().fillRect(new Rectangle(context.getPos().x,context.getPos().y+context.getSize().height-3,context.getSize().width,3),color,color,color,color);
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 12, context.getPos().y + 6, 8, 2), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 9, context.getPos().y + 3, 2, 8), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                 }
@@ -141,10 +143,12 @@ public class NextTheme extends ThemeBase {
     @Override
     public <T> IEmptySpaceRenderer<T> getEmptySpaceRenderer (Class<T> type, int logicalLevel, int graphicalLevel, boolean container) {
         return (context,focus,state)->{
-            if (graphicalLevel==0) {
-                Color color=getBackgroundColor(focus);
-                context.getInterface().fillRect(context.getRect(),color,color,color,color);
-            }
+            Color color;
+            if (container) {
+                if (logicalLevel>0) color=getBackgroundColor(focus);
+                else color=getMainColor(focus,false);
+            } else color=scheme.getColor("Main Color");
+            context.getInterface().fillRect(context.getRect(),color,color,color,color);
         };
     }
 
@@ -161,12 +165,12 @@ public class NextTheme extends ThemeBase {
                 }
                 else if (graphicalLevel == 0)
                     context.getInterface().fillRect(context.getRect(),getMainColor(focus, false), getMainColor(focus, false), getMainColor(focus, false), getMainColor(focus, false));
-                else
-                    context.getInterface().fillRect(context.getRect(),getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus));
-
+                else {
+                    context.getInterface().fillRect(context.getRect(), getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus));
+                }
                 renderOverlay(context);
                 if (type==String.class) context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title+separator+state,getFontColor(focus));
-                else if (graphicalLevel == 0) context.getInterface().drawString(new Point(context.getPos().x+context.getSize().width/2 - context.getInterface().getFontWidth(0, title)/2,context.getRect().y+padding),height,title,getFontColor(focus));
+                else if (graphicalLevel == 0 || type == Void.class) context.getInterface().drawString(new Point(context.getPos().x+context.getSize().width/2 - context.getInterface().getFontWidth(0, title)/2,context.getRect().y+padding),height,title,getFontColor(focus));
                 else context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title,getFontColor(focus));
             }
 
@@ -255,7 +259,7 @@ public class NextTheme extends ThemeBase {
         return new ISliderRenderer() {
             @Override
             public void renderSlider(Context context, String title, String state, boolean focus, double value) {
-                Color colorA=getMainColor(focus,true),colorB=getBackgroundColor(focus);
+                Color colorA=scheme.getColor("Main Color"),colorB=getBackgroundColor(focus);
                 Rectangle rect=getSlideArea(context);
                 int divider=(int)(rect.width*value);
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y,divider,rect.height),colorA,colorA,colorA,colorA);
@@ -319,10 +323,10 @@ public class NextTheme extends ThemeBase {
             @Override
             public int renderTextField (Context context, String title, boolean focus, String content, int position, int select, int boxPosition, boolean insertMode) {
                 // Declare and assign variables
-                Color color=focus?scheme.getColor("Main Color"):scheme.getColor("Settings Color");
+                Color color=focus?scheme.getColor("Main Color"):new Color(0,0,0,0);
                 Color textColor=getFontColor(focus);
                 Color highlightColor=scheme.getColor("Highlight Color");
-                Rectangle rect=getTextArea(context,content);
+                Rectangle rect=getTextArea(context,title);
                 int strlen=context.getInterface().getFontWidth(height,content.substring(0,position));
                 // Deal with box render offset
                 if (boxPosition<position) {
@@ -374,13 +378,13 @@ public class NextTheme extends ThemeBase {
 
             @Override
             public int getDefaultHeight() {
-                return 2*getBaseHeight();
+                return getBaseHeight();
             }
 
             @Override
             public Rectangle getTextArea (Context context, String title) {
                 Rectangle rect=context.getRect();
-                return title==null?rect:new Rectangle(rect.x+padding,rect.y+getBaseHeight(),rect.width-2*padding,rect.height-getBaseHeight()-padding);
+                return title==null?rect:new Rectangle(rect.x+context.getInterface().getFontWidth(height, title) + 6,rect.y + padding/2,rect.width-context.getInterface().getFontWidth(height, title)-9,rect.height-padding);
             }
 
             @Override
@@ -417,7 +421,8 @@ public class NextTheme extends ThemeBase {
 
                 if (state)
                     context.getInterface().fillRect(new Rectangle(getOffField(context).x + 2, getOffField(context).y + 2, getOffField(context).width - 4, getOffField(context).height - 4), scheme.getColor("Main Color"), scheme.getColor("Main Color"), scheme.getColor("Main Color"), scheme.getColor("Main Color"));
-
+                else
+                    context.getInterface().fillRect(new Rectangle(getOffField(context).x + 2, getOffField(context).y + 2, getOffField(context).width - 4, getOffField(context).height - 4), new Color(scheme.getColor("Main Color").getRed(), scheme.getColor("Main Color").getGreen(), scheme.getColor("Main Color").getBlue(), scheme.getColor("Main Color").getAlpha() - 150), new Color(scheme.getColor("Main Color").getRed(), scheme.getColor("Main Color").getGreen(), scheme.getColor("Main Color").getBlue(), scheme.getColor("Main Color").getAlpha() - 150), new Color(scheme.getColor("Main Color").getRed(), scheme.getColor("Main Color").getGreen(), scheme.getColor("Main Color").getBlue(), scheme.getColor("Main Color").getAlpha() - 150), new Color(scheme.getColor("Main Color").getRed(), scheme.getColor("Main Color").getGreen(), scheme.getColor("Main Color").getBlue(), scheme.getColor("Main Color").getAlpha() - 150));
             }
 
             @Override

@@ -37,6 +37,10 @@ public class SettingManager {
         settingMap.get(name).add(value);
     }
 
+    public void registerSetting(Class<? extends Module> module, Setting value) {
+        settingMap.get(module.getAnnotation(Mod.class).name()).add(value);
+    }
+
     public List<Setting> getAllSettingsFrom(String name) {
         for (Map.Entry<String, List<Setting>> stringListEntry : settingMap.entrySet()) {
             if (stringListEntry.getKey().equalsIgnoreCase(name)) return stringListEntry.getValue();
