@@ -5,6 +5,7 @@ import com.lukflug.panelstudio.base.IInterface;
 import com.lukflug.panelstudio.setting.ILabeled;
 import com.lukflug.panelstudio.theme.*;
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 
 import java.awt.*;
@@ -101,14 +102,12 @@ public class NextTheme extends ThemeBase {
         return new IPanelRenderer<T>() {
             @Override
             public void renderPanelOverlay(Context context, boolean focus, T state, boolean open) {
-                if (graphicalLevel==0 && !open) {
+                if (graphicalLevel==0 && !open && !NextGui.gui.getHUDVisibility().isOn()) {
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 12, context.getPos().y + context.getSize().height - 9, 8, 2), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                 }
 
-                if (graphicalLevel==0 && open) {
+                if (graphicalLevel==0 && open && !NextGui.gui.getHUDVisibility().isOn()) {
                     Color color= scheme.getColor("Main Color");
-//                    context.setHeight(context.getSize().height+3);
-//                    context.getInterface().fillRect(new Rectangle(context.getPos().x,context.getPos().y+context.getSize().height-3,context.getSize().width,3),color,color,color,color);
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 12, context.getPos().y + 6, 8, 2), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 9, context.getPos().y + 3, 2, 8), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                 }
@@ -116,7 +115,7 @@ public class NextTheme extends ThemeBase {
 
             @Override
             public void renderTitleOverlay(Context context, boolean focus, T state, boolean open) {
-                if (graphicalLevel==0 && open) {
+                if (graphicalLevel==0 && open && !NextGui.gui.getHUDVisibility().isOn()) {
                     Color color= scheme.getColor("Main Color");
                     context.setHeight(context.getSize().height + 3);
                     context.getInterface().fillRect(new Rectangle(context.getPos().x,context.getPos().y+context.getSize().height-3,context.getSize().width,3),color,color,color,color);

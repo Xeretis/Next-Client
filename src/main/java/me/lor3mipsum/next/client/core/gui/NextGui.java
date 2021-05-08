@@ -17,17 +17,23 @@ import com.lukflug.panelstudio.widget.ColorComponent;
 import com.lukflug.panelstudio.widget.ToggleButton;
 import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.event.client.KeyEvent;
+import me.lor3mipsum.next.api.event.game.RenderEvent;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.client.core.gui.components.NextColorComponent;
 import me.lor3mipsum.next.client.core.gui.themes.NextTheme;
 import me.lor3mipsum.next.client.core.module.Category;
+import me.lor3mipsum.next.client.core.module.HudModule;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.Setting;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.settings.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listenable;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Formatting;
@@ -41,7 +47,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class NextGui extends MinecraftHUDGUI {
+public class NextGui extends MinecraftHUDGUI implements Listenable {
     public static final int WIDTH = 120, HEIGHT = 12, FONT_HEIGHT = 9, DISTANCE = 10, HUD_BORDER = 2;
 
     public static IClient client;
@@ -50,6 +56,8 @@ public class NextGui extends MinecraftHUDGUI {
     private final ITheme theme;
 
     public NextGui() {
+        Main.EVENT_BUS.subscribe(this);
+
         ClickGuiModule clickGuiModule = Main.moduleManager.getModule(ClickGuiModule.class);
 
         guiInterface = new GUIInterface(true) {
@@ -119,7 +127,7 @@ public class NextGui extends MinecraftHUDGUI {
 
                     @Override
                     public Stream<ISetting<?>> getSettings() {
-                        Stream<ISetting<?>> temp=Main.settingManager.getAllSettingsFrom(module.getClass()).stream().map(setting->createSetting(setting));
+                        Stream<ISetting<?>> temp=Main.settingManager.getAllSettingsFrom(module).stream().map(setting->createSetting(setting));
                         return Stream.concat(temp, Stream.concat(Stream.of(new IBooleanSetting() {
                             @Override
                             public void toggle() {
@@ -165,6 +173,7 @@ public class NextGui extends MinecraftHUDGUI {
         IToggleable hudToggle = new SimpleToggleable(false) {
             @Override
             public boolean isOn() {
+                if (guiToggle.isOn() && super.isOn()) return false;
                 return super.isOn();
             }
         };
@@ -193,12 +202,29 @@ public class NextGui extends MinecraftHUDGUI {
             public void setSize(Dimension size) {
                 this.size.width = size.width;
                 this.size.height = size.height;
-//                if (size.width < 75) this.size.width = 75;
-//                if (size.height<50) this.size.height = 50;
+                if (size.width < 75) this.size.width = 75;
+                if (size.height<50) this.size.height = 50;
             }
         };
 
         //HUD
+        for (Module module : Main.moduleManager.getModules()) {
+            if (module instanceof HudModule) {
+                ((HudModule)module).populate(theme);
+                gui.addHUDComponent(((HudModule) module).getComponent(), new IToggleable() {
+                    @Override
+                    public void toggle() {
+                        module.toggle();
+                    }
+
+                    @Override
+                    public boolean isOn() {
+                        return module.getEnabled();
+                    }
+                }, animation.get(), theme, HUD_BORDER);
+            }
+        }
+
 
         //GUI
         IComponentAdder classicPanelAdder = new PanelAdder(new IContainer<IFixedComponent>() {
@@ -681,7 +707,20 @@ public class NextGui extends MinecraftHUDGUI {
 
         @Override
         public Color getColor(String name) {
-            return ((ColorSetting)Main.settingManager.getAllSettingsFrom(ClickGuiModule.class).stream().filter(setting -> setting.getName().equals(name)).findFirst().orElse(null)).getValue();
+            return ((ColorSetting)Main.settingManager.getAllSettingsFrom(Main.moduleManager.getModule(ClickGuiModule.class)).stream().filter(setting -> setting.getName().equals(name)).findFirst().orElse(null)).getValue();
         }
     }
+
+    @EventHandler
+    private Listener<RenderEvent> onRender = new Listener<>(event -> {
+        render();
+    });
+
+    @EventHandler
+    private Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getGUIVisibility().isOn())
+            gui.getGUIVisibility().toggle();
+        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getHUDVisibility().isOn())
+            gui.getHUDVisibility().toggle();
+    });
 }

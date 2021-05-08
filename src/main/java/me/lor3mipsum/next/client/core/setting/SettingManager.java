@@ -37,8 +37,9 @@ public class SettingManager {
         settingMap.get(name).add(value);
     }
 
-    public void registerSetting(Class<? extends Module> module, Setting value) {
-        settingMap.get(module.getAnnotation(Mod.class).name()).add(value);
+    public void registerSetting(Object module, Setting value) {
+        if (module instanceof Module)
+            settingMap.get(((Module) module).getName()).add(value);
     }
 
     public List<Setting> getAllSettingsFrom(String name) {
@@ -48,10 +49,11 @@ public class SettingManager {
         return null;
     }
 
-    public List<Setting> getAllSettingsFrom(Class<? extends Module> module) {
-        for (Map.Entry<String, List<Setting>> stringListEntry : settingMap.entrySet()) {
-            if (stringListEntry.getKey().equalsIgnoreCase(module.getAnnotation(Mod.class).name())) return stringListEntry.getValue();
-        }
+    public List<Setting> getAllSettingsFrom(Object module) {
+        if (module instanceof Module)
+            for (Map.Entry<String, List<Setting>> stringListEntry : settingMap.entrySet()) {
+                if (stringListEntry.getKey().equalsIgnoreCase(((Module) module).getName())) return stringListEntry.getValue();
+            }
         return null;
     }
 

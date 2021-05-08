@@ -9,15 +9,19 @@ import net.minecraft.client.MinecraftClient;
 
 public class Module implements Listenable {
 
-    private final String name = getClass().getAnnotation(Mod.class).name();
-    private final String description = getClass().getAnnotation(Mod.class).description();
+    private final String name = getModDeclaration().name();
+    private final String description = getModDeclaration().description();
 
-    private final Category category = getClass().getAnnotation(Mod.class).category();
-    private int bind = getClass().getAnnotation(Mod.class).bind();
-    private boolean enabled = getClass().getAnnotation(Mod.class).enabled();
-    private boolean drawn = getClass().getAnnotation(Mod.class).drawn();
+    private final Category category = getModDeclaration().category();
+    private int bind = getModDeclaration().bind();
+    private boolean enabled = getModDeclaration().enabled();
+    private boolean drawn = getModDeclaration().drawn();
 
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
+
+    public Mod getModDeclaration() {
+        return getClass().getAnnotation(Mod.class);
+    }
 
     //For override
     protected void onEnable() {
@@ -28,7 +32,7 @@ public class Module implements Listenable {
 
     }
 
-    protected String getHudInfo() {
+    public String getHudInfo() {
         return "";
     }
 
