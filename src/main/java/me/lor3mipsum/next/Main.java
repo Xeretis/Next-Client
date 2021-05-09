@@ -1,11 +1,17 @@
 package me.lor3mipsum.next;
 
 import me.lor3mipsum.next.api.config.LoadConfig;
+import me.lor3mipsum.next.api.config.SaveConfig;
+import me.lor3mipsum.next.api.event.game.GameLeftEvent;
+import me.lor3mipsum.next.api.event.game.RenderEvent;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.SettingManager;
 import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listenable;
+import me.zero.alpine.listener.Listener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +22,7 @@ import org.quantumclient.renderer.text.GlyphPage;
 import java.awt.*;
 import java.io.File;
 
-public class Main implements ModInitializer {
+public class Main implements ModInitializer, Listenable {
 
 	public static final String CLIENT_NAME = "Next";
 
@@ -33,6 +39,8 @@ public class Main implements ModInitializer {
 	public void onInitialize() {
 		LOG.info("Initializing the client");
 
+		EVENT_BUS.subscribe(this);
+
 		settingManager = new SettingManager();
 		LOG.info("Initialized the setting manager");
 
@@ -43,5 +51,15 @@ public class Main implements ModInitializer {
 		LOG.info("Initialized the clickgui");
 
 		LoadConfig.load();
+		LOG.info("Loaded config");
 	}
+
+	@EventHandler
+	private Listener<GameLeftEvent> onDisconnect = new Listener<>(event -> {
+		SaveConfig.save();
+		LOG.info("Saved config");
+	});
+
+	@EventHandler
+	private Listener<RenderEvent> onRender = new Listener<>(event -> clickGui.render());
 }

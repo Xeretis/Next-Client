@@ -31,7 +31,6 @@ public class MinecraftClientMixin {
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
     private void onDisconnect(Screen screen, CallbackInfo info) {
         if (world != null) {
-            SaveConfig.save();
             Main.EVENT_BUS.post(new GameLeftEvent());
         }
     }

@@ -42,7 +42,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class NextGui extends MinecraftHUDGUI implements Listenable {
+public class NextGui extends MinecraftHUDGUI {
     public static final int WIDTH = 120, HEIGHT = 12, FONT_HEIGHT = 9, DISTANCE = 10, HUD_BORDER = 2;
 
     public static IClient client;
@@ -50,8 +50,6 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
     public static HUDGUI gui;
 
     public NextGui() {
-        Main.EVENT_BUS.subscribe(this);
-
         ClickGuiModule clickGuiModule = Main.moduleManager.getModule(ClickGuiModule.class);
 
         guiInterface = new GUIInterface(true) {
@@ -692,9 +690,6 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
     protected int getScrollSpeed() {
         return ((Number) Main.moduleManager.getModule(ClickGuiModule.class).scrollSpeed.getValue()).intValue();
     }
-
-    @EventHandler
-    private Listener<RenderEvent> onRender = new Listener<>(event -> render());
 
     private static final class NextColorScheme implements IColorScheme {
 

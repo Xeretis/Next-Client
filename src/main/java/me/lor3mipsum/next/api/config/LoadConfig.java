@@ -17,7 +17,7 @@ public class LoadConfig {
         try {
             loadGuiPositions();
         } catch (IOException e) {
-            Main.LOG.error("Failed to load config");
+            Main.LOG.error("Config loading failed");
         }
     }
 

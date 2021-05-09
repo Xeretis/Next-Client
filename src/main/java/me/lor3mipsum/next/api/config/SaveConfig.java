@@ -21,10 +21,9 @@ public class SaveConfig {
             saveConfig();
             saveGuiPositions();
         } catch (IOException e) {
-            Main.LOG.error("Failed to save config");
+            Main.LOG.error("Config saving failed");
             Main.LOG.error(e.getStackTrace());
         }
-        Main.LOG.info("Saved config");
     }
 
     private static void saveConfig() throws IOException {
