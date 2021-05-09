@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface HudMod {
     int posX();
-    int posZ();
+    int posY();
 }

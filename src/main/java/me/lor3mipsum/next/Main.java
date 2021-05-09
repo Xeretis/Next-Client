@@ -17,8 +17,6 @@ import java.io.File;
 
 public class Main implements ModInitializer {
 
-	public static final File FOLDER = new File(FabricLoader.getInstance().getGameDir().toString(), "Next");
-
 	public static final Logger LOG = LogManager.getLogger("Next");
 	public static final EventBus EVENT_BUS = new EventManager();
 

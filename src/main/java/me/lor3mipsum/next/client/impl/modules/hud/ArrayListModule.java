@@ -16,7 +16,6 @@ import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.util.Formatting;
 
@@ -26,7 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Mod(name = "ArrayList", description = "Shows you your active modules", category = Category.HUD)
-@HudMod(posX = 0, posZ = 200)
+@HudMod(posX = 0, posY = 200)
 public class ArrayListModule extends HudModule {
     public ColorSetting color = new ColorSetting("Color", false, new NextColor(255,255,255));
     public BooleanSetting gradient = new BooleanSetting("Gradient Rainbow", true);

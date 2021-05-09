@@ -597,7 +597,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public boolean hasHSBModel() {
-                    return Main.moduleManager.getModule(ClickGuiModule.class).colorMode.getValue() == ClickGuiModule.ColorMode.HSB;
+                    return Main.moduleManager.getModule(ClickGuiModule.class).colorMode.getValue() == ClickGuiModule.ColorModel.HSB;
                 }
 
                 @Override
@@ -695,14 +695,6 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
     @EventHandler
     private Listener<RenderEvent> onRender = new Listener<>(event -> render());
-
-    @EventHandler
-    private Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getGUIVisibility().isOn())
-            gui.getGUIVisibility().toggle();
-        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getHUDVisibility().isOn())
-            gui.getHUDVisibility().toggle();
-    });
 
     private static final class NextColorScheme implements IColorScheme {
 

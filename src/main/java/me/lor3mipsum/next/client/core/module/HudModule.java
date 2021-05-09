@@ -8,7 +8,7 @@ import java.awt.*;
 
 public abstract class HudModule extends Module {
     protected IFixedComponent component;
-    protected Point position = new Point(getHudModDeclaration().posX(), getHudModDeclaration().posZ());
+    protected Point position = new Point(getHudModDeclaration().posX(), getHudModDeclaration().posY());
 
     public HudModule() {
         setDrawn(false);
