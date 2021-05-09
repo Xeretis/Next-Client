@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.mixin;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.config.SaveConfig;
 import me.lor3mipsum.next.api.event.game.GameLeftEvent;
 import me.lor3mipsum.next.api.event.game.OpenScreenEvent;
 import net.minecraft.client.MinecraftClient;
@@ -30,6 +31,7 @@ public class MinecraftClientMixin {
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
     private void onDisconnect(Screen screen, CallbackInfo info) {
         if (world != null) {
+            SaveConfig.save();
             Main.EVENT_BUS.post(new GameLeftEvent());
         }
     }

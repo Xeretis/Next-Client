@@ -1,5 +1,6 @@
 package me.lor3mipsum.next;
 
+import me.lor3mipsum.next.api.config.LoadConfig;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.SettingManager;
@@ -16,6 +17,8 @@ import java.awt.*;
 import java.io.File;
 
 public class Main implements ModInitializer {
+
+	public static final String CLIENT_NAME = "Next";
 
 	public static final Logger LOG = LogManager.getLogger("Next");
 	public static final EventBus EVENT_BUS = new EventManager();
@@ -38,5 +41,7 @@ public class Main implements ModInitializer {
 
 		clickGui = new NextGui();
 		LOG.info("Initialized the clickgui");
+
+		LoadConfig.load();
 	}
 }
