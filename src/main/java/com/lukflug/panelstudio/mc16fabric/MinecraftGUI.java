@@ -173,7 +173,6 @@ public abstract class MinecraftGUI extends Screen {
 	 */
 	protected abstract int getScrollSpeed();
 	
-	
 	/**
 	 * Implementation of {@link GLInterface} to be used with {@link MinecraftGUI}
 	 * @author lukflug

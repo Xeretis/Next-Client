@@ -35,6 +35,7 @@ public class NextColorComponent extends VerticalContainer {
         super(setting,theme.getContainerRenderer(false));
         this.setting=setting;
         this.theme=theme.theme;
+
         addComponent(new ToggleSwitch(new Labeled("  - Rainbow",null,()->setting.allowsRainbow()),new IToggleable() {
             @Override
             public boolean isOn() {
@@ -46,7 +47,9 @@ public class NextColorComponent extends VerticalContainer {
                 setting.setRainbow(!setting.getRainbow());
             }
         },theme.theme.getToggleSwitchRenderer(theme.logicalLevel,theme.graphicalLevel+1,false)));
+
         ISliderRenderer sliderRenderer=theme.theme.getSliderRenderer(theme.logicalLevel,theme.graphicalLevel+1,false);
+
         addComponent(new ColorSlider(()->true,sliderRenderer,0));
         addComponent(new ColorSlider(()->true,sliderRenderer,1));
         addComponent(new ColorSlider(()->true,sliderRenderer,2));
@@ -117,6 +120,7 @@ public class NextColorComponent extends VerticalContainer {
         protected void setValue(double value) {
             Color c=setting.getColor();
             float[] color=Color.RGBtoHSB(c.getRed(),c.getGreen(),c.getBlue(),null);
+
             switch (this.value) {
                 case 0:
                     if (setting.hasHSBModel()) c=Color.getHSBColor((float)value,color[1],color[2]);
@@ -145,6 +149,7 @@ public class NextColorComponent extends VerticalContainer {
         @Override
         protected String getDisplayState() {
             int max=100;
+
             if (!setting.hasHSBModel()) max=255;
             else if (value==0) max=360;
             return ""+(int)(getValue()*max);

@@ -5,7 +5,6 @@ import com.lukflug.panelstudio.component.*;
 import com.lukflug.panelstudio.container.IContainer;
 import com.lukflug.panelstudio.hud.HUDGUI;
 import com.lukflug.panelstudio.layout.*;
-import com.lukflug.panelstudio.mc16fabric.GLInterface;
 import com.lukflug.panelstudio.mc16fabric.MinecraftHUDGUI;
 import com.lukflug.panelstudio.popup.CenteredPositioner;
 import com.lukflug.panelstudio.popup.MousePositioner;
@@ -13,8 +12,6 @@ import com.lukflug.panelstudio.popup.PanelPositioner;
 import com.lukflug.panelstudio.popup.PopupTuple;
 import com.lukflug.panelstudio.setting.*;
 import com.lukflug.panelstudio.theme.*;
-import com.lukflug.panelstudio.widget.ColorComponent;
-import com.lukflug.panelstudio.widget.ToggleButton;
 import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.client.KeyEvent;
@@ -26,9 +23,7 @@ import me.lor3mipsum.next.client.core.gui.themes.NextTheme;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.HudModule;
 import me.lor3mipsum.next.client.core.module.Module;
-import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.Setting;
-import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.zero.alpine.listener.EventHandler;
@@ -177,12 +172,16 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
                 return super.isOn();
             }
         };
+
         gui = new HUDGUI(guiInterface, theme.getDescriptionRenderer(), new MousePositioner(new Point(10, 10)), guiToggle, hudToggle);
+
         BiFunction<Context, Integer, Integer> scrollHeight = ((context, componentHeight)  -> {
             if (clickGuiModule.scrollMode.getValue() == ClickGuiModule.ScrollMode.Screen) return componentHeight;
             else return Math.min(componentHeight,Math.max(HEIGHT*4,NextGui.this.height-context.getPos().y-HEIGHT));
         });
+
         Supplier<Animation> animation = () -> new SettingsAnimation(() -> clickGuiModule.animationSpeed.getValue(), () -> guiInterface.getTime());
+
         PopupTuple popupType = new PopupTuple(new PanelPositioner(new Point(0, 0)), false, new IScrollSize() {
             @Override
             public int getScrollHeight(Context context, int componentHeight) {
@@ -301,17 +300,23 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
             }
 
         };
+
+        //Panel Layout
         ILayout classicPanelLayout = new PanelLayout(WIDTH, new Point(DISTANCE, DISTANCE), (WIDTH + WIDTH)/2, HEIGHT+DISTANCE,animation,level-> ChildUtil.ChildMode.DOWN, level-> ChildUtil.ChildMode.DOWN,popupType);
+
         classicPanelLayout.populateGUI(classicPanelAdder,generator,client,theme);
 
-        PopupTuple colorPopup=new PopupTuple(new CenteredPositioner(()->new Rectangle(new Point(0,0),guiInterface.getWindowSize())),true,new IScrollSize() {});
+        //CSGO Layout
+        PopupTuple csgoPopup=new PopupTuple(new CenteredPositioner(()->new Rectangle(new Point(0,0),guiInterface.getWindowSize())),true,new IScrollSize() {});
+
         IComponentAdder horizontalCSGOAdder=new PanelAdder(gui,true,()->clickGuiModule.csgoLayout.getValue(),title->title) {
             @Override
             protected IResizable getResizable (int width) {
                 return resizable.apply(width);
             }
         };
-        ILayout horizontalCSGOLayout=new CSGOLayout(new Labeled("Next Client",null,()->true),new Point(100,100),480,WIDTH,animation,"Enabled",true,true,2, ChildUtil.ChildMode.DOWN,colorPopup) {
+
+        ILayout horizontalCSGOLayout=new CSGOLayout(new Labeled("Next Client",null,()->true),new Point(100,100),480,WIDTH,animation,"Enabled",true,true,2, ChildUtil.ChildMode.DOWN,csgoPopup) {
             @Override
             public int getScrollHeight (Context context, int componentHeight) {
                 return 320;
@@ -337,6 +342,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
                 return key==GLFW.GLFW_KEY_RIGHT;
             }
         };
+
         horizontalCSGOLayout.populateGUI(horizontalCSGOAdder,generator,client,theme);
     }
 
@@ -366,8 +372,6 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
                 @Override
                 public Stream<ISetting<?>> getSubSettings() {
                     return null;
-					/*if (setting.getSubSettings().count()==0) return null;
-					return setting.getSubSettings().map(subSetting->createSetting(subSetting));*/
                 }
             };
         } else if (setting instanceof IntegerSetting) {
@@ -543,8 +547,6 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
                 @Override
                 public Stream<ISetting<?>> getSubSettings() {
                     return null;
-					/*if (setting.getSubSettings().count()==0) return null;
-					return setting.getSubSettings().map(subSetting->createSetting(subSetting));*/
                 }
             };
         } else if (setting instanceof ColorSetting) {
@@ -692,6 +694,19 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
         return ((Number) Main.moduleManager.getModule(ClickGuiModule.class).scrollSpeed.getValue()).intValue();
     }
 
+    @EventHandler
+    private Listener<RenderEvent> onRender = new Listener<>(event -> {
+        render();
+    });
+
+    @EventHandler
+    private Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getGUIVisibility().isOn())
+            gui.getGUIVisibility().toggle();
+        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getHUDVisibility().isOn())
+            gui.getHUDVisibility().toggle();
+    });
+
     private final class NextColorScheme implements IColorScheme {
 
         private final boolean isVisible;
@@ -710,17 +725,4 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
             return ((ColorSetting)Main.settingManager.getAllSettingsFrom(Main.moduleManager.getModule(ClickGuiModule.class)).stream().filter(setting -> setting.getName().equals(name)).findFirst().orElse(null)).getValue();
         }
     }
-
-    @EventHandler
-    private Listener<RenderEvent> onRender = new Listener<>(event -> {
-        render();
-    });
-
-    @EventHandler
-    private Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getGUIVisibility().isOn())
-            gui.getGUIVisibility().toggle();
-        if (event.key == GLFW.GLFW_KEY_ESCAPE && event.action == KeyboardUtils.KeyAction.Press && gui.getHUDVisibility().isOn())
-            gui.getHUDVisibility().toggle();
-    });
 }

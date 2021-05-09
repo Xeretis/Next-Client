@@ -5,11 +5,8 @@ import java.util.List;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.client.KeyEvent;
-import me.lor3mipsum.next.api.event.game.RenderEvent;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
-import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
-import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;

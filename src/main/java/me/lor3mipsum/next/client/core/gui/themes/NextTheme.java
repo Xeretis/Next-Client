@@ -1,7 +1,6 @@
 package me.lor3mipsum.next.client.core.gui.themes;
 
 import com.lukflug.panelstudio.base.Context;
-import com.lukflug.panelstudio.base.IInterface;
 import com.lukflug.panelstudio.setting.ILabeled;
 import com.lukflug.panelstudio.theme.*;
 import me.lor3mipsum.next.Main;
@@ -161,13 +160,14 @@ public class NextTheme extends ThemeBase {
                 else if (type==Color.class) {
                     context.getInterface().fillRect(context.getRect(),getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus));
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 12, context.getPos().y + 3, 9, 9), (Color)state, (Color)state, (Color)state, (Color)state);
-                }
-                else if (graphicalLevel == 0)
+                } else if (graphicalLevel == 0)
                     context.getInterface().fillRect(context.getRect(),getMainColor(focus, false), getMainColor(focus, false), getMainColor(focus, false), getMainColor(focus, false));
                 else {
                     context.getInterface().fillRect(context.getRect(), getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus));
                 }
+
                 renderOverlay(context);
+
                 if (type==String.class) context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title+separator+state,getFontColor(focus));
                 else if (graphicalLevel == 0 || type == Void.class) context.getInterface().drawString(new Point(context.getPos().x+context.getSize().width/2 - context.getInterface().getFontWidth(0, title)/2,context.getRect().y+padding),height,title,getFontColor(focus));
                 else context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title,getFontColor(focus));
@@ -185,11 +185,14 @@ public class NextTheme extends ThemeBase {
         return new IButtonRenderer<Void>() {
             @Override
             public void renderButton (Context context, String title, boolean focus, Void state) {
-                //fillBaseRect(context,focus,true,logicalLevel,graphicalLevel,null);
+                fillBaseRect(context,focus,true,logicalLevel,graphicalLevel,null);
+
                 renderOverlay(context);
+
                 Point points[]=new Point[3];
                 Rectangle rect=new Rectangle(context.getRect().x+padding,context.getRect().y+padding,context.getRect().height-2*padding,context.getRect().height-2*padding);
                 if (title==null) rect.x+=context.getRect().width/2-context.getRect().height/2;
+
                 switch (symbol) {
                     case ITheme.CLOSE:
                         break;
@@ -242,7 +245,9 @@ public class NextTheme extends ThemeBase {
             @Override
             public void renderButton(Context context, String title, boolean focus, String state) {
                 fillBaseRect(context,focus,focus,logicalLevel,graphicalLevel,null);
+
                 renderOverlay(context);
+
                 context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title+separator+(focus?"...":state),getFontColor(focus));
             }
 
@@ -259,11 +264,16 @@ public class NextTheme extends ThemeBase {
             @Override
             public void renderSlider(Context context, String title, String state, boolean focus, double value) {
                 Color colorA=scheme.getColor("Main Color"),colorB=getBackgroundColor(focus);
+
                 Rectangle rect=getSlideArea(context);
+
                 int divider=(int)(rect.width*value);
+
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y,divider,rect.height),colorA,colorA,colorA,colorA);
                 context.getInterface().fillRect(new Rectangle(rect.x+divider,rect.y,rect.width-divider,rect.height),colorB,colorB,colorB,colorB);
+
                 renderOverlay(context);
+
                 context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title+separator+state,getFontColor(focus));
             }
 
@@ -283,8 +293,11 @@ public class NextTheme extends ThemeBase {
                     Rectangle rect=getItemRect(context,items,i,horizontal);
                     Context subContext=new Context(context.getInterface(),rect.width,rect.getLocation(),context.hasFocus(),context.onTop());
                     subContext.setHeight(rect.height);
+
                     fillBaseRect(subContext,focus,i==target,logicalLevel,graphicalLevel,null);
+
                     renderOverlay(subContext);
+
                     context.getInterface().drawString(new Point(rect.x+padding,rect.y+padding),height,items[i].getDisplayName(),getFontColor(focus));
                 }
             }
@@ -302,7 +315,9 @@ public class NextTheme extends ThemeBase {
             @Override
             public void drawBorder(Context context, boolean focus) {
                 Color color=getBackgroundColor(focus);
+
                 Rectangle rect=context.getRect();
+
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y,rect.width,getBorder()),color,color,color,color);
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y+rect.height-getBorder(),rect.width,getBorder()),color,color,color,color);
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y+getBorder(),getBorder(),rect.height-2*getBorder()),color,color,color,color);
@@ -325,8 +340,10 @@ public class NextTheme extends ThemeBase {
                 Color color=focus?scheme.getColor("Main Color"):new Color(0,0,0,0);
                 Color textColor=getFontColor(focus);
                 Color highlightColor=scheme.getColor("Highlight Color");
+
                 Rectangle rect=getTextArea(context,title);
                 int strlen=context.getInterface().getFontWidth(height,content.substring(0,position));
+
                 // Deal with box render offset
                 if (boxPosition<position) {
                     int minPosition=boxPosition;
@@ -344,34 +361,47 @@ public class NextTheme extends ThemeBase {
                     }
                     maxPosition--;
                 }
+
                 if (boxPosition>maxPosition) boxPosition=maxPosition;
                 else if (boxPosition<0) boxPosition=0;
+
                 int offset=context.getInterface().getFontWidth(height,content.substring(0,boxPosition));
+
                 // Deal with highlighted text
                 int x1=rect.x+padding/2-offset+strlen;
                 int x2=rect.x+padding/2-offset;
+
                 if (position<content.length()) x2+=context.getInterface().getFontWidth(height,content.substring(0,position+1));
                 else x2+=context.getInterface().getFontWidth(height,content+"X");
+
                 // Draw stuff around the box
                 fillBaseRect(context,focus,false,logicalLevel,graphicalLevel,null);
+
                 renderOverlay(context);
+
                 if (title!=null) context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title,textColor);
+
                 // Draw the box
                 context.getInterface().window(rect);
+
                 if (select>=0) {
                     int x3=rect.x+padding/2-offset+context.getInterface().getFontWidth(height,content.substring(0,select));
                     context.getInterface().fillRect(new Rectangle(Math.min(x1,x3),rect.y+padding/2,Math.abs(x3-x1),height),highlightColor,highlightColor,highlightColor,highlightColor);
                 }
+
                 context.getInterface().drawString(new Point(rect.x+padding/2-offset,rect.y+padding/2),height,content,textColor);
+
                 if ((System.currentTimeMillis()/500)%2==0) {
                     if (insertMode) context.getInterface().fillRect(new Rectangle(x1,rect.y+padding/2+height,x2-x1,1),textColor,textColor,textColor,textColor);
                     else context.getInterface().fillRect(new Rectangle(x1,rect.y+padding/2,1,height),textColor,textColor,textColor,textColor);
                 }
+
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y,rect.width,1),color,color,color,color);
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y+rect.height-1,rect.width,1),color,color,color,color);
                 context.getInterface().fillRect(new Rectangle(rect.x,rect.y,1,rect.height),color,color,color,color);
                 context.getInterface().fillRect(new Rectangle(rect.x+rect.width-1,rect.y,1,rect.height),color,color,color,color);
                 context.getInterface().restore();
+
                 return boxPosition;
             }
 
@@ -390,7 +420,9 @@ public class NextTheme extends ThemeBase {
             public int transformToCharPos(Context context, String content, int boxPosition) {
                 Rectangle rect=getTextArea(context,content);
                 Point mouse=context.getInterface().getMouse();
+
                 int offset=context.getInterface().getFontWidth(height,content.substring(0,boxPosition));
+
                 if (rect.contains(mouse)) {
                     for (int i=1;i<=content.length();i++) {
                         if (rect.x+padding/2-offset+context.getInterface().getFontWidth(height,content.substring(0,i))>mouse.x) {
@@ -399,6 +431,7 @@ public class NextTheme extends ThemeBase {
                     }
                     return content.length();
                 }
+
                 return -1;
             }
         };
@@ -410,7 +443,9 @@ public class NextTheme extends ThemeBase {
             public void renderButton(Context context, String title, boolean focus, Boolean state) {
                 fillBaseRect(context,focus,false,logicalLevel,graphicalLevel,null);
                 context.getInterface().fillRect(context.getRect(), getBackgroundColor(focus),  getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus));
+
                 renderOverlay(context);
+
                 context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title+separator+(state?"On":"Off"),getFontColor(focus));
 
                 context.getInterface().fillRect(new Rectangle(getOffField(context).x, getOffField(context).y, 1, getOffField(context).height), scheme.getColor("Main Color"), scheme.getColor("Main Color"), scheme.getColor("Main Color"), scheme.getColor("Main Color"));
@@ -446,20 +481,28 @@ public class NextTheme extends ThemeBase {
             @Override
             public void renderButton(Context context, String title, boolean focus, String state) {
                 fillBaseRect(context,focus,false,logicalLevel,graphicalLevel,null);
+
                 Color color=scheme.getColor("Main Color");
                 if (graphicalLevel<=0 && container) {
                     context.getInterface().fillRect(new Rectangle(context.getPos().x,context.getPos().y+context.getSize().height-1,context.getSize().width,1),color,color,color,color);
                 }
+
                 renderOverlay(context);
+
                 Color textColor=getFontColor(focus);
+
                 context.getInterface().drawString(new Point(context.getRect().x+padding,context.getRect().y+padding),height,title+separator+state,textColor);
+
                 Rectangle rect=getOnField(context);
                 Context subContext=new Context(context,rect.width,new Point(rect.x-context.getRect().x,0),true,true);
                 subContext.setHeight(rect.height);
+
                 getSmallButtonRenderer(ITheme.LEFT,logicalLevel,graphicalLevel,container).renderButton(subContext,null,focus,null);
                 rect=getOffField(context);
+
                 subContext=new Context(context,rect.width,new Point(rect.x-context.getRect().x,0),true,true);
                 subContext.setHeight(rect.height);
+
                 getSmallButtonRenderer(ITheme.RIGHT,logicalLevel,graphicalLevel,container).renderButton(subContext,null,focus,null);
             }
 
