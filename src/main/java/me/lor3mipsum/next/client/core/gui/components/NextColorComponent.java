@@ -36,7 +36,7 @@ public class NextColorComponent extends VerticalContainer {
         this.setting=setting;
         this.theme=theme.theme;
 
-        addComponent(new ToggleSwitch(new Labeled("  - Rainbow",null,()->setting.allowsRainbow()),new IToggleable() {
+        addComponent(new ToggleSwitch(new Labeled("  - Rainbow",null, setting::allowsRainbow),new IToggleable() {
             @Override
             public boolean isOn() {
                 return setting.getRainbow();
@@ -53,7 +53,7 @@ public class NextColorComponent extends VerticalContainer {
         addComponent(new ColorSlider(()->true,sliderRenderer,0));
         addComponent(new ColorSlider(()->true,sliderRenderer,1));
         addComponent(new ColorSlider(()->true,sliderRenderer,2));
-        addComponent(new ColorSlider(()->setting.hasAlpha(),sliderRenderer,3));
+        addComponent(new ColorSlider(setting::hasAlpha,sliderRenderer,3));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class NextColorComponent extends VerticalContainer {
 
         /**
          * Constructor.
-         * @param visible the visiblity of the component
+         * @param visible the visibility of the component
          * @param renderer the renderer to be used
          * @param value the index of the slider inside the color component
          */

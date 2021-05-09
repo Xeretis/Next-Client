@@ -6,7 +6,7 @@ import me.lor3mipsum.next.client.core.setting.Setting;
 import java.util.function.Predicate;
 
 public class ColorSetting extends Setting<NextColor> {
-    private boolean rainbow = false;
+    private boolean rainbow;
     private final boolean rainbowEnabled, alphaEnabled;
 
     public ColorSetting(String name, boolean rainbow, NextColor value) {
@@ -62,7 +62,7 @@ public class ColorSetting extends Setting<NextColor> {
         if (rainbowEnabled) rainbow = ((number & 0x1000000) != 0);
         else rainbow = false;
         setValue(new NextColor((int)(number & 0xFFFFFF)));
-        if (alphaEnabled) setValue(new NextColor(getColor(),(int)((number&0xFF00000000l)>>32)));
+        if (alphaEnabled) setValue(new NextColor(getColor(),(int)((number& 0xFF00000000L)>>32)));
     }
 
     @Override

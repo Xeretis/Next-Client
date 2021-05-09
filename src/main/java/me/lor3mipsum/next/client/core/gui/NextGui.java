@@ -16,6 +16,7 @@ import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.client.KeyEvent;
 import me.lor3mipsum.next.api.event.game.RenderEvent;
+import me.lor3mipsum.next.api.util.client.FontUtils;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.client.core.gui.components.NextColorComponent;
@@ -29,7 +30,6 @@ import me.lor3mipsum.next.client.impl.settings.*;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
@@ -48,7 +48,6 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
     public static IClient client;
     public static GUIInterface guiInterface;
     public static HUDGUI gui;
-    private final ITheme theme;
 
     public NextGui() {
         Main.EVENT_BUS.subscribe(this);
@@ -59,13 +58,13 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
             @Override
             public void drawString(Point pos, int height, String s, Color c) {
                 end(false);
-                MinecraftClient.getInstance().textRenderer.drawWithShadow(new MatrixStack(), s,pos.x,pos.y,c.getRGB());
+                FontUtils.drawString(new MatrixStack(), s, pos.x, pos.y, c);
                 begin(false);
             }
 
             @Override
             public int getFontWidth(int height, String s) {
-                return MinecraftClient.getInstance().textRenderer.getWidth(s);
+                return (int) FontUtils.getStringWidth(s);
             }
 
             @Override
@@ -84,7 +83,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
             }
         };
 
-        theme = new NextTheme(new NextColorScheme(true),FONT_HEIGHT,3,5,": " + Formatting.GRAY);
+        ITheme theme = new NextTheme(new NextColorScheme(true), FONT_HEIGHT, 3, 5, ": " + Formatting.GRAY);
 
         client = () -> Arrays.stream(Category.values()).sorted(Comparator.comparing(Category::toString)).map(category -> new ICategory() {
             @Override
@@ -122,7 +121,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                     @Override
                     public Stream<ISetting<?>> getSettings() {
-                        Stream<ISetting<?>> temp=Main.settingManager.getAllSettingsFrom(module).stream().map(setting->createSetting(setting));
+                        Stream<ISetting<?>> temp=Main.settingManager.getAllSettingsFrom(module).stream().map(NextGui.this::createSetting);
                         return Stream.concat(temp, Stream.concat(Stream.of(new IBooleanSetting() {
                             @Override
                             public void toggle() {
@@ -190,7 +189,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
         });
 
         IntFunction<IResizable> resizable =  width -> new IResizable() {
-            Dimension size = new Dimension(width, 320);
+            final Dimension size = new Dimension(width, 320);
 
             @Override
             public Dimension getSize() {
@@ -304,7 +303,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
         //Panel Layout
         ILayout classicPanelLayout = new PanelLayout(WIDTH, new Point(DISTANCE, DISTANCE), (WIDTH + WIDTH)/2, HEIGHT+DISTANCE,animation,level-> ChildUtil.ChildMode.DOWN, level-> ChildUtil.ChildMode.DOWN,popupType);
 
-        classicPanelLayout.populateGUI(classicPanelAdder,generator,client,theme);
+        classicPanelLayout.populateGUI(classicPanelAdder,generator,client, theme);
 
         //CSGO Layout
         PopupTuple csgoPopup=new PopupTuple(new CenteredPositioner(()->new Rectangle(new Point(0,0),guiInterface.getWindowSize())),true,new IScrollSize() {});
@@ -343,7 +342,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
             }
         };
 
-        horizontalCSGOLayout.populateGUI(horizontalCSGOAdder,generator,client,theme);
+        horizontalCSGOLayout.populateGUI(horizontalCSGOAdder,generator,client, theme);
     }
 
     private ISetting<?> createSetting (Setting<?> setting) {
@@ -356,7 +355,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return ()->setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -383,7 +382,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return ()->setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -425,7 +424,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return ()->setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -435,7 +434,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public void setNumber(double value) {
-                    ((DoubleSetting)setting).setValue(value);
+                    ((DoubleSetting)setting).setValue((double) Math.round(value * Math.pow(10, 1)) / Math.pow(10, 1));
                 }
 
                 @Override
@@ -467,7 +466,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return ()->setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -477,7 +476,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public void setNumber(double value) {
-                    ((FloatSetting)setting).setValue((float) value);
+                    ((FloatSetting)setting).setValue((float) ((float) Math.round(value * Math.pow(10, 1)) / Math.pow(10, 1)));
                 }
 
                 @Override
@@ -511,7 +510,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return ()->setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -558,7 +557,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return () -> setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -615,7 +614,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
                 @Override
                 public IBoolean isVisible() {
-                    return ()->setting.getVisible();
+                    return setting::getVisible;
                 }
 
                 @Override
@@ -659,7 +658,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
 
             @Override
             public IBoolean isVisible() {
-                return ()->setting.getVisible();
+                return setting::getVisible;
             }
 
             @Override
@@ -695,9 +694,7 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
     }
 
     @EventHandler
-    private Listener<RenderEvent> onRender = new Listener<>(event -> {
-        render();
-    });
+    private Listener<RenderEvent> onRender = new Listener<>(event -> render());
 
     @EventHandler
     private Listener<KeyEvent> onKey = new Listener<>(event -> {
@@ -707,11 +704,11 @@ public class NextGui extends MinecraftHUDGUI implements Listenable {
             gui.getHUDVisibility().toggle();
     });
 
-    private final class NextColorScheme implements IColorScheme {
+    private static final class NextColorScheme implements IColorScheme {
 
         private final boolean isVisible;
 
-        public NextColorScheme (boolean isVisible) { ;
+        public NextColorScheme (boolean isVisible) {
             this.isVisible=isVisible;
         }
 

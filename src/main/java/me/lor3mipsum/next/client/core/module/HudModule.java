@@ -1,9 +1,7 @@
 package me.lor3mipsum.next.client.core.module;
 
-import com.lukflug.panelstudio.component.FixedComponent;
 import com.lukflug.panelstudio.component.IFixedComponent;
 import com.lukflug.panelstudio.theme.ITheme;
-import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.client.core.module.annotation.HudMod;
 
 import java.awt.*;

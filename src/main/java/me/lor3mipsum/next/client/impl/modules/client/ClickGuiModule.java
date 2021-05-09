@@ -29,6 +29,8 @@ public class ClickGuiModule extends Module {
         HSB
     }
 
+    public SettingSeparator generalSep = new SettingSeparator("General");
+
     public IntegerSetting animationSpeed = new IntegerSetting("Animation Speed", 10, 0, 100);
     public IntegerSetting scrollSpeed = new IntegerSetting("Scroll Speed", 10, 0, 100);
     public EnumSetting<ScrollMode> scrollMode = new EnumSetting<ScrollMode>("Scroll Mode", ScrollMode.Container);
@@ -45,9 +47,8 @@ public class ClickGuiModule extends Module {
         setEnabled(false);
     }
 
-    public ColorSetting registerColor (String name, boolean rainbow, NextColor value, boolean isVisible, boolean rainbowEnabled, boolean alphaEnabled) {
+    public void registerColor (String name, boolean rainbow, NextColor value, boolean isVisible, boolean rainbowEnabled, boolean alphaEnabled) {
         ColorSetting setting = new ColorSetting(name, rainbow, value, isVisible, rainbowEnabled, alphaEnabled);
         Main.settingManager.registerSetting(getName(), setting);
-        return setting;
     }
 }

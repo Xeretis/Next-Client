@@ -5,8 +5,8 @@ import me.lor3mipsum.next.client.core.setting.Setting;
 import java.util.function.Predicate;
 
 public class IntegerSetting extends Setting<Integer> {
-    private int min;
-    private int max;
+    private final int min;
+    private final int max;
 
     public IntegerSetting(String name, int defaultVal, int min, int max) {
         super(name, defaultVal);

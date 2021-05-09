@@ -3,11 +3,11 @@ package me.lor3mipsum.next.client.core.setting;
 import java.util.function.Predicate;
 
 public abstract class Setting<T> {
-    private String name;
+    private final String name;
     private T value;
-    private T defaultVal;
+    private final T defaultVal;
 
-    private boolean visible;
+    private final boolean visible;
 
     private Predicate<T> validator;
 

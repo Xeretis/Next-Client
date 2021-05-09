@@ -13,7 +13,7 @@ public class NextTheme extends ThemeBase {
     protected int height,padding,scroll;
     protected String separator;
 
-    private ClickGuiModule clickGuiModule = Main.moduleManager.getModule(ClickGuiModule.class);
+    private final ClickGuiModule clickGuiModule = Main.moduleManager.getModule(ClickGuiModule.class);
 
     public NextTheme (IColorScheme scheme, int height, int padding, int scroll, String separator) {
         super(scheme);
@@ -30,11 +30,10 @@ public class NextTheme extends ThemeBase {
         scheme.createSetting(this,"Hover Color",null,true,true,new Color(0, 0, 0, 30),false);
     }
 
-    protected void fillBaseRect (Context context, boolean focus, boolean active, int logicalLevel, int graphicalLevel, Color colorState) {
+    protected void fillBaseRect(Context context, boolean focus, boolean active, int logicalLevel, int graphicalLevel) {
         Color color=getMainColor(focus,active);
         if (logicalLevel>1 && !active) color=getBackgroundColor(focus);
         else if (graphicalLevel<=0 && active) color= scheme.getColor("Settings Color");
-        if (colorState!=null) color=colorState;
         context.getInterface().fillRect(context.getRect(),color,color,color,color);
     }
 
@@ -47,14 +46,13 @@ public class NextTheme extends ThemeBase {
     public IDescriptionRenderer getDescriptionRenderer() {
         return (inter, pos, text) -> {
             if(clickGuiModule.descriptionMode.getValue() == ClickGuiModule.DescriptionMode.Mouse) {
-                Point mouseDescPos=pos;
-                Rectangle r=new Rectangle(mouseDescPos,new Dimension(inter.getFontWidth(height, text)+2, height+2));
+                Rectangle r=new Rectangle(pos,new Dimension(inter.getFontWidth(height, text)+2, height+2));
                 Color bgcolor=scheme.getColor("Settings Color");
                 inter.fillRect(r,bgcolor,bgcolor,bgcolor,bgcolor);
                 Color color = scheme.getColor("Main Color");
                 inter.drawRect(r,color,color,color,color);
                 Color textColor = getFontColor(true);
-                inter.drawString(new Point(mouseDescPos.x+1,mouseDescPos.y+1), height, text,textColor);
+                inter.drawString(new Point(pos.x+1, pos.y+1), height, text,textColor);
             } else {
                 Point fixedDescPos= new Point(0, 0);
                 Rectangle r=new Rectangle(fixedDescPos,new Dimension(inter.getFontWidth(height, text)+2, height+2));
@@ -106,7 +104,6 @@ public class NextTheme extends ThemeBase {
                 }
 
                 if (graphicalLevel==0 && open && !NextGui.gui.getHUDVisibility().isOn()) {
-                    Color color= scheme.getColor("Main Color");
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 12, context.getPos().y + 6, 8, 2), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                     context.getInterface().fillRect(new Rectangle(context.getPos().x + context.getSize().width - 9, context.getPos().y + 3, 2, 8), getFontColor(focus), getFontColor(focus), getFontColor(focus), getFontColor(focus));
                 }
@@ -185,20 +182,18 @@ public class NextTheme extends ThemeBase {
         return new IButtonRenderer<Void>() {
             @Override
             public void renderButton (Context context, String title, boolean focus, Void state) {
-                fillBaseRect(context,focus,true,logicalLevel,graphicalLevel,null);
+                fillBaseRect(context,focus,true,logicalLevel,graphicalLevel);
 
                 renderOverlay(context);
 
-                Point points[]=new Point[3];
+                Point[] points =new Point[3];
                 Rectangle rect=new Rectangle(context.getRect().x+padding,context.getRect().y+padding,context.getRect().height-2*padding,context.getRect().height-2*padding);
                 if (title==null) rect.x+=context.getRect().width/2-context.getRect().height/2;
 
                 switch (symbol) {
                     case ITheme.CLOSE:
-                        break;
-                    case ITheme.MINIMIZE:
-                        break;
                     case ITheme.ADD:
+                    case ITheme.MINIMIZE:
                         break;
                     case ITheme.LEFT:
                         if (rect.height%2==1) rect.height-=1;
@@ -244,7 +239,7 @@ public class NextTheme extends ThemeBase {
         return new IButtonRenderer<String>() {
             @Override
             public void renderButton(Context context, String title, boolean focus, String state) {
-                fillBaseRect(context,focus,focus,logicalLevel,graphicalLevel,null);
+                fillBaseRect(context,focus,focus,logicalLevel,graphicalLevel);
 
                 renderOverlay(context);
 
@@ -294,7 +289,7 @@ public class NextTheme extends ThemeBase {
                     Context subContext=new Context(context.getInterface(),rect.width,rect.getLocation(),context.hasFocus(),context.onTop());
                     subContext.setHeight(rect.height);
 
-                    fillBaseRect(subContext,focus,i==target,logicalLevel,graphicalLevel,null);
+                    fillBaseRect(subContext,focus,i==target,logicalLevel,graphicalLevel);
 
                     renderOverlay(subContext);
 
@@ -375,7 +370,7 @@ public class NextTheme extends ThemeBase {
                 else x2+=context.getInterface().getFontWidth(height,content+"X");
 
                 // Draw stuff around the box
-                fillBaseRect(context,focus,false,logicalLevel,graphicalLevel,null);
+                fillBaseRect(context,focus,false,logicalLevel,graphicalLevel);
 
                 renderOverlay(context);
 
@@ -441,7 +436,7 @@ public class NextTheme extends ThemeBase {
         return new ISwitchRenderer<Boolean>() {
             @Override
             public void renderButton(Context context, String title, boolean focus, Boolean state) {
-                fillBaseRect(context,focus,false,logicalLevel,graphicalLevel,null);
+                fillBaseRect(context,focus,false,logicalLevel,graphicalLevel);
                 context.getInterface().fillRect(context.getRect(), getBackgroundColor(focus),  getBackgroundColor(focus), getBackgroundColor(focus), getBackgroundColor(focus));
 
                 renderOverlay(context);
@@ -480,7 +475,7 @@ public class NextTheme extends ThemeBase {
         return new ISwitchRenderer<String>() {
             @Override
             public void renderButton(Context context, String title, boolean focus, String state) {
-                fillBaseRect(context,focus,false,logicalLevel,graphicalLevel,null);
+                fillBaseRect(context,focus,false,logicalLevel,graphicalLevel);
 
                 Color color=scheme.getColor("Main Color");
                 if (graphicalLevel<=0 && container) {

@@ -5,8 +5,8 @@ import me.lor3mipsum.next.client.core.setting.Setting;
 import java.util.function.Predicate;
 
 public class FloatSetting extends Setting<Float> {
-    private float min;
-    private float max;
+    private final float min;
+    private final float max;
 
     public FloatSetting(String name, float defaultVal, float min, float max) {
         super(name, defaultVal);
