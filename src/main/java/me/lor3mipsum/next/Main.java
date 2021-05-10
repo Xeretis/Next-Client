@@ -25,6 +25,7 @@ import java.io.File;
 public class Main implements ModInitializer, Listenable {
 
 	public static final String CLIENT_NAME = "Next";
+	public static final String CLIENT_VERSION = "2.0.0";
 
 	public static final Logger LOG = LogManager.getLogger("Next");
 	public static final EventBus EVENT_BUS = new EventManager();
@@ -52,6 +53,8 @@ public class Main implements ModInitializer, Listenable {
 
 		LoadConfig.load();
 		LOG.info("Loaded config");
+
+		LOG.info(prefix);
 	}
 
 	@EventHandler

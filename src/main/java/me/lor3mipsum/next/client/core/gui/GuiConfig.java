@@ -3,6 +3,7 @@ package me.lor3mipsum.next.client.core.gui;
 import com.lukflug.panelstudio.config.IConfigList;
 import com.lukflug.panelstudio.config.IPanelConfig;
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.config.LoadConfig;
 import org.yaml.snakeyaml.Yaml;
 
 import java.awt.*;
@@ -39,6 +40,7 @@ public class GuiConfig implements IConfigList {
                 panelMap = (Map<String, Object>) mainMap.get("Panels");
                 inputStream.close();
             } catch (Exception e) {
+                LoadConfig.backup("Failed to load panels");
                 Main.LOG.error("Failed to load panels");
                 Main.LOG.error(e.getStackTrace());
             }
@@ -116,6 +118,7 @@ public class GuiConfig implements IConfigList {
                 point.x = (int) configMap.get("PosX");
                 point.y = (int) configMap.get("PosY");
             } catch (Exception e) {
+                LoadConfig.backup("Failed to load panel position");
                 Main.LOG.error("Failed to load panel position");
                 Main.LOG.error(e.getStackTrace());
                 return null;
@@ -134,6 +137,7 @@ public class GuiConfig implements IConfigList {
             try {
                 state = (boolean) configMap.get("State");
             } catch (Exception e) {
+                LoadConfig.backup("Failed to load panel state");
                 Main.LOG.error("Failed to load panel state");
                 Main.LOG.error(e.getStackTrace());
                 return false;
