@@ -1,7 +1,6 @@
 package me.lor3mipsum.next.client.core.setting;
 
 import me.lor3mipsum.next.client.core.module.Module;
-import me.lor3mipsum.next.client.core.module.annotation.Mod;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -25,8 +25,8 @@ public class TestModule extends Module {
 
     public SettingSeparator su = new SettingSeparator("Setting Separator");
 
-    public EnumSetting<TestEnum> en = new EnumSetting<TestEnum>("En", TestEnum.Val1);
-    public EnumSetting<TestEnum> in = new EnumSetting<TestEnum>("In", TestEnum.Val1, false);
+    public EnumSetting<TestEnum> en = new EnumSetting<>("En", TestEnum.Val1);
+    public EnumSetting<TestEnum> in = new EnumSetting<>("In", TestEnum.Val1, false);
     public StringSetting st = new StringSetting("String", "");
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
