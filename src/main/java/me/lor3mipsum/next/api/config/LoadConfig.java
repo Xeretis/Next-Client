@@ -2,6 +2,7 @@ package me.lor3mipsum.next.api.config;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.client.core.gui.GuiConfig;
+import me.lor3mipsum.next.client.core.gui.NextGui;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -18,10 +19,10 @@ import java.util.zip.ZipOutputStream;
 public class LoadConfig {
 
     public static String rootDir = Main.CLIENT_NAME + "/";
-    private static String backupDir = "Backups/";
-    private static String mainDir = "Main/";
-    private static String moduleDir = "Modules/";
-    private static String otherDir = "Other/";
+    private static final String backupDir = "Backups/";
+    private static final String mainDir = "Main/";
+    private static final String moduleDir = "Modules/";
+    private static final String otherDir = "Other/";
 
     public static void load() {
         try {
@@ -33,7 +34,7 @@ public class LoadConfig {
     }
 
     private static void loadGuiPositions() throws IOException {
-        Main.clickGui.gui.loadConfig(new GuiConfig(rootDir + mainDir));
+        NextGui.gui.loadConfig(new GuiConfig(rootDir + mainDir));
     }
 
     private static void loadClientData() throws IOException {
@@ -100,7 +101,8 @@ public class LoadConfig {
                             Files.copy(path, zs);
                             zs.closeEntry();
                         } catch (IOException e) {
-                            System.err.println(e);
+                            Main.LOG.error("Failed to zip backup");
+                            Main.LOG.error(e.getStackTrace());
                         }
                     });
         }

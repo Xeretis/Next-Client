@@ -2,6 +2,7 @@ package me.lor3mipsum.next.api.config;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.client.core.gui.GuiConfig;
+import me.lor3mipsum.next.client.core.gui.NextGui;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -14,10 +15,10 @@ import java.util.Map;
 public class SaveConfig {
 
     public static String rootDir = Main.CLIENT_NAME + "/";
-    private static String backupDir = "Backups/";
-    private static String mainDir = "Main/";
-    private static String moduleDir = "Modules/";
-    private static String otherDir = "Other/";
+    private static final String backupDir = "Backups/";
+    private static final String mainDir = "Main/";
+    private static final String moduleDir = "Modules/";
+    private static final String otherDir = "Other/";
 
     public static void save() {
         try {
@@ -55,7 +56,7 @@ public class SaveConfig {
 
     private static void saveGuiPositions() throws IOException {
         registerFiles(mainDir, "GuiPanels");
-        Main.clickGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
+        NextGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
     }
 
     private static void saveClientData() throws IOException {
