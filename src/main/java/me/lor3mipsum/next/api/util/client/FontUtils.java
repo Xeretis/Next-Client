@@ -13,22 +13,22 @@ public class FontUtils {
 
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
-    private static FontRenderer tahoma;
+    private static FontRenderer verdana;
     private static final CustomFont customFont = Main.moduleManager.getModule(CustomFont.class);
 
     public static void drawString(MatrixStack matrix, String text, int x, int y, Color color) {
-        if (tahoma == null) tahoma = new FontRenderer(new GlyphPage(new Font("Verdana", Font.PLAIN, 256), 256));
+        if (verdana == null) verdana = new FontRenderer(new GlyphPage(new Font("Verdana", Font.PLAIN, 256), 256));
         if (customFont.getEnabled()) {
-            tahoma.drawString(matrix, text, x, y-3, false, color);
+            verdana.drawString(matrix, text, x, y-3, false, color);
         } else {
             mc.textRenderer.drawWithShadow(new MatrixStack(), text, x, y, color.getRGB());
         }
     }
 
     public static float getStringWidth(String string) {
-        if (tahoma == null) tahoma = new FontRenderer(new GlyphPage(new Font("Verdana", Font.PLAIN, 256), 256));
+        if (verdana == null) verdana = new FontRenderer(new GlyphPage(new Font("Verdana", Font.PLAIN, 256), 256));
         if (customFont.getEnabled()) {
-            return tahoma.getWidth(string);
+            return verdana.getWidth(string);
         } else {
             return mc.textRenderer.getWidth(string);
         }
