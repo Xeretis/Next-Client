@@ -55,7 +55,7 @@ public class LoadConfig {
             if(!mainMap.get("Version").equals(Main.CLIENT_VERSION))
                 backup("Version change");
 
-            if (mainMap.get("Prefix") !=null)
+            if (mainMap.get("Prefix") != null)
                 Main.prefix = (String) mainMap.get("Prefix");
         } catch (Exception e) {
             backup("Failed to load client data");

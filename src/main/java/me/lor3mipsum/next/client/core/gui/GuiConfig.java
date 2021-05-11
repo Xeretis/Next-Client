@@ -4,6 +4,7 @@ import com.lukflug.panelstudio.config.IConfigList;
 import com.lukflug.panelstudio.config.IPanelConfig;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.config.LoadConfig;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.awt.*;
@@ -53,7 +54,11 @@ public class GuiConfig implements IConfigList {
             return;
         if (!loading) {
             try {
-                Yaml yaml = new Yaml();
+                DumperOptions options = new DumperOptions();
+                options.setIndent(4);
+                options.setPrettyFlow(true);
+
+                Yaml yaml = new Yaml(options);
                 OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(fileLocation + "GuiPanels" + ".yaml"), StandardCharsets.UTF_8);
 
                 StringWriter writer = new StringWriter();

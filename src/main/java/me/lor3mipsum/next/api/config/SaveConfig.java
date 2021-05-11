@@ -3,6 +3,10 @@ package me.lor3mipsum.next.api.config;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.client.core.gui.GuiConfig;
 import me.lor3mipsum.next.client.core.gui.NextGui;
+import me.lor3mipsum.next.client.core.module.Module;
+import me.lor3mipsum.next.client.core.setting.Setting;
+import me.lor3mipsum.next.client.impl.settings.ColorSetting;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -23,6 +27,7 @@ public class SaveConfig {
     public static void save() {
         try {
             saveConfig();
+            saveModules();
             saveClientData();
             saveGuiPositions();
         } catch (IOException e) {
@@ -54,6 +59,43 @@ public class SaveConfig {
         Files.createFile(Paths.get(rootDir + location + name + ".yaml"));
     }
 
+    private static void saveModules() throws IOException {
+        DumperOptions options = new DumperOptions();
+        options.setIndent(4);
+        options.setPrettyFlow(true);
+
+        Yaml yaml  = new Yaml(options);
+
+        for (Module module : Main.moduleManager.getModules()) {
+            OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + moduleDir + module.getName() + ".yaml"), StandardCharsets.UTF_8);
+
+            Map<String, Object> mainMap = new LinkedHashMap<>();
+
+            mainMap.put("Enabled", module.getEnabled());
+            mainMap.put("Drawn", module.getDrawn());
+            mainMap.put("Bind", module.getBind());
+
+            if (!Main.settingManager.getAllSettingsFrom(module).isEmpty()) {
+                Map<String, Object> settingMap = new LinkedHashMap<>();
+
+                for (Setting setting : Main.settingManager.getAllSettingsFrom(module)) {
+                    if (setting instanceof ColorSetting)
+                        settingMap.put(setting.getName(), ((ColorSetting) setting).toLong());
+                    else
+                        settingMap.put(setting.getName(), setting.getValue());
+                }
+
+                mainMap.put("Settings", settingMap);
+            }
+
+            StringWriter writer = new StringWriter();
+            yaml.dump(mainMap, writer);
+
+            fileOutputStreamWriter.write(writer.toString());
+            fileOutputStreamWriter.close();
+        }
+    }
+
     private static void saveGuiPositions() throws IOException {
         registerFiles(mainDir, "GuiPanels");
         NextGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
@@ -62,7 +104,11 @@ public class SaveConfig {
     private static void saveClientData() throws IOException {
         registerFiles(mainDir, "ClientData");
 
-        Yaml yaml  = new Yaml();
+        DumperOptions options = new DumperOptions();
+        options.setIndent(4);
+        options.setPrettyFlow(true);
+
+        Yaml yaml  = new Yaml(options);
         OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + mainDir + "ClientData" + ".yaml"), StandardCharsets.UTF_8);
 
         Map<String, Object> mainMap = new LinkedHashMap<>();
