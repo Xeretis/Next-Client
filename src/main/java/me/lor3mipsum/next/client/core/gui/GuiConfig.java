@@ -34,10 +34,8 @@ public class GuiConfig implements IConfigList {
 
                 InputStream inputStream;
                 inputStream = Files.newInputStream(Paths.get(fileLocation + "GuiPanels" + ".yaml"));
-                Map<String, Object> mainMap = yaml.load(inputStream);
-                if (mainMap.get("Panels") == null)
-                    return;
-                panelMap = (Map<String, Object>) mainMap.get("Panels");
+
+                panelMap = yaml.load(inputStream);
                 inputStream.close();
             } catch (Exception e) {
                 LoadConfig.backup("Failed to load panels");
@@ -58,11 +56,8 @@ public class GuiConfig implements IConfigList {
                 Yaml yaml = new Yaml();
                 OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(fileLocation + "GuiPanels" + ".yaml"), StandardCharsets.UTF_8);
 
-                Map<String, Object> mainMap = new LinkedHashMap<>();
-                mainMap.put("Panels", panelMap);
-
                 StringWriter writer = new StringWriter();
-                yaml.dump(mainMap, writer);
+                yaml.dump(panelMap, writer);
 
                 fileOutputStreamWriter.write(writer.toString());
                 fileOutputStreamWriter.close();

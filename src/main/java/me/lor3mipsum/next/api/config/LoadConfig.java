@@ -49,10 +49,10 @@ public class LoadConfig {
         try {
             Map<String, Object> mainMap = yaml.load(inputStream);
 
-            if (mainMap.get("Name") != Main.CLIENT_NAME)
+            if (!mainMap.get("Name").equals(Main.CLIENT_NAME))
                 backup("Wtf did you do ...?");
 
-            if(mainMap.get("Version") != Main.CLIENT_VERSION)
+            if(!mainMap.get("Version").equals(Main.CLIENT_VERSION))
                 backup("Version change");
 
             if (mainMap.get("Prefix") !=null)
