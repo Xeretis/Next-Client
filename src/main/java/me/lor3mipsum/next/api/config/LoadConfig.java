@@ -76,7 +76,7 @@ public class LoadConfig {
                     }
                 }
             }catch (Exception e) {
-                backup("Failed to load module '" + module.getName() + "'");
+                Backup.backup("Failed to load module '" + module.getName() + "'");
                 Main.LOG.error("Failed to load module '" + module.getName() + "'");
                 Main.LOG.error(e.getMessage(), e);
             }
@@ -100,61 +100,17 @@ public class LoadConfig {
             Map<String, Object> mainMap = yaml.load(inputStream);
 
             if (!mainMap.get("Name").equals(Main.CLIENT_NAME))
-                backup("Wtf did you do ...?");
+                Backup.backup("Wtf did you do ...?");
 
             if(!mainMap.get("Version").equals(Main.CLIENT_VERSION))
-                backup("Version change");
+                Backup.backup("Version change");
 
             if (mainMap.get("Prefix") != null)
                 Main.prefix = (String) mainMap.get("Prefix");
         } catch (Exception e) {
-            backup("Failed to load client data");
+            Backup.backup("Failed to load client data");
             Main.LOG.error("Failed to load client data");
             Main.LOG.error(e.getMessage(), e);
-        }
-    }
-
-    public static void backup(String backupReason) {
-        Main.LOG.warn("Creating backup '" + backupReason + "'");
-
-        try {
-            if (!Files.exists(Paths.get(rootDir + backupDir)))
-                Files.createDirectories(Paths.get(rootDir + backupDir));
-
-            File out = new File(rootDir + backupDir, "backup_" + System.currentTimeMillis());
-
-            out.mkdirs();
-
-            File reason = new File(out, "Reason.txt");
-            reason.createNewFile();
-
-            com.google.common.io.Files.write(backupReason.getBytes(StandardCharsets.UTF_8), reason);
-
-            pack(rootDir + mainDir, out.getPath() + "/Main.zip");
-            pack(rootDir + moduleDir, out.getPath() + "/Modules.zip");
-        } catch (Exception e) {
-            Main.LOG.error("Failed to backup");
-            Main.LOG.error(e.getMessage(), e);
-        }
-    }
-
-    private static void pack(String sourceDirPath, String zipFilePath) throws IOException {
-        Path p = Files.createFile(Paths.get(zipFilePath));
-        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
-            Path pp = Paths.get(sourceDirPath);
-            Files.walk(pp)
-                    .filter(path -> !Files.isDirectory(path))
-                    .forEach(path -> {
-                        ZipEntry zipEntry = new ZipEntry(pp.relativize(path).toString());
-                        try {
-                            zs.putNextEntry(zipEntry);
-                            Files.copy(path, zs);
-                            zs.closeEntry();
-                        } catch (IOException e) {
-                            Main.LOG.error("Failed to zip backup");
-                            Main.LOG.error(e.getMessage(), e);
-                        }
-                    });
         }
     }
 }
