@@ -41,7 +41,7 @@ public class GuiConfig implements IConfigList {
             } catch (Exception e) {
                 LoadConfig.backup("Failed to load panels");
                 Main.LOG.error("Failed to load panels");
-                Main.LOG.error(e.getStackTrace());
+                Main.LOG.error(e.getStackTrace().toString());
             }
         } else {
             panelMap = new LinkedHashMap<>();
@@ -68,7 +68,7 @@ public class GuiConfig implements IConfigList {
                 fileOutputStreamWriter.close();
             } catch (Exception e) {
                 Main.LOG.error("Failed to save panels");
-                Main.LOG.error(e.getStackTrace());
+                Main.LOG.error(e.getMessage(), e);
             }
             panelMap = null;
         }
@@ -92,7 +92,7 @@ public class GuiConfig implements IConfigList {
             return new NextPanelConfig(configMap);
         } catch (Exception e) {
             Main.LOG.error("Failed to get panel");
-            Main.LOG.error(e.getStackTrace());
+            Main.LOG.error(e.getMessage(), e);
         }
         return null;
     }
@@ -120,7 +120,7 @@ public class GuiConfig implements IConfigList {
             } catch (Exception e) {
                 LoadConfig.backup("Failed to load panel position");
                 Main.LOG.error("Failed to load panel position");
-                Main.LOG.error(e.getStackTrace());
+                Main.LOG.error(e.getMessage(), e);
                 return null;
             }
             return point;
@@ -139,7 +139,7 @@ public class GuiConfig implements IConfigList {
             } catch (Exception e) {
                 LoadConfig.backup("Failed to load panel state");
                 Main.LOG.error("Failed to load panel state");
-                Main.LOG.error(e.getStackTrace());
+                Main.LOG.error(e.getMessage(), e);
                 return false;
             }
             return state;

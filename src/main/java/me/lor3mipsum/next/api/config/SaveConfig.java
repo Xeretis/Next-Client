@@ -32,7 +32,7 @@ public class SaveConfig {
             saveGuiPositions();
         } catch (IOException e) {
             Main.LOG.error("Config saving failed");
-            Main.LOG.error(e.getStackTrace());
+            Main.LOG.error(e.getStackTrace().toString());
         }
     }
 
@@ -76,16 +76,19 @@ public class SaveConfig {
             mainMap.put("Bind", module.getBind());
 
             if (!Main.settingManager.getAllSettingsFrom(module).isEmpty()) {
-                Map<String, Object> settingMap = new LinkedHashMap<>();
+                Map<String, Object> settingsMap = new LinkedHashMap<>();
 
                 for (Setting setting : Main.settingManager.getAllSettingsFrom(module)) {
-                    if (setting instanceof ColorSetting)
-                        settingMap.put(setting.getName(), ((ColorSetting) setting).toLong());
-                    else
-                        settingMap.put(setting.getName(), setting.getValue());
+                    if (setting instanceof ColorSetting) {
+                        Map<String, Object> colorMap = new LinkedHashMap<>();
+                        colorMap.put("Rainbow", ((ColorSetting) setting).getRainbow());
+                        colorMap.put("Value", ((ColorSetting) setting).getColor().getRGB());
+                        settingsMap.put(setting.getName(), colorMap);
+                    } else
+                        settingsMap.put(setting.getName(), setting.getValue());
                 }
 
-                mainMap.put("Settings", settingMap);
+                mainMap.put("Settings", settingsMap);
             }
 
             StringWriter writer = new StringWriter();
