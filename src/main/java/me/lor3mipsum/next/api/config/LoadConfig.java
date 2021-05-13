@@ -9,17 +9,11 @@ import me.lor3mipsum.next.client.core.setting.Setting;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class LoadConfig {
 
