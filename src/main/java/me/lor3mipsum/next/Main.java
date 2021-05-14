@@ -13,14 +13,10 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.quantumclient.renderer.text.FontRenderer;
-import org.quantumclient.renderer.text.GlyphPage;
 
 import java.awt.*;
-import java.io.File;
 
 public class Main implements ModInitializer, Listenable {
 
@@ -53,8 +49,6 @@ public class Main implements ModInitializer, Listenable {
 
 		LoadConfig.load();
 		LOG.info("Loaded config");
-
-		LOG.info(prefix);
 	}
 
 	@EventHandler
