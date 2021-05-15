@@ -41,11 +41,6 @@ public class EntityUtils {
         return isInRenderDistance(entity.getPos().getX(), entity.getPos().getZ());
     }
 
-    public static boolean isInRenderDistance(BlockPos pos) {
-        if (pos == null) return false;
-        return isInRenderDistance(pos.getX(), pos.getZ());
-    }
-
     public static boolean isInRenderDistance(double posX, double posZ) {
         double x = Math.abs(mc.gameRenderer.getCamera().getPos().x - posX);
         double z = Math.abs(mc.gameRenderer.getCamera().getPos().z - posZ);
