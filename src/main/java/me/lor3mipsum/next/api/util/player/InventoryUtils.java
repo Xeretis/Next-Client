@@ -10,6 +10,7 @@ import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -32,6 +33,15 @@ public class InventoryUtils {
     private static MinecraftClient mc = MinecraftClient.getInstance();
 
     private static final InventoryAction ACTION = new InventoryAction();
+
+    //Selection
+
+    public static void select(int slot) {
+        mc.player.inventory.selectedSlot = slot;
+        mc.player.networkHandler.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
+    }
+
+    //Actions
 
     public static InventoryAction move() {
         ACTION.type = SlotActionType.PICKUP;
