@@ -18,7 +18,7 @@ import net.minecraft.world.RaycastContext;
 import java.util.UUID;
 
 public class EntityUtils {
-    private static MinecraftClient mc = MinecraftClient.getInstance();
+    private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public static boolean isHostile(LivingEntity entity) {
         return entity instanceof Monster;

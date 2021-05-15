@@ -7,6 +7,7 @@ import me.lor3mipsum.next.api.event.game.RenderEvent;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.SettingManager;
+import me.lor3mipsum.next.client.core.social.SocialManager;
 import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
 import me.zero.alpine.listener.EventHandler;
@@ -28,6 +29,7 @@ public class Main implements ModInitializer, Listenable {
 
 	public static ModuleManager moduleManager;
 	public static SettingManager settingManager;
+	public static SocialManager socialManager;
 	public static NextGui clickGui;
 
 	public static String prefix = ".";
@@ -43,6 +45,9 @@ public class Main implements ModInitializer, Listenable {
 
 		moduleManager = new ModuleManager();
 		LOG.info("Initialized the module manager");
+
+		socialManager = new SocialManager();
+		LOG.info("Initialized the social manager");
 
 		clickGui = new NextGui();
 		LOG.info("Initialized the clickgui");
