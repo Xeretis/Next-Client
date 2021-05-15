@@ -2,6 +2,8 @@ package me.lor3mipsum.next.mixin;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.config.SaveConfig;
+import me.lor3mipsum.next.api.event.NextEvent;
+import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.game.GameLeftEvent;
 import me.lor3mipsum.next.api.event.game.OpenScreenEvent;
 import net.minecraft.client.MinecraftClient;
@@ -33,5 +35,15 @@ public class MinecraftClientMixin {
         if (world != null) {
             Main.EVENT_BUS.post(new GameLeftEvent());
         }
+    }
+
+    @Inject(at = @At("HEAD"), method = "tick")
+    private void onPreTick(CallbackInfo info) {
+        Main.EVENT_BUS.post(new TickEvent(NextEvent.Era.PRE));
+    }
+
+    @Inject(at = @At("TAIL"), method = "tick")
+    private void onTick(CallbackInfo info) {
+        Main.EVENT_BUS.post(new TickEvent(NextEvent.Era.POST));
     }
 }
