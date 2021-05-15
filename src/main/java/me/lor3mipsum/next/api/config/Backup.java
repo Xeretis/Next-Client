@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -26,7 +28,10 @@ public class Backup {
             if (!Files.exists(Paths.get(rootDir + backupDir)))
                 Files.createDirectories(Paths.get(rootDir + backupDir));
 
-            File out = new File(rootDir + backupDir, "backup_" + System.currentTimeMillis());
+            SimpleDateFormat sdf = new SimpleDateFormat("MM_dd_yyyy-HH_mm");
+            Date resultdate = new Date(System.currentTimeMillis());
+
+            File out = new File(rootDir + backupDir, "backup-" + sdf.format(resultdate));
 
             out.mkdirs();
 
