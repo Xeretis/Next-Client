@@ -20,6 +20,8 @@ public class Drawn extends Command {
 
         Module mod = Next.INSTANCE.moduleManager.getModule(args[0], false);
 
+        if (mod == null) throw new CommandException("The module '" + args[0] + "' does not exist");
+
         boolean state = !mod.getDrawn();
 
         if (args.length >= 2) {
