@@ -27,7 +27,8 @@
     "WorldChunkMixin",
     "ClientPlayNetworkHandlerMixin",
     "ClientWorldMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "accessor.HorseScreenHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
