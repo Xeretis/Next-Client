@@ -329,12 +329,16 @@ public class NextTheme extends ThemeBase {
     @Override
     public ITextFieldRenderer getTextRenderer (int logicalLevel, int graphicalLevel, boolean container) {
         return new ITextFieldRenderer() {
+            private String title;
+
             @Override
             public int renderTextField (Context context, String title, boolean focus, String content, int position, int select, int boxPosition, boolean insertMode) {
                 // Declare and assign variables
                 Color color=focus?scheme.getColor("Main Color"):new Color(0,0,0,0);
                 Color textColor=getFontColor(focus);
                 Color highlightColor=scheme.getColor("Highlight Color");
+
+                this.title = title;
 
                 Rectangle rect=getTextArea(context,title);
                 int strlen=context.getInterface().getFontWidth(height,content.substring(0,position));
@@ -413,7 +417,7 @@ public class NextTheme extends ThemeBase {
 
             @Override
             public int transformToCharPos(Context context, String content, int boxPosition) {
-                Rectangle rect=getTextArea(context,content);
+                Rectangle rect=getTextArea(context, title);
                 Point mouse=context.getInterface().getMouse();
 
                 int offset=context.getInterface().getFontWidth(height,content.substring(0,boxPosition));
