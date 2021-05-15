@@ -6,6 +6,7 @@ import me.lor3mipsum.next.client.core.gui.GuiConfig;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.setting.Setting;
+import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import org.yaml.snakeyaml.Yaml;
 
@@ -65,7 +66,9 @@ public class LoadConfig {
                             Map<String, Object> colorMap = (Map<String, Object>) settingsMap.get(setting.getName());
                             ((ColorSetting) setting).setRainbow((boolean) colorMap.get("Rainbow"));
                             setting.setValue(new NextColor((int) colorMap.get("Value"), true));
-                        } else
+                        } else if (setting instanceof SettingSeparator)
+                            continue;
+                        else
                             setting.setValue(settingsMap.get(setting.getName()));
                     }
                 }

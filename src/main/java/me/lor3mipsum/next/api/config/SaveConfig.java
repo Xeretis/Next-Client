@@ -5,6 +5,7 @@ import me.lor3mipsum.next.client.core.gui.GuiConfig;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.setting.Setting;
+import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -84,7 +85,9 @@ public class SaveConfig {
                         colorMap.put("Rainbow", ((ColorSetting) setting).getRainbow());
                         colorMap.put("Value", ((ColorSetting) setting).getColor().getRGB());
                         settingsMap.put(setting.getName(), colorMap);
-                    } else
+                    } else if (setting instanceof SettingSeparator)
+                        continue;
+                    else
                         settingsMap.put(setting.getName(), setting.getValue());
                 }
 
