@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.client.core.setting;
 
+import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.client.core.module.Module;
 
 import java.lang.reflect.Field;
@@ -26,19 +27,30 @@ public class SettingManager {
                     values.add((Setting) obj);
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                Main.LOG.error("Registering settings failed");
+                Main.LOG.error(e.getMessage(), e);
             }
         }
         settingMap.put(name, values);
     }
 
     public void registerSetting(String name, Setting value) {
-        settingMap.get(name).add(value);
+        if (settingMap.containsKey(name))
+            settingMap.get(name).add(value);
+        else {
+            settingMap.put(name, new ArrayList<>());
+            settingMap.get(name).add(value);
+        }
     }
 
     public void registerSetting(Object module, Setting value) {
         if (module instanceof Module)
-            settingMap.get(((Module) module).getName()).add(value);
+            if (settingMap.containsKey(((Module) module).getName()))
+                settingMap.get(((Module) module).getName()).add(value);
+            else {
+                settingMap.put(((Module) module).getName(), new ArrayList<>());
+                settingMap.get(((Module) module).getName()).add(value);
+            }
     }
 
     public List<Setting> getAllSettingsFrom(String name) {

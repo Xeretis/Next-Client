@@ -24,7 +24,7 @@ public class ModuleManager implements Listenable {
         try {
             addModules();
         } catch (Exception e) {
-            Main.LOG.error(e.getStackTrace());
+            Main.LOG.error(e.getMessage(), e);
         }
     }
 
