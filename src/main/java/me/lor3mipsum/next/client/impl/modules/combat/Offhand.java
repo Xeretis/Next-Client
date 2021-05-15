@@ -8,6 +8,7 @@ import me.lor3mipsum.next.client.impl.settings.ModeSetting;
 import me.lor3mipsum.next.client.impl.settings.NumberSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
+import me.lor3mipsum.next.client.utils.ChatUtils;
 import me.lor3mipsum.next.client.utils.player.InventoryUtils;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.Item;
@@ -22,8 +23,15 @@ public class Offhand extends Module {
     public BooleanSetting inInv = new BooleanSetting("InInv", false);
     public KeybindSetting keybind = new KeybindSetting(GLFW.GLFW_KEY_UNKNOWN);
 
+    private boolean hadError;
+
     public Offhand() {
         super("Offhand", "Manages your offhand automatically", Category.COMBAT);
+    }
+
+    @Override
+    public void onEnable() {
+        hadError = false;
     }
 
     @EventTarget
@@ -34,6 +42,13 @@ public class Offhand extends Module {
         if (mc.currentScreen instanceof InventoryScreen && !inInv.isOn()) return;
 
         InventoryUtils.FindItemResult selected = InventoryUtils.findItemWithCount(getItem());
+
+        if (selected.count <= 0 && !hadError) {
+            hadError = true;
+            ChatUtils.moduleError(this, "No " + getItem().getName().getString() + " found");
+            return;
+        } else if (selected.count > 0)
+            hadError = false;
 
         if (elytra.isOn() && mc.player.inventory.getArmorStack(2).getItem() == Items.ELYTRA)
             return;

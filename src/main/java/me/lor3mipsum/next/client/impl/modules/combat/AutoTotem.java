@@ -7,6 +7,7 @@ import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.KeybindSetting;
 import me.lor3mipsum.next.client.module.Category;
 import me.lor3mipsum.next.client.module.Module;
+import me.lor3mipsum.next.client.utils.ChatUtils;
 import me.lor3mipsum.next.client.utils.player.InventoryUtils;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.Item;
@@ -20,8 +21,15 @@ public class AutoTotem extends Module {
 
     public Offhand offhand = Next.INSTANCE.moduleManager.getModule(Offhand.class);
 
+    private boolean hadError;
+
     public AutoTotem() {
         super("AutoTotem", "no.", Category.COMBAT);
+    }
+
+    @Override
+    public void onEnable() {
+        hadError = false;
     }
 
     @EventTarget
@@ -33,11 +41,18 @@ public class AutoTotem extends Module {
 
         InventoryUtils.FindItemResult selected = InventoryUtils.findItemWithCount(Items.TOTEM_OF_UNDYING);
 
+        if (selected.count <= 0 && !hadError) {
+            hadError = true;
+            ChatUtils.moduleError(this, "No totems found");
+            return;
+        } else if (selected.count > 0)
+            hadError = false;
+
         if (offhand.elytra.isOn() && mc.player.inventory.getArmorStack(2).getItem() == Items.ELYTRA)
             if (mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING)
                 InventoryUtils.move().from(selected.slot).toOffhand();
 
-        if ((!offhand.isOn() || (mc.player.getHealth() + mc.player.getAbsorptionAmount() < offhand.health.getNumber())) && selected.count > 0)
+        if ((!offhand.isOn() || (mc.player.getHealth() + mc.player.getAbsorptionAmount() < offhand.health.getNumber())))
             if (mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING)
                 InventoryUtils.move().from(selected.slot).toOffhand();
     }
