@@ -1,5 +1,8 @@
 package me.lor3mipsum.next.client.core.social;
 
+import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.client.impl.modules.client.Social;
+
 public class Friend {
     private final String name;
     private final int level;
@@ -14,6 +17,8 @@ public class Friend {
     }
 
     public int getLevel() {
+        if (Main.moduleManager.getModule(Social.class).ignoreFriendLevel.getValue())
+            return 0;
         return this.level;
     }
 }

@@ -1,5 +1,8 @@
 package me.lor3mipsum.next.client.core.social;
 
+import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.client.impl.modules.client.Social;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,9 @@ public class SocialManager {
     }
 
     public boolean isFriend(String name) {
+        if (!Main.moduleManager.getModule(Social.class).getEnabled() || !Main.moduleManager.getModule(Social.class).friends.getValue())
+            return false;
+
         boolean value = false;
 
         for (Friend friend : getFriends()) {
@@ -48,6 +54,9 @@ public class SocialManager {
     }
 
     public boolean isEnemy(String name) {
+        if (!Main.moduleManager.getModule(Social.class).getEnabled() || !Main.moduleManager.getModule(Social.class).enemies.getValue())
+            return false;
+
         boolean value = false;
 
         for (Enemy enemy : getEnemies()) {
