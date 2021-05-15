@@ -30,7 +30,7 @@ public class InventoryUtils {
     public static final int ARMOR_START = 36;
     public static final int ARMOR_END = 39;
 
-    private static MinecraftClient mc = MinecraftClient.getInstance();
+    private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     private static final InventoryAction ACTION = new InventoryAction();
 
