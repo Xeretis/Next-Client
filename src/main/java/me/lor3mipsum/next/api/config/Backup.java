@@ -42,6 +42,7 @@ public class Backup {
 
             pack(rootDir + mainDir, out.getPath() + "/Main.zip");
             pack(rootDir + moduleDir, out.getPath() + "/Modules.zip");
+            pack(rootDir + otherDir, out.getPath() + "/Other.zip");
         } catch (Exception e) {
             Main.LOG.error("Failed to backup");
             Main.LOG.error(e.getMessage(), e);
