@@ -40,13 +40,21 @@ public class Module implements Listenable {
     public void setEnabled(boolean enabled) {
         if (enabled) {
             this.enabled = true;
+
             Main.EVENT_BUS.subscribe(this);
             Main.EVENT_BUS.post(new ModuleEnableEvent(this));
+
+            Main.LOG.info("Enabled module '" + getName() + "'");
+
             onEnable();
         } else {
             this.enabled = false;
+
             Main.EVENT_BUS.unsubscribe(this);
             Main.EVENT_BUS.post(new ModuleDisableEvent(this));
+
+            Main.LOG.info("Disabled module '" + getName() + "'");
+
             onDisable();
         }
     }

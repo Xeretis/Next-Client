@@ -30,17 +30,4 @@ public class TestModule2 extends Module {
     public StringSetting st = new StringSetting("St", "");
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
-
-
-
-    @Override
-    public void onEnable() {
-        Main.LOG.info("TestModule enabled");
-        ChatUtils.moduleInfo(this, "hey");
-    }
-
-    @Override
-    public void onDisable() {
-        Main.LOG.info("TestModule disabled");
-    }
 }
