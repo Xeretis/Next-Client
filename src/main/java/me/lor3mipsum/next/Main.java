@@ -53,13 +53,13 @@ public class Main implements ModInitializer, Listenable {
 		LOG.info("Initialized the clickgui");
 
 		LoadConfig.load();
-		LOG.info("Loaded config");
+		LOG.info("Loaded the config");
 	}
 
 	@EventHandler
 	private Listener<GameLeftEvent> onDisconnect = new Listener<>(event -> {
 		SaveConfig.save();
-		LOG.info("Saved config");
+		LOG.info("Saved the config");
 	});
 
 	@EventHandler
