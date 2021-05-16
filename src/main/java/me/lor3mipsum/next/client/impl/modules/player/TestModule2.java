@@ -1,7 +1,5 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
-import me.lor3mipsum.next.Main;
-import me.lor3mipsum.next.api.util.client.ChatUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;

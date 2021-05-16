@@ -1,7 +1,7 @@
 package me.lor3mipsum.next.client.core.command;
 
 import me.lor3mipsum.next.Main;
-import me.lor3mipsum.next.api.util.client.ChatUtils;
+import me.lor3mipsum.next.api.util.player.ChatUtils;
 import me.lor3mipsum.next.client.core.command.annotation.Cmd;
 import org.reflections.Reflections;
 

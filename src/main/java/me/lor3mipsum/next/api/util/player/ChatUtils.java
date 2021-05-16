@@ -1,4 +1,4 @@
-package me.lor3mipsum.next.api.util.client;
+package me.lor3mipsum.next.api.util.player;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.client.core.command.Command;
