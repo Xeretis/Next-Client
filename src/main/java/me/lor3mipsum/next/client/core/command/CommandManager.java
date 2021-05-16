@@ -46,7 +46,7 @@ public class CommandManager {
 
 
         if (command == null) {
-            ChatUtils.error("'" + cmdName + "' doesn't exist");
+            ChatUtils.error("Command  '" + cmdName + "' doesn't exist");
             return false;
         } else {
             String[] args = new String[split.length - 1];

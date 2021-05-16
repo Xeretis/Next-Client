@@ -7,6 +7,7 @@ import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.impl.settings.StringSetting;
+import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.arikia.dev.drpc.DiscordEventHandlers;
@@ -37,5 +38,5 @@ public class DiscordRPCModule extends Module {
             DiscordRPC.discordUpdatePresence(new DiscordRichPresence.Builder(state.getValue()).setBigImage("nextlogo", Main.CLIENT_NAME + " " + Main.CLIENT_VERSION).setStartTimestamps(System.currentTimeMillis() - tick * 50).setDetails(details.getValue()).build());
             tick++;
         }
-    });
+    }, EventPriority.LOW);
 }
