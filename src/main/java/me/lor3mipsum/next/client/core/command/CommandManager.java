@@ -58,4 +58,9 @@ public class CommandManager {
             return true;
         }
     }
+
+    //Getters
+    public List<Command> getCommands() {
+        return commands;
+    }
 }
