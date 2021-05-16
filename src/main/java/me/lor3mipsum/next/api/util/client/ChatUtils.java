@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.api.util.client;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.client.core.command.Command;
 import me.lor3mipsum.next.client.core.module.Module;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
@@ -23,6 +24,10 @@ public class ChatUtils {
 
     public static String getModulePrefix(Module mod) {
         return Formatting.GRAY + "[" + Formatting.AQUA + mod.getName() + Formatting.GRAY + "] " + Formatting.RESET;
+    }
+
+    public static String getCommandPrefix(Command cmd) {
+        return Formatting.GRAY + "[" + Formatting.DARK_AQUA + cmd.getName() + Formatting.GRAY + "] " + Formatting.RESET;
     }
 
     public static void formattedMessage(Formatting color, String msg) {
@@ -65,5 +70,15 @@ public class ChatUtils {
         sendMessage(getClientPrefix() + getModulePrefix(mod) + Formatting.RED + msg);
     }
 
-    //TODO: Make command messages
+    public static void commandInfo(Command cmd, String msg) {
+        sendMessage(getClientPrefix() + getCommandPrefix(cmd) + Formatting.GRAY + msg);
+    }
+
+    public static void commandWarning(Command cmd, String msg) {
+        sendMessage(getClientPrefix() + getCommandPrefix(cmd) + Formatting.YELLOW + msg);
+    }
+
+    public static void commandError(Command cmd, String msg) {
+        sendMessage(getClientPrefix() + getCommandPrefix(cmd) + Formatting.RED + msg);
+    }
 }

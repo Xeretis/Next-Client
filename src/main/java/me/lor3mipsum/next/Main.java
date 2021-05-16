@@ -4,6 +4,7 @@ import me.lor3mipsum.next.api.config.LoadConfig;
 import me.lor3mipsum.next.api.config.SaveConfig;
 import me.lor3mipsum.next.api.event.game.GameLeftEvent;
 import me.lor3mipsum.next.api.event.game.RenderEvent;
+import me.lor3mipsum.next.client.core.command.CommandManager;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
 import me.lor3mipsum.next.client.core.setting.SettingManager;
@@ -29,6 +30,7 @@ public class Main implements ModInitializer, Listenable {
 
 	public static ModuleManager moduleManager;
 	public static SettingManager settingManager;
+	public static CommandManager commandManager;
 	public static SocialManager socialManager;
 	public static NextGui clickGui;
 
@@ -45,6 +47,9 @@ public class Main implements ModInitializer, Listenable {
 
 		moduleManager = new ModuleManager();
 		LOG.info("Initialized the module manager");
+
+		commandManager = new CommandManager();
+		LOG.info("Initialized the command manager");
 
 		socialManager = new SocialManager();
 		LOG.info("Initialized the social manager");

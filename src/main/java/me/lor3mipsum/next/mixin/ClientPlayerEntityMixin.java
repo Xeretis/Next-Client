@@ -22,6 +22,12 @@ public abstract class ClientPlayerEntityMixin {
     private void onSendChatMessage(String msg, CallbackInfo info) {
         if (ignoreChatMessage) return;
 
+        if(msg.startsWith(Main.prefix) && msg.length() > 1) {
+            Main.commandManager.executeCommand(msg);
+            info.cancel();
+            return;
+        }
+
         if (!msg.startsWith(Main.prefix) && !msg.startsWith("/")) {
             SendMessageEvent event = new SendMessageEvent(msg);
 

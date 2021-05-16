@@ -24,20 +24,21 @@ public class ModuleManager implements Listenable {
         try {
             addModules();
         } catch (Exception e) {
+            Main.LOG.error("Failed to load modules");
             Main.LOG.error(e.getMessage(), e);
         }
     }
 
-    public void addModules() throws IllegalAccessException, InstantiationException {
-        Reflections reflections = new Reflections("me.lor3mipsum.next.client.impl");
+    private void addModules() throws IllegalAccessException, InstantiationException {
+        Reflections reflections = new Reflections("me.lor3mipsum.next.client.impl.modules");
 
-        Set<Class<? extends Module>> featureClasses = reflections.getSubTypesOf(Module.class);
+        Set<Class<? extends Module>> moduleClasses = reflections.getSubTypesOf(Module.class);
 
-        for (Class<? extends Module> moduleClass : featureClasses) {
+        for (Class<? extends Module> moduleClass : moduleClasses) {
             if (moduleClass.isAnnotationPresent(Mod.class)) {
-                Module loadedFeature = moduleClass.newInstance();
-                Main.settingManager.registerObject(loadedFeature.getName(), loadedFeature);
-                modules.add(loadedFeature);
+                Module loadedModule = moduleClass.newInstance();
+                Main.settingManager.registerObject(loadedModule.getName(), loadedModule);
+                modules.add(loadedModule);
             }
         }
     }
