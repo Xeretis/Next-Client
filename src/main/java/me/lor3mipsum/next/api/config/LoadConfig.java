@@ -7,6 +7,8 @@ import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.setting.Setting;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
+import me.lor3mipsum.next.client.core.social.Enemy;
+import me.lor3mipsum.next.client.core.social.Friend;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 public class LoadConfig {
@@ -27,6 +30,8 @@ public class LoadConfig {
     public static void load() {
         try {
             loadModules();
+            loadFriends();
+            loadEnemies();
             loadClientData();
             loadGuiPositions();
         } catch (IOException e) {
@@ -49,6 +54,7 @@ public class LoadConfig {
             InputStream inputStream = Files.newInputStream(Paths.get(modulesLocation + module.getName() + ".yaml"));
 
             try {
+
                 Map<String, Object> mainMap = yaml.load(inputStream);
 
                 module.setEnabled( (boolean) mainMap.get("Enabled"));
@@ -72,11 +78,62 @@ public class LoadConfig {
                             setting.setValue(settingsMap.get(setting.getName()));
                     }
                 }
+
             }catch (Exception e) {
                 Backup.backup("Failed to load module '" + module.getName() + "'");
                 Main.LOG.error("Failed to load module '" + module.getName() + "'");
                 Main.LOG.error(e.getMessage(), e);
             }
+        }
+    }
+
+    private static void loadFriends() throws IOException {
+        Yaml yaml = new Yaml();
+        String friendsLocation = rootDir + otherDir;
+
+        if (!Files.exists(Paths.get(friendsLocation + "Friends" + ".yaml")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(friendsLocation + "Friends" + ".yaml"));
+
+        try {
+
+            Map<String, Object> mainMap = yaml.load(inputStream);
+
+            List<Map<String, Object>> friends = (List<Map<String, Object>>) mainMap.get("Friends");
+
+            for (Map<String, Object> friendMap : friends)
+                Main.socialManager.addFriend(new Friend( (String) friendMap.get("Name"), (int) friendMap.get("Level")));
+
+        } catch (Exception e) {
+            Backup.backup("Failed to load friends");
+            Main.LOG.error("Failed to load friends");
+            Main.LOG.error(e.getMessage(), e);
+        }
+    }
+
+    private static void loadEnemies() throws IOException {
+        Yaml yaml = new Yaml();
+        String enemiesLocation = rootDir + otherDir;
+
+        if (!Files.exists(Paths.get(enemiesLocation + "Enemies" + ".yaml")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(enemiesLocation + "Enemies" + ".yaml"));
+
+        try {
+
+            Map<String, Object> mainMap = yaml.load(inputStream);
+
+            List<Map<String, Object>> enemies = (List<Map<String, Object>>) mainMap.get("Enemies");
+
+            for (Map<String, Object> enemyMap : enemies)
+                Main.socialManager.addEnemy(new Enemy( (String) enemyMap.get("Name"), (int) enemyMap.get("Level")));
+
+        } catch (Exception e) {
+            Backup.backup("Failed to load enemies");
+            Main.LOG.error("Failed to load enemies");
+            Main.LOG.error(e.getMessage(), e);
         }
     }
 
@@ -94,6 +151,7 @@ public class LoadConfig {
         InputStream inputStream = Files.newInputStream(Paths.get(clientDataLocation + "ClientData" + ".yaml"));
 
         try {
+
             Map<String, Object> mainMap = yaml.load(inputStream);
 
             if (!mainMap.get("Name").equals(Main.CLIENT_NAME))
@@ -104,6 +162,7 @@ public class LoadConfig {
 
             if (mainMap.get("Prefix") != null)
                 Main.prefix = (String) mainMap.get("Prefix");
+
         } catch (Exception e) {
             Backup.backup("Failed to load client data");
             Main.LOG.error("Failed to load client data");

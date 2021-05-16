@@ -6,6 +6,8 @@ import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.setting.Setting;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
+import me.lor3mipsum.next.client.core.social.Enemy;
+import me.lor3mipsum.next.client.core.social.Friend;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -14,7 +16,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SaveConfig {
@@ -29,6 +33,8 @@ public class SaveConfig {
         try {
             saveConfig();
             saveModules();
+            saveFriends();
+            saveEnemies();
             saveClientData();
             saveGuiPositions();
         } catch (IOException e) {
@@ -100,6 +106,70 @@ public class SaveConfig {
             fileOutputStreamWriter.write(writer.toString());
             fileOutputStreamWriter.close();
         }
+    }
+
+    private static void saveFriends() throws IOException {
+        registerFiles(otherDir, "Friends");
+
+        DumperOptions options = new DumperOptions();
+        options.setIndent(4);
+        options.setPrettyFlow(true);
+
+        Yaml yaml  = new Yaml(options);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Friends" + ".yaml"), StandardCharsets.UTF_8);
+
+        Map<String, Object> mainMap = new LinkedHashMap<>();
+
+        List<Map<String, Object>> friends = new ArrayList<>();
+
+        for (Friend friend : Main.socialManager.getFriends()) {
+            Map<String, Object> friendMap = new LinkedHashMap<>();
+
+            friendMap.put("Name", friend.getName());
+            friendMap.put("Level", friend.getLevel());
+
+            friends.add(friendMap);
+        }
+
+        mainMap.put("Friends", friends);
+
+        StringWriter writer = new StringWriter();
+        yaml.dump(mainMap, writer);
+
+        fileOutputStreamWriter.write(writer.toString());
+        fileOutputStreamWriter.close();
+    }
+
+    private static void saveEnemies() throws IOException {
+        registerFiles(otherDir, "Enemies");
+
+        DumperOptions options = new DumperOptions();
+        options.setIndent(4);
+        options.setPrettyFlow(true);
+
+        Yaml yaml  = new Yaml(options);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Enemies" + ".yaml"), StandardCharsets.UTF_8);
+
+        Map<String, Object> mainMap = new LinkedHashMap<>();
+
+        List<Map<String, Object>> enemies = new ArrayList<>();
+
+        for (Enemy enemy : Main.socialManager.getEnemies()) {
+            Map<String, Object> enemyMap = new LinkedHashMap<>();
+
+            enemyMap.put("Name", enemy.getName());
+            enemyMap.put("Level", enemy.getLevel());
+
+            enemies.add(enemyMap);
+        }
+
+        mainMap.put("Enemies", enemies);
+
+        StringWriter writer = new StringWriter();
+        yaml.dump(mainMap, writer);
+
+        fileOutputStreamWriter.write(writer.toString());
+        fileOutputStreamWriter.close();
     }
 
     private static void saveGuiPositions() throws IOException {
