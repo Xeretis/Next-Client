@@ -16,6 +16,12 @@ public class MathUtils {
         return value;
     }
 
+    public static double clamp(double value, double min, double max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
     public int getRandom(int cap) {
         return rng.nextInt(cap);
     }
