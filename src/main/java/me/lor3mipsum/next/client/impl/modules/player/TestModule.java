@@ -1,12 +1,23 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
+import me.lor3mipsum.next.api.event.game.RenderEvent;
+import me.lor3mipsum.next.api.util.client.FontUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
+import me.lor3mipsum.next.api.util.render.RenderUtils;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
+
+import java.awt.*;
+import java.util.List;
 
 @Mod(name = "TestModule", description = "Test description", category = Category.PLAYER, bind = GLFW.GLFW_KEY_R)
 public class TestModule extends Module {
@@ -28,4 +39,9 @@ public class TestModule extends Module {
     public StringSetting st = new StringSetting("String", "");
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
+
+    @EventHandler
+    Listener<RenderEvent> onRender = new Listener<>(event -> {
+
+    });
 }
