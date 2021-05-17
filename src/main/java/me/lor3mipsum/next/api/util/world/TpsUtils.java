@@ -20,10 +20,6 @@ public class TpsUtils implements Listenable {
     private long timeLastTimeUpdate = -1;
     private long timeGameJoined;
 
-    private TpsUtils() {
-        Main.EVENT_BUS.subscribe(this);
-    }
-
     @EventHandler
     private Listener<PacketReciveEvent> onPacketReceive = new Listener<>(event -> {
         if (event.packet instanceof WorldTimeUpdateS2CPacket) {

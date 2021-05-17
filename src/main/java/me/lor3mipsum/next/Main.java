@@ -4,6 +4,8 @@ import me.lor3mipsum.next.api.config.LoadConfig;
 import me.lor3mipsum.next.api.config.SaveConfig;
 import me.lor3mipsum.next.api.event.game.GameLeftEvent;
 import me.lor3mipsum.next.api.event.game.RenderEvent;
+import me.lor3mipsum.next.api.util.player.RotationUtils;
+import me.lor3mipsum.next.api.util.world.TpsUtils;
 import me.lor3mipsum.next.client.core.command.CommandManager;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.ModuleManager;
@@ -59,6 +61,10 @@ public class Main implements ModInitializer, Listenable {
 
 		LoadConfig.load();
 		LOG.info("Loaded the config");
+
+		EVENT_BUS.subscribe(RotationUtils.INSTANCE);
+		EVENT_BUS.subscribe(TpsUtils.INSTANCE);
+		LOG.info("Registered the utils");
 	}
 
 	@EventHandler

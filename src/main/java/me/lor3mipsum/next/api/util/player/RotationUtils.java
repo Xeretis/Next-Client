@@ -36,10 +36,6 @@ public class RotationUtils implements Listenable {
 
     public static RotationUtils INSTANCE = new RotationUtils();
 
-    public RotationUtils() {
-        Main.EVENT_BUS.subscribe(this);
-    }
-
     public static float[] calculateAngle(Vec3d target) {
         Vec3d eyesPos = new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
 
@@ -99,13 +95,13 @@ public class RotationUtils implements Listenable {
         return mc.player.pitch + MathHelper.wrapDegrees((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)) - mc.player.pitch);
     }
 
-    public static void rotateBack() {
+    public static void rotateToCam() {
         mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(mc.player.yaw, mc.player.pitch, mc.player.isOnGround()));
         INSTANCE.setCamRotation(mc.player.yaw, mc.player.pitch);
     }
 
     @EventHandler
-    Listener<SendMovementPacketsEvent> onSendMovementPackets = new Listener<>(event ->  {
+    private Listener<SendMovementPacketsEvent> onSendMovementPackets = new Listener<>(event ->  {
         if (event.era == NextEvent.Era.PRE) {
             if (mc.cameraEntity != mc.player) return;
             sentLastRotation = false;
@@ -143,7 +139,7 @@ public class RotationUtils implements Listenable {
                     Rotation rotation = rotations.get(i);
 
                     setCamRotation(rotation.yaw, rotation.pitch);
-                    if (rotation.clientSide) setClientRotation(rotation);
+                    if (rotation.clientSide) setClientSideRotation(rotation);
                     rotation.sendPacket();
                     if (rotation.clientSide) resetRotation();
 
@@ -160,7 +156,7 @@ public class RotationUtils implements Listenable {
     });
 
     @EventHandler
-    Listener<TickEvent> onTick = new Listener<>(event -> {
+    private Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.era == NextEvent.Era.PRE) {
             rotationTimer++;
         }
@@ -200,11 +196,11 @@ public class RotationUtils implements Listenable {
     }
 
     private void setupMovementPacketRotation(Rotation rotation) {
-        setClientRotation(rotation);
+        setClientSideRotation(rotation);
         setCamRotation(rotation.yaw, rotation.pitch);
     }
 
-    private void setClientRotation(Rotation rotation) {
+    private void setClientSideRotation(Rotation rotation) {
         preYaw = mc.player.yaw;
         prePitch = mc.player.pitch;
 
