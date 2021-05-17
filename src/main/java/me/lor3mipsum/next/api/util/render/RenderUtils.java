@@ -1,24 +1,12 @@
 package me.lor3mipsum.next.api.util.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import me.lor3mipsum.next.api.util.client.FontUtils;
-import me.lor3mipsum.next.api.util.misc.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.system.MemoryStack;
-
-import java.awt.*;
-import java.nio.FloatBuffer;
 
 public class RenderUtils {
 
