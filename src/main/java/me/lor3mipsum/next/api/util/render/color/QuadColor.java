@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public class QuadColor extends RenderColor {
 
-    private Function<Integer, int[]> getColorFunc;
+    private final Function<Integer, int[]> getColorFunc;
 
     public static QuadColor single(float red, float green, float blue, float alpha) {
         return QuadColor.single((int) (red * 255f), (int) (green * 255f), (int) (blue * 255f), (int) (alpha * 255f));
@@ -106,7 +106,7 @@ public class QuadColor extends RenderColor {
         return newColor;
     }
 
-    public static enum CardinalDirection {
+    public enum CardinalDirection {
         NORTH(3, 0),
         EAST(0, 1),
         SOUTH(1, 2),
@@ -115,7 +115,7 @@ public class QuadColor extends RenderColor {
         public final int vertex1;
         public final int vertex2;
 
-        private CardinalDirection(int vertex1, int vertex2) {
+        CardinalDirection(int vertex1, int vertex2) {
             this.vertex1 = vertex1;
             this.vertex2 = vertex2;
         }

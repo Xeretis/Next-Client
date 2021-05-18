@@ -1,27 +1,16 @@
 package me.lor3mipsum.next.api.util.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.api.util.render.color.LineColor;
 import me.lor3mipsum.next.api.util.render.color.QuadColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.*;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-
-import java.awt.*;
 
 public class RenderUtils {
 
@@ -57,8 +46,6 @@ public class RenderUtils {
         RenderSystem.popMatrix();
     }
 
-    // -------------------- Fill + Outline Boxes --------------------
-
     public static void drawBoxBoth(BlockPos blockPos, QuadColor color, float lineWidth, Direction... excludeDirs) {
         drawBoxBoth(new Box(blockPos), color, lineWidth, excludeDirs);
     }
@@ -79,8 +66,6 @@ public class RenderUtils {
         drawBoxOutline(box, outlineColor, lineWidth, excludeDirs);
     }
 
-    // -------------------- Fill Boxes --------------------
-
     public static void drawBoxFill(BlockPos blockPos, QuadColor color, Direction... excludeDirs) {
         drawBoxFill(new Box(blockPos), color, excludeDirs);
     }
@@ -100,8 +85,6 @@ public class RenderUtils {
 
         cleanup();
     }
-
-    // -------------------- Outline Boxes --------------------
 
     public static void drawBoxOutline(BlockPos blockPos, QuadColor color, float lineWidth, Direction... excludeDirs) {
         drawBoxOutline(new Box(blockPos), color, lineWidth, excludeDirs);
@@ -126,8 +109,6 @@ public class RenderUtils {
         RenderSystem.enableCull();
         cleanup();
     }
-
-    // -------------------- Lines --------------------
 
     public static void drawLine(double x1, double y1, double z1, double x2, double y2, double z2, LineColor color, float width) {
         setup();
