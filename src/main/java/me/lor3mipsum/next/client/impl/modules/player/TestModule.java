@@ -1,14 +1,17 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
 import me.lor3mipsum.next.api.event.game.RenderEvent;
+import me.lor3mipsum.next.api.event.world.WorldRenderEvent;
 import me.lor3mipsum.next.api.util.client.FontUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.api.util.render.RenderUtils;
+import me.lor3mipsum.next.api.util.render.color.QuadColor;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
+import me.lor3mipsum.next.mixin.WorldRendererMixin;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.util.math.MatrixStack;
@@ -41,7 +44,7 @@ public class TestModule extends Module {
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
 
     @EventHandler
-    Listener<RenderEvent> onRender = new Listener<>(event -> {
-
+    Listener<WorldRenderEvent> onRender = new Listener<>(event -> {
+        RenderUtils.drawBoxBoth(mc.player.getBlockPos(), QuadColor.single(co.getValue().getRGB()), 2.5f);
     });
 }
