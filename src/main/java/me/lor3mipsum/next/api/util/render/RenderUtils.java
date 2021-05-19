@@ -11,7 +11,6 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.*;
 import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.opengl.GL11;
 
 public class RenderUtils {
 

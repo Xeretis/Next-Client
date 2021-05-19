@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
+import java.awt.*;
+
 @Mod(name = "AirPlace", description = "Allows you to place blocks in air", category = Category.EXPLOIT, enabled = true)
 public class AirPlace extends Module {
 
@@ -35,7 +37,7 @@ public class AirPlace extends Module {
 
     public ColorSetting side = new ColorSetting("SidesColor", false, new NextColor(255, 255, 255, 100));
     public ColorSetting line = new ColorSetting("LinesColor", false, new NextColor(255, 255, 255, 255));
-    public FloatSetting lineWidth = new FloatSetting("LineWidth", 2.5f, 0.1f, 5f);
+    public DoubleSetting lineWidth = new DoubleSetting("LineWidth", 2.5f, 0.1f, 5f);
 
     private BlockPos target;
 
@@ -67,6 +69,6 @@ public class AirPlace extends Module {
                 || !(mc.player.getMainHandStack().getItem() instanceof BlockItem))
             return;
 
-        RenderUtils.drawBoxBoth(target, QuadColor.single(side.getValue().getRGB()), QuadColor.single(line.getValue().getRGB()), lineWidth.getValue());
+        RenderUtils.drawBoxBoth(target, QuadColor.gradient(side.getValue().getRGB(), Color.WHITE.getBlue(), QuadColor.CardinalDirection.NORTH), QuadColor.single(line.getValue().getRGB()), lineWidth.getValue().floatValue());
     }, event -> event.era == NextEvent.Era.POST);
 }

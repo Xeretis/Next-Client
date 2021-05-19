@@ -450,48 +450,6 @@ public class NextGui extends MinecraftHUDGUI {
                     return null;
                 }
             };
-        } else if (setting instanceof FloatSetting) {
-            return new INumberSetting() {
-                @Override
-                public String getDisplayName() {
-                    return "> " +  setting.getName();
-                }
-
-                @Override
-                public IBoolean isVisible() {
-                    return setting::getVisible;
-                }
-
-                @Override
-                public double getNumber() {
-                    return ((Number) setting.getValue()).doubleValue();
-                }
-
-                @Override
-                public void setNumber(double value) {
-                    ((FloatSetting)setting).setValue((float) ((float) Math.round(value * Math.pow(10, 1)) / Math.pow(10, 1)));
-                }
-
-                @Override
-                public double getMaximumValue() {
-                    return ((Number) ((FloatSetting) setting).getMax()).doubleValue();
-                }
-
-                @Override
-                public double getMinimumValue() {
-                    return ((Number) ((FloatSetting) setting).getMin()).doubleValue();
-                }
-
-                @Override
-                public int getPrecision() {
-                    return 1;
-                }
-
-                @Override
-                public Stream<ISetting<?>> getSubSettings() {
-                    return null;
-                }
-            };
         } else if (setting instanceof EnumSetting) {
             return new IEnumSetting() {
                 private final ILabeled[] states=((EnumSetting<Enum<?>>)setting).getModes().stream().map(mode->new Labeled(mode,null,()->true)).toArray(ILabeled[]::new);

@@ -19,7 +19,6 @@ public class TestModule2 extends Module {
     public BooleanSetting bo = new BooleanSetting("Bo", false);
     public IntegerSetting nu = new IntegerSetting("Nu", 10, 9, 11);
     public DoubleSetting du = new DoubleSetting("Du", 5.0, 6.0, 7.0);
-    public FloatSetting fu = new FloatSetting("Fu", 15f, 14f, 16f);
 
     public SettingSeparator su = new SettingSeparator("");
 
