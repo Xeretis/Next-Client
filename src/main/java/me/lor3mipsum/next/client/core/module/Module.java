@@ -37,8 +37,8 @@ public class Module implements Listenable {
     }
 
     //For state manipulation
-    public void setEnabled(boolean enabled) {
-        if (enabled) {
+    public void setEnabled(boolean newEnabled) {
+        if (newEnabled) {
             this.enabled = true;
 
             Main.EVENT_BUS.subscribe(this);
