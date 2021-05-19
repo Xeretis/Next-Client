@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.api.util.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.lor3mipsum.next.api.util.render.color.LineColor;
 import me.lor3mipsum.next.api.util.render.color.QuadColor;
@@ -133,18 +134,28 @@ public class RenderUtils {
     }
 
     public static void setup() {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+//        RenderSystem.enableBlend();
+//        RenderSystem.defaultBlendFunc();
+//        RenderSystem.disableAlphaTest();
+//        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+//        RenderSystem.disableTexture();
         RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
+        RenderSystem.enableCull();
     }
 
     public static void cleanup() {
-        RenderSystem.shadeModel(GL11.GL_FLAT);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.disableBlend();
+//        RenderSystem.shadeModel(GL11.GL_FLAT);
+//        RenderSystem.enableAlphaTest();
+//        RenderSystem.disableBlend();
+//        RenderSystem.enableTexture();
         RenderSystem.enableTexture();
+        RenderSystem.disableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 
     public static class Vertexer {

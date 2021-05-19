@@ -10,6 +10,9 @@ import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.core.social.Enemy;
 import me.lor3mipsum.next.client.core.social.Friend;
 import me.lor3mipsum.next.client.impl.settings.ColorSetting;
+import me.lor3mipsum.next.client.impl.settings.DoubleSetting;
+import me.lor3mipsum.next.client.impl.settings.FloatSetting;
+import me.lor3mipsum.next.client.impl.settings.IntegerSetting;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -74,6 +77,12 @@ public class LoadConfig {
                             setting.setValue(new NextColor((int) colorMap.get("Value"), true));
                         } else if (setting instanceof SettingSeparator)
                             continue;
+                        else if (setting instanceof FloatSetting)
+                            setting.setValue((Float) settingsMap.get(setting.getName()));
+                        else if (setting instanceof DoubleSetting)
+                            setting.setValue((Double) settingsMap.get(setting.getName()));
+                        else if (setting instanceof IntegerSetting)
+                            setting.setValue((Integer) settingsMap.get(setting.getName()));
                         else
                             setting.setValue(settingsMap.get(setting.getName()));
                     }

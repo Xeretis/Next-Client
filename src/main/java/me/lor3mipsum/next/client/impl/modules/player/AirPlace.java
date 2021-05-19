@@ -41,7 +41,7 @@ public class AirPlace extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (!(mc.crosshairTarget instanceof BlockHitResult) || !(mc.player.getMainHandStack().getItem() instanceof BlockItem)) return;
+        if (mc.player == null || mc.world == null || (mc.crosshairTarget == null) || !(mc.crosshairTarget instanceof BlockHitResult) || !(mc.player.getMainHandStack().getItem() instanceof BlockItem)) return;
 
         target = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
 
