@@ -33,6 +33,11 @@ public class Help extends Command {
         } else if (args.length == 1) {
             Command cmd = commands.stream().filter(c -> c.getNameAndAliases().contains(args[0])).findFirst().orElse(null);
 
+            if (cmd == null) {
+                ChatUtils.commandError(this, "Couldn't find command " + Formatting.WHITE + args[0]);
+                return;
+            }
+
             StringBuilder msg = new StringBuilder("[" + Formatting.WHITE);
 
             List<String> aliases = cmd.getNameAndAliases();

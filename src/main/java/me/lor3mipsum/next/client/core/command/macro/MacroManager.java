@@ -28,7 +28,7 @@ public class MacroManager implements Listenable {
 
     public Macro getMacro(String name) {
         for (Macro macro : macros)
-            if (macro.getName() == name)
+            if (macro.getName().equals(name))
                 return macro;
         return null;
     }
