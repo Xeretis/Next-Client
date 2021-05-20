@@ -53,7 +53,10 @@ public class HudLogo extends HudModule {
 
         @Override
         public Dimension getSize(IInterface inter) {
-            return new Dimension((int) (50 * scale.getValue()),(int) (50 * scale.getValue()));
+            if (!((int) (50 * scale.getValue()) > inter.getFontWidth(NextGui.FONT_HEIGHT, "Logo")))
+                return new Dimension(inter.getFontWidth(NextGui.FONT_HEIGHT, "Logo"), (int) (50 * scale.getValue()));
+            else
+                return new Dimension((int) (50 * scale.getValue()),(int) (50 * scale.getValue()));
         }
     }
 }
