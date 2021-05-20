@@ -15,59 +15,21 @@ import static org.lwjgl.opengl.GL11C.*;
 
 public class GlyphPageFontRenderer {
     public Random fontRandom = new Random();
-    /**
-     * Current X coordinate at which to draw the next character.
-     */
+
     private float posX;
-    /**
-     * Current Y coordinate at which to draw the next character.
-     */
     private float posY;
-    /**
-     * Array of RGB triplets defining the 16 standard chat colors followed by 16 darker version of the same colors for
-     * drop shadows.
-     */
+
     private int[] colorCode = new int[32];
-    /**
-     * Used to specify new red value for the current color.
-     */
     private float red;
-    /**
-     * Used to specify new blue value for the current color.
-     */
     private float blue;
-    /**
-     * Used to specify new green value for the current color.
-     */
     private float green;
-    /**
-     * Used to speify new alpha value for the current color.
-     */
     private float alpha;
-    /**
-     * Text color of the currently rendering string.
-     */
     private int textColor;
 
-    /**
-     * Set if the "k" style (random) is active in currently rendering string
-     */
     private boolean randomStyle;
-    /**
-     * Set if the "l" style (bold) is active in currently rendering string
-     */
     private boolean boldStyle;
-    /**
-     * Set if the "o" style (italic) is active in currently rendering string
-     */
     private boolean italicStyle;
-    /**
-     * Set if the "n" style (underlined) is active in currently rendering string
-     */
     private boolean underlineStyle;
-    /**
-     * Set if the "m" style (strikethrough) is active in currently rendering string
-     */
     private boolean strikethroughStyle;
 
     private GlyphPage regularGlyphPage, boldGlyphPage, italicGlyphPage, boldItalicGlyphPage;
@@ -142,10 +104,6 @@ public class GlyphPageFontRenderer {
         return new GlyphPageFontRenderer(regularPage, boldPage, italicPage, boldItalicPage);
     }
 
-
-    /**
-     * Draws the specified string.
-     */
     public int drawString(String text, float x, float y, int color, boolean dropShadow) {
         GlStateManager.enableAlphaTest();
         this.resetStyles();
@@ -161,9 +119,6 @@ public class GlyphPageFontRenderer {
         return i;
     }
 
-    /**
-     * Render single line string by setting GL color, current (posX,posY), and calling renderStringAtPos()
-     */
     private int renderString(String text, float x, float y, int color, boolean dropShadow) {
         if (text == null) {
             return 0;
@@ -189,9 +144,6 @@ public class GlyphPageFontRenderer {
         }
     }
 
-    /**
-     * Render a single line string at the current (posX,posY) and update posX
-     */
     private void renderStringAtPos(String text, boolean shadow) {
         GlyphPage glyphPage = getCurrentGlyphPage();
 
@@ -310,9 +262,6 @@ public class GlyphPageFontRenderer {
             return regularGlyphPage;
     }
 
-    /**
-     * Reset all style flag fields in the class to false; called at the start of string rendering
-     */
     private void resetStyles() {
         this.randomStyle = false;
         this.boldStyle = false;
@@ -371,16 +320,10 @@ public class GlyphPageFontRenderer {
         return width / 2;
     }
 
-    /**
-     * Trims a string to fit a specified Width.
-     */
     public String trimStringToWidth(String text, int width) {
         return this.trimStringToWidth(text, width, false);
     }
 
-    /**
-     * Trims a string to a specified width, and will reverse it if par3 is set.
-     */
     public String trimStringToWidth(String text, int maxWidth, boolean reverse) {
         StringBuilder stringbuilder = new StringBuilder();
 

@@ -14,7 +14,7 @@ import com.lukflug.panelstudio.setting.*;
 import com.lukflug.panelstudio.theme.*;
 import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
-import me.lor3mipsum.next.api.util.client.FontUtils;
+import me.lor3mipsum.next.api.util.render.font.FontUtils;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.client.core.gui.components.NextColorComponent;
@@ -25,7 +25,6 @@ import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.setting.Setting;
 import me.lor3mipsum.next.client.impl.modules.client.ClickGuiModule;
 import me.lor3mipsum.next.client.impl.settings.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
@@ -51,7 +50,7 @@ public class NextGui extends MinecraftHUDGUI {
             @Override
             public void drawString(Point pos, int height, String s, Color c) {
                 end(false);
-                FontUtils.drawString(new MatrixStack(), s, pos.x, pos.y, c);
+                FontUtils.drawString( s, pos.x, pos.y, c);
                 begin(false);
             }
 

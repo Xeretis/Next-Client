@@ -24,9 +24,11 @@ import static org.lwjgl.opengl.GL11C.GL_TRIANGLES;
 public class GlyphPage {
     private int imgSize;
     private int maxFontHeight = -1;
+
     private Font font;
     private boolean antiAliasing;
     private boolean fractionalMetrics;
+
     private HashMap<Character, Glyph> glyphCharacterMap = new HashMap<>();
 
     private BufferedImage bufferedImage;
@@ -39,7 +41,6 @@ public class GlyphPage {
     }
 
     public void generateGlyphPage(char[] chars) {
-        // Calculate glyphPageSize
         double maxWidth = -1;
         double maxHeight = -1;
 
