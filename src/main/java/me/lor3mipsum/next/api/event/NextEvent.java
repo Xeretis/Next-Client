@@ -15,7 +15,6 @@ public class NextEvent extends Cancellable {
 
     public enum Era {
         PRE,
-        PERI,
         POST
     }
 }
