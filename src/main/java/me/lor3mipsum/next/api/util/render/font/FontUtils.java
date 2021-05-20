@@ -18,7 +18,7 @@ public class FontUtils {
     public static void drawString(String text, int x, int y, Color color) {
         if (arial == null) arial = GlyphPageFontRenderer.create("Arial", 19, false, false, false);
         if (customFont.getEnabled()) {
-            arial.drawString(text, x, y-2, (color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24), customFont.shadow.getValue());
+            arial.drawString(text, x-2, y-2, (color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24), customFont.shadow.getValue());
         } else {
             mc.textRenderer.drawWithShadow(new MatrixStack(), text, x, y, color.getRGB());
         }
