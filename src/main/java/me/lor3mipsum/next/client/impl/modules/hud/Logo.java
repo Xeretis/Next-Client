@@ -24,7 +24,7 @@ import java.awt.*;
 
 @Mod(name = "Logo", description = "The logo of the client", category = Category.HUD)
 @HudMod(posX = 0, posY = 0)
-public class HudLogo extends HudModule {
+public class Logo extends HudModule {
     public DoubleSetting scale = new DoubleSetting("Scale", 1, 0.1, 5);
     public ColorSetting color = new ColorSetting("Color", false, new NextColor(255, 255, 255, 255));
 
@@ -43,7 +43,7 @@ public class HudLogo extends HudModule {
     private class LogoComponent extends HUDComponent {
 
         public LogoComponent(ITheme theme) {
-            super(new Labeled(getName(),null,()->true), HudLogo.this.position, getName());
+            super(new Labeled(getName(),null,()->true), Logo.this.position, getName());
         }
 
         @Override
