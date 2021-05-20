@@ -35,6 +35,7 @@ public class Logo extends HudModule {
         component = new LogoComponent(theme);
     }
 
+    //doing this in the render event of the component only renders a solid square for some reason
     @EventHandler
     private Listener<RenderEvent> onRender = new Listener<>(event -> {
         RenderUtils.drawImage(new MatrixStack(), img, component.getPosition(NextGui.guiInterface).x, component.getPosition(NextGui.guiInterface).y, (int) (50 * scale.getValue()), (int) (50 * scale.getValue()), color.getValue().getRed() / 255f, color.getValue().getGreen() / 255f, color.getValue().getBlue() / 255f, color.getValue().getAlpha() / 255f);
