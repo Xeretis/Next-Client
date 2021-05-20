@@ -1,17 +1,35 @@
 package me.lor3mipsum.next.api.util.misc;
 
 public class Timer {
-    public long ms;
+    private long time;
 
-    public Timer() {
-        this.ms = 0;
+    public Timer()
+    {
+        time = -1;
     }
 
-    public boolean hasPassed(int ms) {
-        return System.currentTimeMillis() - this.ms >= ms;
+    public boolean passed(double ms)
+    {
+        return System.currentTimeMillis() - this.time >= ms;
     }
 
-    public void reset() {
-        this.ms = System.currentTimeMillis();
+    public void reset()
+    {
+        this.time = System.currentTimeMillis();
+    }
+
+    public void resetTimeSkipTo(long p_MS)
+    {
+        this.time = System.currentTimeMillis() + p_MS;
+    }
+
+    public long getTime()
+    {
+        return time;
+    }
+
+    public void setTime(long time)
+    {
+        this.time = time;
     }
 }
