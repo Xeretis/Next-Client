@@ -5,12 +5,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.lor3mipsum.next.api.util.render.color.LineColor;
 import me.lor3mipsum.next.api.util.render.color.QuadColor;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.apache.commons.lang3.ArrayUtils;
+import org.lwjgl.opengl.GL11;
 
 public class RenderUtils {
 
@@ -44,6 +47,24 @@ public class RenderUtils {
         RenderSystem.scaled(scale, scale, 1);
         drawItem(itemStack, (int) (x / scale), (int) (y / scale), overlay);
         RenderSystem.popMatrix();
+    }
+
+    public static void drawImage(MatrixStack matrices, Identifier identifier, int x, int y, int imageWidth, int imageHeight, float r, float g, float b, float a) {
+
+        RenderSystem.enableAlphaTest();
+        RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(770, 771);
+        GL11.glColor4f(r, g, b, a);
+
+        mc.getTextureManager().bindTexture(identifier);
+        Screen.drawTexture(matrices, x, y, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+
+        GL11.glColor4f(1, 1, 1, 1);
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableBlend();
+        RenderSystem.popMatrix();
+
     }
 
     public static void drawBoxBoth(BlockPos blockPos, QuadColor color, float lineWidth, Direction... excludeDirs) {
