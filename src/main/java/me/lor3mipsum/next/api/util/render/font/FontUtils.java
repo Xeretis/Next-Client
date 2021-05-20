@@ -1,7 +1,6 @@
 package me.lor3mipsum.next.api.util.render.font;
 
 import me.lor3mipsum.next.Main;
-import me.lor3mipsum.next.api.util.render.font.GlyphPageFontRenderer;
 import me.lor3mipsum.next.client.impl.modules.client.CustomFont;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;

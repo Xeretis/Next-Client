@@ -41,7 +41,7 @@ public class GuiConfig implements IConfigList {
             } catch (Exception e) {
                 Backup.backup("Failed to load panels");
                 Main.LOG.error("Failed to load panels");
-                Main.LOG.error(e.getStackTrace().toString());
+                Main.LOG.error(e.getMessage(), e);
             }
         } else {
             panelMap = new LinkedHashMap<>();

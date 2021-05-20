@@ -29,9 +29,9 @@ public class Backup {
                 Files.createDirectories(Paths.get(rootDir + backupDir));
 
             SimpleDateFormat sdf = new SimpleDateFormat("MM_dd_yyyy-HH_mm");
-            Date resultdate = new Date(System.currentTimeMillis());
+            Date resultDate = new Date(System.currentTimeMillis());
 
-            File out = new File(rootDir + backupDir, "backup-" + sdf.format(resultdate));
+            File out = new File(rootDir + backupDir, "backup-" + sdf.format(resultDate));
 
             out.mkdirs();
 

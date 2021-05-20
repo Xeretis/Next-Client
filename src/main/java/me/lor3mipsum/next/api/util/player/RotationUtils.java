@@ -1,6 +1,5 @@
 package me.lor3mipsum.next.api.util.player;
 
-import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.player.SendMovementPacketsEvent;
@@ -32,21 +31,9 @@ public class RotationUtils implements Listenable {
     private int lastRotationTimer;
     private boolean sentLastRotation;
 
-    private static MinecraftClient mc = MinecraftClient.getInstance();
+    private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public static RotationUtils INSTANCE = new RotationUtils();
-
-    public static float[] calculateAngle(Vec3d target) {
-        Vec3d eyesPos = new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
-
-        double dX = target.x - eyesPos.x;
-        double dY = (target.y - eyesPos.y) * -1.0D;
-        double dZ = target.z - eyesPos.z;
-
-        double dist = MathHelper.sqrt(dX * dX + dZ * dZ);
-
-        return new float[]{(float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(dZ, dX)) - 90.0D), (float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(dY, dist)))};
-    }
 
     public static double getYaw(Entity entity) {
         return mc.player.yaw + MathHelper.wrapDegrees((float) Math.toDegrees(Math.atan2(entity.getZ() - mc.player.getZ(), entity.getX() - mc.player.getX())) - 90f - mc.player.yaw);
@@ -61,7 +48,7 @@ public class RotationUtils implements Listenable {
         double diffY = pos.getY() - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()));
         double diffZ = pos.getZ() - mc.player.getZ();
 
-        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+        double diffXZ = Math.hypot(diffX, diffZ);
 
         return mc.player.pitch + MathHelper.wrapDegrees((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)) - mc.player.pitch);
     }
@@ -76,7 +63,7 @@ public class RotationUtils implements Listenable {
         double diffY = y - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()));
         double diffZ = entity.getZ() - mc.player.getZ();
 
-        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+        double diffXZ = Math.hypot(diffX, diffZ);
 
         return mc.player.pitch + MathHelper.wrapDegrees((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)) - mc.player.pitch);
     }
@@ -90,7 +77,7 @@ public class RotationUtils implements Listenable {
         double diffY = pos.getY() + 0.5 - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()));
         double diffZ = pos.getZ() + 0.5 - mc.player.getZ();
 
-        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+        double diffXZ = Math.hypot(diffX, diffZ);
 
         return mc.player.pitch + MathHelper.wrapDegrees((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)) - mc.player.pitch);
     }

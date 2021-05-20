@@ -39,7 +39,7 @@ public class SaveConfig {
             saveGuiPositions();
         } catch (IOException e) {
             Main.LOG.error("Config saving failed");
-            Main.LOG.error(e.getStackTrace().toString());
+            Main.LOG.error(e.getMessage(), e);
         }
     }
 

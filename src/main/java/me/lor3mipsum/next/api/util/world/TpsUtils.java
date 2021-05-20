@@ -1,6 +1,5 @@
 package me.lor3mipsum.next.api.util.world;
 
-import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.game.GameJoinedEvent;
 import me.lor3mipsum.next.api.event.network.PacketReciveEvent;
 import me.lor3mipsum.next.api.util.misc.MathUtils;

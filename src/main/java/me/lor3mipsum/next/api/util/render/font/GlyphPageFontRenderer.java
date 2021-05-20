@@ -4,35 +4,32 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.WorldRenderer;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.Locale;
-import java.util.Random;
 
 import static org.lwjgl.opengl.GL11C.*;
 
 public class GlyphPageFontRenderer {
-    public Random fontRandom = new Random();
-
     private float posX;
     private float posY;
 
-    private int[] colorCode = new int[32];
+    private final int[] colorCode = new int[32];
     private float red;
     private float blue;
     private float green;
     private float alpha;
-    private int textColor;
 
-    private boolean randomStyle;
     private boolean boldStyle;
     private boolean italicStyle;
     private boolean underlineStyle;
     private boolean strikethroughStyle;
 
-    private GlyphPage regularGlyphPage, boldGlyphPage, italicGlyphPage, boldItalicGlyphPage;
+    private final GlyphPage regularGlyphPage;
+    private final GlyphPage boldGlyphPage;
+    private final GlyphPage italicGlyphPage;
+    private final GlyphPage boldItalicGlyphPage;
 
     public GlyphPageFontRenderer(GlyphPage regularGlyphPage, GlyphPage boldGlyphPage, GlyphPage italicGlyphPage, GlyphPage boldItalicGlyphPage) {
         this.regularGlyphPage = regularGlyphPage;
@@ -166,7 +163,6 @@ public class GlyphPageFontRenderer {
                 int i1 = "0123456789abcdefklmnor".indexOf(text.toLowerCase(Locale.ENGLISH).charAt(i + 1));
 
                 if (i1 < 16) {
-                    this.randomStyle = false;
                     this.boldStyle = false;
                     this.strikethroughStyle = false;
                     this.underlineStyle = false;
@@ -181,11 +177,9 @@ public class GlyphPageFontRenderer {
                     }
 
                     int j1 = this.colorCode[i1];
-                    this.textColor = j1;
 
                     GlStateManager.color4f((float) (j1 >> 16) / 255.0F, (float) (j1 >> 8 & 255) / 255.0F, (float) (j1 & 255) / 255.0F, this.alpha);
                 } else if (i1 == 16) {
-                    this.randomStyle = true;
                 } else if (i1 == 17) {
                     this.boldStyle = true;
                 } else if (i1 == 18) {
@@ -195,7 +189,6 @@ public class GlyphPageFontRenderer {
                 } else if (i1 == 20) {
                     this.italicStyle = true;
                 } else {
-                    this.randomStyle = false;
                     this.boldStyle = false;
                     this.strikethroughStyle = false;
                     this.underlineStyle = false;
@@ -226,10 +219,10 @@ public class GlyphPageFontRenderer {
             Tessellator tessellator1 = Tessellator.getInstance();
             BufferBuilder worldrenderer1 = tessellator1.getBuffer();
             worldrenderer1.begin(7, VertexFormats.POSITION);
-            worldrenderer1.vertex((double) this.posX, (double) (this.posY + (float) (glyphPage.getMaxFontHeight() / 2)), 0.0D).next();
-            worldrenderer1.vertex((double) (this.posX + f), (double) (this.posY + (float) (glyphPage.getMaxFontHeight() / 2)), 0.0D).next();
-            worldrenderer1.vertex((double) (this.posX + f), (double) (this.posY + (float) (glyphPage.getMaxFontHeight() / 2) - 1.0F), 0.0D).next();
-            worldrenderer1.vertex((double) this.posX, (double) (this.posY + (float) (glyphPage.getMaxFontHeight() / 2) - 1.0F), 0.0D).next();
+            worldrenderer1.vertex(this.posX, this.posY + (float) (glyphPage.getMaxFontHeight() / 2), 0.0D).next();
+            worldrenderer1.vertex(this.posX + f, this.posY + (float) (glyphPage.getMaxFontHeight() / 2), 0.0D).next();
+            worldrenderer1.vertex(this.posX + f, this.posY + (float) (glyphPage.getMaxFontHeight() / 2) - 1.0F, 0.0D).next();
+            worldrenderer1.vertex(this.posX, this.posY + (float) (glyphPage.getMaxFontHeight() / 2) - 1.0F, 0.0D).next();
             tessellator1.draw();
         }
 
@@ -239,10 +232,10 @@ public class GlyphPageFontRenderer {
             GlStateManager.disableTexture();
             worldrenderer1.begin(7, VertexFormats.POSITION);
             int l = this.underlineStyle ? -1 : 0;
-            worldrenderer1.vertex((double) (this.posX + (float) l), (double) (this.posY + (float) glyphPage.getMaxFontHeight()), 0.0D).next();
-            worldrenderer1.vertex((double) (this.posX + f), (double) (this.posY + (float) glyphPage.getMaxFontHeight()), 0.0D).next();
-            worldrenderer1.vertex((double) (this.posX + f), (double) (this.posY + (float) glyphPage.getMaxFontHeight() - 1.0F), 0.0D).next();
-            worldrenderer1.vertex((double) (this.posX + (float) l), (double) (this.posY + (float) glyphPage.getMaxFontHeight() - 1.0F), 0.0D).next();
+            worldrenderer1.vertex(this.posX + (float) l, this.posY + (float) glyphPage.getMaxFontHeight(), 0.0D).next();
+            worldrenderer1.vertex(this.posX + f, this.posY + (float) glyphPage.getMaxFontHeight(), 0.0D).next();
+            worldrenderer1.vertex(this.posX + f, this.posY + (float) glyphPage.getMaxFontHeight() - 1.0F, 0.0D).next();
+            worldrenderer1.vertex(this.posX + (float) l, this.posY + (float) glyphPage.getMaxFontHeight() - 1.0F, 0.0D).next();
             tessellator1.draw();
             GlStateManager.enableTexture();
         }
@@ -263,7 +256,6 @@ public class GlyphPageFontRenderer {
     }
 
     private void resetStyles() {
-        this.randomStyle = false;
         this.boldStyle = false;
         this.italicStyle = false;
         this.underlineStyle = false;

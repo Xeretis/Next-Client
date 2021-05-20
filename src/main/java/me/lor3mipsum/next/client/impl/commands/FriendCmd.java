@@ -5,7 +5,6 @@ import me.lor3mipsum.next.api.util.player.ChatUtils;
 import me.lor3mipsum.next.client.core.command.Command;
 import me.lor3mipsum.next.client.core.command.annotation.Cmd;
 import me.lor3mipsum.next.client.core.social.Friend;
-import me.lor3mipsum.next.client.core.social.SocialManager;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
@@ -24,11 +23,11 @@ public class FriendCmd extends Command {
             List<Friend> friends = Main.socialManager.getFriends();
 
             if (friends.size() != 0) {
-                String msg = "Friends: ";
+                StringBuilder msg = new StringBuilder("Friends: ");
                 for (Friend friend : friends)
-                    msg += friend.getName() + " - " + friend.getLevel() + ", ";
-                msg = msg.substring(0, msg.length() - 2);
-                ChatUtils.commandInfo(this, msg);
+                    msg.append(friend.getName()).append(" - ").append(friend.getLevel()).append(", ");
+                msg = new StringBuilder(msg.substring(0, msg.length() - 2));
+                ChatUtils.commandInfo(this, msg.toString());
             } else {
                 ChatUtils.commandInfo(this, "Damn, you don't have any friends :(");
             }

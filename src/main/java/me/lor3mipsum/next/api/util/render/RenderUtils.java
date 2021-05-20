@@ -133,11 +133,6 @@ public class RenderUtils {
     }
 
     public static void setup() {
-//        RenderSystem.enableBlend();
-//        RenderSystem.defaultBlendFunc();
-//        RenderSystem.disableAlphaTest();
-//        RenderSystem.shadeModel(GL11.GL_SMOOTH);
-//        RenderSystem.disableTexture();
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
@@ -146,10 +141,6 @@ public class RenderUtils {
     }
 
     public static void cleanup() {
-//        RenderSystem.shadeModel(GL11.GL_FLAT);
-//        RenderSystem.enableAlphaTest();
-//        RenderSystem.disableBlend();
-//        RenderSystem.enableTexture();
         RenderSystem.enableTexture();
         RenderSystem.disableCull();
         RenderSystem.disableBlend();
@@ -280,7 +271,7 @@ public class RenderUtils {
             Matrix4f model = matrix.peek().getModel();
             Matrix3f normal = matrix.peek().getNormal();
 
-            Vector3f normalVec = getNormal(normal, x1, y1, z1, x2, y2, z2);
+            Vector3f normalVec = getNormal(x1, y1, z1, x2, y2, z2);
 
             int[] color1 = lineColor.getColor(x1, y1, z1, 0);
             int[] color2 = lineColor.getColor(x2, y2, z2, 1);
@@ -291,7 +282,7 @@ public class RenderUtils {
             vertexConsumer.vertex(model, x2, y2, z2).color(color1[0], color1[1], color1[2], 0).normal(normal, normalVec.getX(), normalVec.getY(), normalVec.getZ()).next();
         }
 
-        public static Vector3f getNormal(Matrix3f normal, float x1, float y1, float z1, float x2, float y2, float z2) {
+        public static Vector3f getNormal(float x1, float y1, float z1, float x2, float y2, float z2) {
             float xNormal = x2 - x1;
             float yNormal = y2 - y1;
             float zNormal = z2 - z1;

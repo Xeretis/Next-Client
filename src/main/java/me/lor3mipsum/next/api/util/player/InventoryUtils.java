@@ -313,10 +313,10 @@ public class InventoryUtils {
         else if (handler instanceof ShulkerBoxScreenHandler) return genericContainer(i, 3);
         else if (handler instanceof HorseScreenHandler) return horse(handler, i);
         else if (handler instanceof CartographyTableScreenHandler) return cartographyTable(i);
-        else if (handler instanceof GrindstoneScreenHandler) return grindstone(i);
+        else if (handler instanceof GrindstoneScreenHandler) return grindStone(i);
         else if (handler instanceof LecternScreenHandler) return lectern();
         else if (handler instanceof LoomScreenHandler) return loom(i);
-        else if (handler instanceof StonecutterScreenHandler) return stonecutter(i);
+        else if (handler instanceof StonecutterScreenHandler) return stoneCutter(i);
 
         return -1;
     }
@@ -414,7 +414,7 @@ public class InventoryUtils {
         return -1;
     }
 
-    private static int grindstone(int i) {
+    private static int grindStone(int i) {
         if (isHotbar(i)) return 30 + i;
         if (isInventory(i)) return 3 + (i - 9);
         return -1;
@@ -430,7 +430,7 @@ public class InventoryUtils {
         return -1;
     }
 
-    private static int stonecutter(int i) {
+    private static int stoneCutter(int i) {
         if (isHotbar(i)) return 29 + i;
         if (isInventory(i)) return 2 + (i - 9);
         return -1;

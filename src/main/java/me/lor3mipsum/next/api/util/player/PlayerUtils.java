@@ -6,7 +6,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class PlayerUtils {
 
-    private static MinecraftClient mc = MinecraftClient.getInstance();
+    private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public static void centerPlayer() {
         double x = MathHelper.floor(mc.player.getX()) + 0.5;

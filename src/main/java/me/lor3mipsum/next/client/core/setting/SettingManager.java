@@ -35,22 +35,18 @@ public class SettingManager {
     }
 
     public void registerSetting(String name, Setting value) {
-        if (settingMap.containsKey(name))
-            settingMap.get(name).add(value);
-        else {
+        if (!settingMap.containsKey(name))
             settingMap.put(name, new ArrayList<>());
-            settingMap.get(name).add(value);
-        }
+
+        settingMap.get(name).add(value);
     }
 
     public void registerSetting(Object module, Setting value) {
         if (module instanceof Module)
-            if (settingMap.containsKey(((Module) module).getName()))
-                settingMap.get(((Module) module).getName()).add(value);
-            else {
+            if (!settingMap.containsKey(((Module) module).getName()))
                 settingMap.put(((Module) module).getName(), new ArrayList<>());
-                settingMap.get(((Module) module).getName()).add(value);
-            }
+
+        settingMap.get(((Module) module).getName()).add(value);
     }
 
     public List<Setting> getAllSettingsFrom(String name) {

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.resource.ResourceManager;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -15,7 +14,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -25,11 +23,11 @@ public class GlyphPage {
     private int imgSize;
     private int maxFontHeight = -1;
 
-    private Font font;
-    private boolean antiAliasing;
-    private boolean fractionalMetrics;
+    private final Font font;
+    private final boolean antiAliasing;
+    private final boolean fractionalMetrics;
 
-    private HashMap<Character, Glyph> glyphCharacterMap = new HashMap<>();
+    private final HashMap<Character, Glyph> glyphCharacterMap = new HashMap<>();
 
     private BufferedImage bufferedImage;
     private AbstractTexture loadedTexture;

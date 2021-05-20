@@ -40,7 +40,7 @@ public class ArrayListModule extends HudModule {
     }
 
     @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+    private Listener<RenderEvent> onRender = new Listener<>(event -> {
         list.activeModules.clear();
         for (Module module : Main.moduleManager.getModules())
             if(module.getEnabled() && module.getDrawn()) list.activeModules.add(module);

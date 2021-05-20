@@ -5,7 +5,6 @@ import me.lor3mipsum.next.api.util.player.ChatUtils;
 import me.lor3mipsum.next.client.core.command.Command;
 import me.lor3mipsum.next.client.core.command.annotation.Cmd;
 import me.lor3mipsum.next.client.core.social.Enemy;
-import me.lor3mipsum.next.client.core.social.Friend;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
@@ -24,11 +23,11 @@ public class EnemyCmd extends Command {
             List<Enemy> enemies = Main.socialManager.getEnemies();
 
             if (enemies.size() != 0) {
-                String msg = "Enemies: ";
+                StringBuilder msg = new StringBuilder("Enemies: ");
                 for (Enemy enemy : enemies)
-                    msg += enemy.getName() + " - " + enemy.getLevel() + ", ";
-                msg = msg.substring(0, msg.length() - 2);
-                ChatUtils.commandInfo(this, msg);
+                    msg.append(enemy.getName()).append(" - ").append(enemy.getLevel()).append(", ");
+                msg = new StringBuilder(msg.substring(0, msg.length() - 2));
+                ChatUtils.commandInfo(this, msg.toString());
             } else {
                 ChatUtils.commandInfo(this, "Ayyy, you don't have any enemies :)");
             }

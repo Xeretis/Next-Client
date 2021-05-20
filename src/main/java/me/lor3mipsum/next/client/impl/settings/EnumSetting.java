@@ -24,7 +24,7 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
     public List<String> getModes() {
         List<String> modes = new ArrayList<>();
         for (int i = 0; i < getValue().getClass().getEnumConstants().length; i++) {
-            modes.add(((Enum) getValue().getClass().getEnumConstants()[i]).toString());
+            modes.add(getValue().getClass().getEnumConstants()[i].toString());
         }
         return modes;
     }

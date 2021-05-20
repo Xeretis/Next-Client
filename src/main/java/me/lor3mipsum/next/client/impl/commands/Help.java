@@ -26,12 +26,12 @@ public class Help extends Command {
                 }
 
                 msg = new StringBuilder(msg.substring(0, msg.length() - 2));
-                msg.append(Formatting.GRAY + "] - " + command.getDescription());
+                msg.append(Formatting.GRAY + "] - ").append(command.getDescription());
 
                 ChatUtils.commandInfo(this, msg.toString());
             }
         } else if (args.length == 1) {
-            Command cmd = commands.stream().filter(c -> c.getNameAndAliases().contains(args[0])).findFirst().orElse(null);;
+            Command cmd = commands.stream().filter(c -> c.getNameAndAliases().contains(args[0])).findFirst().orElse(null);
 
             StringBuilder msg = new StringBuilder("[" + Formatting.WHITE);
 
@@ -41,7 +41,7 @@ public class Help extends Command {
             }
 
             msg = new StringBuilder(msg.substring(0, msg.length() - 2));
-            msg.append(Formatting.GRAY + "] - " + cmd.getDescription());
+            msg.append(Formatting.GRAY + "] - ").append(cmd.getDescription());
 
             ChatUtils.commandInfo(this, msg.toString());
         } else
