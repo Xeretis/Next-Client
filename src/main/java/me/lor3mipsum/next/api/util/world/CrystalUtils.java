@@ -117,16 +117,11 @@ public class CrystalUtils {
         double motionY = entity.getY() - entity.prevY;
         double motionZ = entity.getZ() - entity.prevZ;
 
-        boolean shouldPredict = false;
         boolean shouldStrafe = false;
 
         double motion = Math.sqrt(motionX * motionX + motionZ * motionZ + motionY * motionY);
 
-        if (motion > 0.1) {
-            shouldPredict = true;
-        }
-
-        if (!shouldPredict) {
+        if (!(motion > 0.1)) {
             return entity;
         }
 
