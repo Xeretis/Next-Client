@@ -106,4 +106,44 @@ public class CrystalUtils {
         }
         return false;
     }
+
+    public static Entity getPredictedPosition(Entity entity, double ticks) {
+
+        if (ticks == 0) return entity;
+
+        Entity e = entity;
+
+        double motionX = entity.getX() - entity.prevX;
+        double motionY = entity.getY() - entity.prevY;
+        double motionZ = entity.getZ() - entity.prevZ;
+
+        boolean shouldPredict = false;
+        boolean shouldStrafe = false;
+
+        double motion = Math.sqrt(motionX * motionX + motionZ * motionZ + motionY * motionY);
+
+        if (motion > 0.1) {
+            shouldPredict = true;
+        }
+
+        if (!shouldPredict) {
+            return entity;
+        }
+
+        if (motion > 0.31) {
+            shouldStrafe = true;
+        }
+
+        for (int i = 0; i < ticks; i++) {
+            if (entity.isOnGround()) {
+                motionY = shouldStrafe ? 0.4 : -0.07840015258789;
+            }else {
+                motionY -= 0.08;
+                motionY *= 0.9800000190734863D;
+            }
+            e.setBoundingBox(entity.getBoundingBox().offset(motionX, motionY, motionZ));
+        }
+
+        return e;
+    }
 }
