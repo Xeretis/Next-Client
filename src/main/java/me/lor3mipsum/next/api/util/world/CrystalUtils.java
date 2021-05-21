@@ -5,9 +5,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +47,11 @@ public class CrystalUtils {
         return true;
     }
 
-    private Vec3d getCrystalPos(BlockPos blockPos) {
+    public static boolean canSeePos(BlockPos pos) {
+        return mc.world.raycast(new RaycastContext(new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ()), Vec3d.of(pos), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS;
+    }
+
+    public static Vec3d getCrystalPos(BlockPos blockPos) {
         return new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
     }
 
@@ -84,5 +93,17 @@ public class CrystalUtils {
         }
 
         return areaBlocks;
+    }
+
+    public static boolean getArmorBreaker(PlayerEntity player, int percent) {
+        for (ItemStack stack : player.getArmorItems()) {
+            if (stack == null || stack.getItem() == Items.AIR) return true;
+
+            int armorPercent = ((stack.getMaxDamage() - stack.getDamage()) /
+                    stack.getMaxDamage()) * 100;
+
+            if (percent >= armorPercent) return true;
+        }
+        return false;
     }
 }
