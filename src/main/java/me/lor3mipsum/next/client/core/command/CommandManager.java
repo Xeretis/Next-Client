@@ -3,6 +3,7 @@ package me.lor3mipsum.next.client.core.command;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.util.player.ChatUtils;
 import me.lor3mipsum.next.client.core.command.annotation.Cmd;
+import net.minecraft.util.Formatting;
 import org.reflections.Reflections;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class CommandManager {
 
 
         if (command == null) {
-            ChatUtils.error("Command  '" + cmdName + "' doesn't exist");
+            ChatUtils.error("Command " + Formatting.WHITE + cmdName + Formatting.RED + " doesn't exist");
             return false;
         } else {
             String[] args = new String[split.length - 1];
