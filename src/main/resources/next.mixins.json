@@ -28,6 +28,7 @@
     "ClientPlayNetworkHandlerMixin",
     "ClientWorldMixin",
     "LivingEntityMixin",
+    "Vec3dMixin",
     "accessor.HorseScreenHandlerAccessor"
   ],
   "injectors": {
