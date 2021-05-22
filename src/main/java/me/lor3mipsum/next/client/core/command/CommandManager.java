@@ -6,6 +6,7 @@ import me.lor3mipsum.next.client.core.command.annotation.Cmd;
 import net.minecraft.util.Formatting;
 import org.reflections.Reflections;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,14 +23,14 @@ public class CommandManager {
         }
     }
 
-    private void addCommands() throws IllegalAccessException, InstantiationException {
+    private void addCommands() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Reflections reflections = new Reflections("me.lor3mipsum.next.client.impl.commands");
 
         Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 
         for (Class<? extends Command> commandClass : commandClasses) {
             if (commandClass.isAnnotationPresent(Cmd.class)) {
-                Command loadedCommand = commandClass.newInstance();
+                Command loadedCommand = commandClass.getDeclaredConstructor().newInstance();
                 commands.add(loadedCommand);
             }
         }

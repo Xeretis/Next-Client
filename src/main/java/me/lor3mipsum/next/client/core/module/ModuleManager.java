@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.client.core.module;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +30,14 @@ public class ModuleManager implements Listenable {
         }
     }
 
-    private void addModules() throws IllegalAccessException, InstantiationException {
+    private void addModules() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Reflections reflections = new Reflections("me.lor3mipsum.next.client.impl.modules");
 
         Set<Class<? extends Module>> moduleClasses = reflections.getSubTypesOf(Module.class);
 
         for (Class<? extends Module> moduleClass : moduleClasses) {
             if (moduleClass.isAnnotationPresent(Mod.class)) {
-                Module loadedModule = moduleClass.newInstance();
+                Module loadedModule = moduleClass.getDeclaredConstructor().newInstance();
                 if (loadedModule.getEnabled()) {
                     Main.EVENT_BUS.subscribe(loadedModule);
                     loadedModule.onEnable();
