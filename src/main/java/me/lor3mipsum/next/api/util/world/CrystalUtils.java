@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.api.util.world;
 
+import me.lor3mipsum.next.api.util.player.ChatUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -108,11 +109,11 @@ public class CrystalUtils {
         return false;
     }
 
-    public static LivingEntity getPredictedPosition(LivingEntity entity, double ticks, PredictMode pMode) {
+    public static Vec3d getPredictedPosition(LivingEntity entity, double ticks, PredictMode pMode) {
 
-        if (ticks == 0) return entity;
+        if (ticks == 0) return entity.getPos();
 
-        LivingEntity e = entity;
+        Vec3d e = entity.getPos();
 
         double motionX = entity.getX() - entity.prevX;
         double motionY = entity.getY() - entity.prevY;
@@ -121,8 +122,10 @@ public class CrystalUtils {
         double motion = Math.sqrt(motionX * motionX + motionZ * motionZ + motionY * motionY);
 
         if (motion < 0.1) {
-            return entity;
+            return entity.getPos();
         }
+
+        ChatUtils.info("Og: " + e.x+ ", " + e.y + ", " + e.z);
 
         if (pMode == PredictMode.Strafe) {
             boolean shouldStrafe = false;
@@ -138,20 +141,24 @@ public class CrystalUtils {
                     motionY -= 0.08;
                     motionY *= 0.9800000190734863D;
                 }
-                e.setBoundingBox(e.getBoundingBox().offset(motionX, motionY, motionZ));
+                e = e.add(motionX, motionY, motionZ);
             }
         } else {
+
+            double distance = motion * ticks;
 
             double unitSlopeX = motionX / motion;
             double unitSlopeY = motionY / motion;
             double unitSlopeZ = motionZ / motion;
 
-            double x = e.prevX + unitSlopeX * ticks;
-            double y = e.prevY + unitSlopeY * ticks;
-            double z = e.prevZ + unitSlopeZ * ticks;
+            double x = entity.prevX + unitSlopeX * distance;
+            double y = entity.prevY + unitSlopeY * distance;
+            double z = entity.prevZ + unitSlopeZ * distance;
 
-            e.setBoundingBox(e.getBoundingBox().offset(x, y, z));
+            e = new Vec3d(x, y, z);
         }
+
+        ChatUtils.info("New: " + e.x + ", " + e.y + ", " + e.z);
 
         return e;
     }

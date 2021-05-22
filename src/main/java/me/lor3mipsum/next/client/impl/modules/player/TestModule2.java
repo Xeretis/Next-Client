@@ -21,6 +21,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mod(name = "TestModule2", description = "Test description", category = Category.PLAYER, bind = GLFW.GLFW_KEY_R)
 public class TestModule2 extends Module {
@@ -42,16 +43,16 @@ public class TestModule2 extends Module {
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
 
-//    @EventHandler
-//    private Listener<TickEvent> onTic = new Listener<>(event -> {
-//        List<Entity> entities = Lists.newArrayList(mc.world.getEntities());
-//
-//        entities.stream().filter(e ->
-//            e.distanceTo(mc.player) <= 5 && e.isAlive() && (e instanceof LivingEntity)
-//        );
-//
-//        if (entities.size() > 0)
-//            CrystalUtils.getPredictedPosition(entities.get(0), 3);
-//
-//    }, event -> event.era == NextEvent.Era.POST);
+    @EventHandler
+    private Listener<TickEvent> onTic = new Listener<>(event -> {
+        List<Entity> entities = Lists.newArrayList(mc.world.getEntities());
+
+        entities = entities.stream().filter(e ->
+            e.distanceTo(mc.player) <= 5 && e.isAlive() && (e instanceof LivingEntity) && e != mc.player
+        ).collect(Collectors.toList());
+
+        if (entities.size() > 0)
+            CrystalUtils.getPredictedPosition((LivingEntity) entities.get(0), 3, CrystalUtils.PredictMode.Strafe);
+
+    }, event -> event.era == NextEvent.Era.POST);
 }
