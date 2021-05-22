@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MacroManager implements Listenable {
-    private List<Macro> macros = new ArrayList<>();
+    private final List<Macro> macros = new ArrayList<>();
 
     public MacroManager() {
         Main.EVENT_BUS.subscribe(this);

@@ -1,7 +1,6 @@
 package me.lor3mipsum.next.api.util.world;
 
 import com.mojang.authlib.GameProfile;
-import me.lor3mipsum.next.api.util.player.ChatUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -111,11 +110,9 @@ public class CrystalUtils {
         return false;
     }
 
-    public static Vec3d getPredictedPosition(LivingEntity entity, double ticks, PredictMode pMode) {
+    private static Vec3d getPredictedPosition(LivingEntity entity, double ticks, PredictMode pMode) {
 
         if (ticks == 0) return entity.getPos();
-
-        Vec3d e = entity.getPos();
 
         double motionX = entity.getX() - entity.prevX;
         double motionY = entity.getY() - entity.prevY;
@@ -127,14 +124,10 @@ public class CrystalUtils {
             return entity.getPos();
         }
 
-        //ChatUtils.info("Og: " + e.x+ ", " + e.y + ", " + e.z);
+        Vec3d predictedPos = entity.getPos();
 
         if (pMode == PredictMode.Strafe) {
-            boolean shouldStrafe = false;
-
-            if (motion > 0.31) {
-                shouldStrafe = true;
-            }
+            boolean shouldStrafe = motion > 0.31;
 
             for (int i = 0; i < ticks; i++) {
                 if (entity.isOnGround()) {
@@ -143,7 +136,7 @@ public class CrystalUtils {
                     motionY -= 0.08;
                     motionY *= 0.9800000190734863D;
                 }
-                e = e.add(motionX, motionY, motionZ);
+                predictedPos = predictedPos.add(motionX, motionY, motionZ);
             }
         } else {
 
@@ -157,12 +150,10 @@ public class CrystalUtils {
             double y = entity.prevY + unitSlopeY * distance;
             double z = entity.prevZ + unitSlopeZ * distance;
 
-            e = new Vec3d(x, y, z);
+            predictedPos = new Vec3d(x, y, z);
         }
 
-        //ChatUtils.info("New: " + e.x + ", " + e.y + ", " + e.z);
-
-        return e;
+        return predictedPos;
     }
 
     public static PlayerEntity getPredictedEntity(PlayerEntity currentTarget, int ticks, PredictMode mode) {

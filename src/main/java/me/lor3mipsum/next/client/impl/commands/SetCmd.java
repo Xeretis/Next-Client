@@ -8,6 +8,7 @@ import me.lor3mipsum.next.client.core.command.Command;
 import me.lor3mipsum.next.client.core.command.annotation.Cmd;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.setting.Setting;
+import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
 import net.minecraft.util.Formatting;
 
@@ -32,7 +33,7 @@ public class SetCmd extends Command {
 
         Setting toSet = Main.settingManager.getByConfigName(mod, args[1]);
 
-        if (toSet == null) {
+        if (toSet == null || toSet instanceof SettingSeparator) {
             ChatUtils.commandError(this, "The module " + Formatting.WHITE + args[0] + Formatting.RED + " doesn't have any setting called " + Formatting.WHITE + args[1]);
             return;
         }

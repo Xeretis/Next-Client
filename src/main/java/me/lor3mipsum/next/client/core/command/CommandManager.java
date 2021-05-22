@@ -35,11 +35,11 @@ public class CommandManager {
         }
     }
 
-    public boolean executeCommand(String string) {
+    public void executeCommand(String string) {
         String raw = string.substring(1);
         String[] split = raw.split(" ");
 
-        if (split.length == 0) return false;
+        if (split.length == 0) return;
 
         String cmdName = split[0];
 
@@ -48,7 +48,6 @@ public class CommandManager {
 
         if (command == null) {
             ChatUtils.error("Command " + Formatting.WHITE + cmdName + Formatting.RED + " doesn't exist");
-            return false;
         } else {
             String[] args = new String[split.length - 1];
 
@@ -56,7 +55,6 @@ public class CommandManager {
 
             command.run(split[0], args);
 
-            return true;
         }
     }
 

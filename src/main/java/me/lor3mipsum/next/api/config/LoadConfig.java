@@ -17,13 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 
 public class LoadConfig {
 
     public static String rootDir = Main.CLIENT_NAME + "/";
-    private static final String backupDir = "Backups/";
     private static final String mainDir = "Main/";
     private static final String moduleDir = "Modules/";
     private static final String otherDir = "Other/";
@@ -102,9 +100,7 @@ public class LoadConfig {
 
             Map<String, Object> mainMap = yaml.load(inputStream);
 
-            mainMap.forEach((name, map) -> {
-                Main.socialManager.addFriend(new Friend(name, (int) ((Map<String, Object>) map).get("Level")));
-            });
+            mainMap.forEach((name, map) -> Main.socialManager.addFriend(new Friend(name, (int) ((Map<String, Object>) map).get("Level"))));
 
         } catch (Exception e) {
             Backup.backup("Failed to load friends");
@@ -126,9 +122,7 @@ public class LoadConfig {
 
             Map<String, Object> mainMap = yaml.load(inputStream);
 
-            mainMap.forEach((name, map) -> {
-                Main.socialManager.addEnemy(new Enemy(name, (int) ((Map<String, Object>) map).get("Level")));
-            });
+            mainMap.forEach((name, map) -> Main.socialManager.addEnemy(new Enemy(name, (int) ((Map<String, Object>) map).get("Level"))));
 
         } catch (Exception e) {
             Backup.backup("Failed to load enemies");

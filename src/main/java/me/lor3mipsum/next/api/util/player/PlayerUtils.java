@@ -2,9 +2,7 @@ package me.lor3mipsum.next.api.util.player;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
-import net.minecraft.world.RaycastContext;
+import net.minecraft.util.math.MathHelper;
 
 public class PlayerUtils {
 

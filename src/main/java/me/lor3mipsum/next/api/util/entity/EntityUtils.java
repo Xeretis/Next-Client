@@ -57,9 +57,7 @@ public class EntityUtils {
             return true;
         if (entity instanceof IronGolemEntity && (((IronGolemEntity) entity).getAngryAt() == mc.player.getUuid() || (((IronGolemEntity) entity).getAngryAt() == null && ((IronGolemEntity) entity).isAttacking())))
             return true;
-        if (entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !doesPlayerOwn(entity))
-            return true;
-        return false;
+        return entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !doesPlayerOwn(entity);
     }
 
     public boolean doesPlayerOwn(Entity entity) {

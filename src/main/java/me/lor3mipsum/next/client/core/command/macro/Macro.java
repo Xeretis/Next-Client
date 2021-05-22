@@ -3,9 +3,9 @@ package me.lor3mipsum.next.client.core.command.macro;
 import me.lor3mipsum.next.Main;
 
 public class Macro {
-    private String name;
-    private int key;
-    private String command;
+    private final String name;
+    private final int key;
+    private final String command;
 
     public Macro(String name, int key, String command) {
         this.name = name;
