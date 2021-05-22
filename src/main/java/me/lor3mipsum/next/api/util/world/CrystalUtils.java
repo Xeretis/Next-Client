@@ -1,9 +1,11 @@
 package me.lor3mipsum.next.api.util.world;
 
+import com.mojang.authlib.GameProfile;
 import me.lor3mipsum.next.api.util.player.ChatUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
@@ -125,7 +127,7 @@ public class CrystalUtils {
             return entity.getPos();
         }
 
-        ChatUtils.info("Og: " + e.x+ ", " + e.y + ", " + e.z);
+        //ChatUtils.info("Og: " + e.x+ ", " + e.y + ", " + e.z);
 
         if (pMode == PredictMode.Strafe) {
             boolean shouldStrafe = false;
@@ -158,9 +160,25 @@ public class CrystalUtils {
             e = new Vec3d(x, y, z);
         }
 
-        ChatUtils.info("New: " + e.x + ", " + e.y + ", " + e.z);
+        //ChatUtils.info("New: " + e.x + ", " + e.y + ", " + e.z);
 
         return e;
+    }
+
+    public static PlayerEntity getPredictedEntity(PlayerEntity currentTarget, int ticks, PredictMode mode) {
+        OtherClientPlayerEntity entity = new OtherClientPlayerEntity(mc.world, new GameProfile(currentTarget.getUuid(), currentTarget.getName().getString()));
+
+        Vec3d predictedPos = getPredictedPosition(currentTarget, ticks, mode);
+
+        entity.copyPositionAndRotation(currentTarget);
+
+        entity.setPos(predictedPos.x, predictedPos.y, predictedPos.z);
+
+        entity.setHealth(currentTarget.getHealth());
+        entity.setAbsorptionAmount(currentTarget.getAbsorptionAmount());
+        entity.inventory.clone(currentTarget.inventory);
+
+        return entity;
     }
 
     public enum PredictMode {

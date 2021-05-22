@@ -1,10 +1,12 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
 import com.google.common.collect.Lists;
+import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.game.RenderEvent;
 import me.lor3mipsum.next.api.util.misc.NextColor;
+import me.lor3mipsum.next.api.util.player.ChatUtils;
 import me.lor3mipsum.next.api.util.render.RenderUtils;
 import me.lor3mipsum.next.api.util.world.CrystalUtils;
 import me.lor3mipsum.next.client.core.module.Category;
@@ -14,9 +16,11 @@ import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -42,17 +46,4 @@ public class TestModule2 extends Module {
     public StringSetting st = new StringSetting("St", "");
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
-
-    @EventHandler
-    private Listener<TickEvent> onTic = new Listener<>(event -> {
-        List<Entity> entities = Lists.newArrayList(mc.world.getEntities());
-
-        entities = entities.stream().filter(e ->
-            e.distanceTo(mc.player) <= 5 && e.isAlive() && (e instanceof LivingEntity) && e != mc.player
-        ).collect(Collectors.toList());
-
-        if (entities.size() > 0)
-            CrystalUtils.getPredictedPosition((LivingEntity) entities.get(0), 3, CrystalUtils.PredictMode.Strafe);
-
-    }, event -> event.era == NextEvent.Era.POST);
 }
