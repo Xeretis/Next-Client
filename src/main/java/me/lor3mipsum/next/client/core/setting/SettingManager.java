@@ -76,11 +76,27 @@ public class SettingManager {
         return found.stream().filter(val -> val.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
-    public Setting get(Class<? extends Module> module, String name) {
-        List<Setting> found = getAllSettingsFrom(module.getName());
+    public Setting get(Object module, String name) {
+        List<Setting> found = getAllSettingsFrom(module);
 
         if (found == null) return null;
 
         return found.stream().filter(val -> val.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public Setting getByConfigName(String owner, String name) {
+        List<Setting> found = getAllSettingsFrom(owner);
+
+        if (found == null) return null;
+
+        return found.stream().filter(val -> val.getConfigName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public Setting getByConfigName(Object module, String name) {
+        List<Setting> found = getAllSettingsFrom(module);
+
+        if (found == null) return null;
+
+        return found.stream().filter(val -> val.getConfigName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 }
