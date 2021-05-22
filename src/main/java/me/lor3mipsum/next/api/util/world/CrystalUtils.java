@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -107,11 +108,11 @@ public class CrystalUtils {
         return false;
     }
 
-    public static Entity getPredictedPosition(Entity entity, double ticks) {
+    public static LivingEntity getPredictedPosition(LivingEntity entity, double ticks) {
 
         if (ticks == 0) return entity;
 
-        Entity e = entity;
+        LivingEntity e = entity;
 
         double motionX = entity.getX() - entity.prevX;
         double motionY = entity.getY() - entity.prevY;
@@ -136,7 +137,7 @@ public class CrystalUtils {
                 motionY -= 0.08;
                 motionY *= 0.9800000190734863D;
             }
-            e.setBoundingBox(entity.getBoundingBox().offset(motionX, motionY, motionZ));
+            e.setBoundingBox(e.getBoundingBox().offset(motionX, motionY, motionZ));
         }
 
         return e;
