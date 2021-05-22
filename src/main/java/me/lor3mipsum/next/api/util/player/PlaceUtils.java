@@ -1,7 +1,6 @@
 package me.lor3mipsum.next.api.util.player;
 
 import com.google.common.collect.Sets;
-import me.lor3mipsum.next.api.util.misc.IVec3d;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -71,16 +70,16 @@ public class PlaceUtils {
 
         Direction side = getPlaceSide(blockPos);
         BlockPos neighbour;
-        Vec3d hitPos = new Vec3d(0, 0, 0);
+        Vec3d hitPos;
 
         if (side == null && airPlace) {
             side = Direction.UP;
             neighbour = blockPos;
-            ((IVec3d) hitPos).set(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+            hitPos = new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
         } else {
             if (side == null) return false;
             neighbour = blockPos.offset(side.getOpposite());
-            ((IVec3d) hitPos).set(neighbour.getX() + 0.5 + side.getOffsetX() * 0.5, neighbour.getY() + 0.6 + side.getOffsetY() * 0.5, neighbour.getZ() + 0.5 + side.getOffsetZ() * 0.5);
+            hitPos = new Vec3d(neighbour.getX() + 0.5 + side.getOffsetX() * 0.5, neighbour.getY() + 0.6 + side.getOffsetY() * 0.5, neighbour.getZ() + 0.5 + side.getOffsetZ() * 0.5);
         }
 
         if (!canPlace(blockPos, checkEntities, airPlace)) return false;
