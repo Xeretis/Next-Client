@@ -1,8 +1,12 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
+import com.google.common.collect.Lists;
+import me.lor3mipsum.next.api.event.NextEvent;
+import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.game.RenderEvent;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.api.util.render.RenderUtils;
+import me.lor3mipsum.next.api.util.world.CrystalUtils;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
@@ -11,8 +15,12 @@ import me.lor3mipsum.next.client.impl.settings.*;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 @Mod(name = "TestModule2", description = "Test description", category = Category.PLAYER, bind = GLFW.GLFW_KEY_R)
 public class TestModule2 extends Module {
@@ -33,4 +41,17 @@ public class TestModule2 extends Module {
     public StringSetting st = new StringSetting("St", "");
     public KeyBindSetting ke = new KeyBindSetting("Ke", GLFW.GLFW_KEY_UNKNOWN);
     public ColorSetting co = new ColorSetting("Co", false, new NextColor(255, 255, 255, 255));
+
+//    @EventHandler
+//    private Listener<TickEvent> onTic = new Listener<>(event -> {
+//        List<Entity> entities = Lists.newArrayList(mc.world.getEntities());
+//
+//        entities.stream().filter(e ->
+//            e.distanceTo(mc.player) <= 5 && e.isAlive() && (e instanceof LivingEntity)
+//        );
+//
+//        if (entities.size() > 0)
+//            CrystalUtils.getPredictedPosition(entities.get(0), 3);
+//
+//    }, event -> event.era == NextEvent.Era.POST);
 }
