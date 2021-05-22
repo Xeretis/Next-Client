@@ -58,11 +58,11 @@ public class CrystalUtils {
         return new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
     }
 
-    public static List<BlockPos> getPlacePositions(float placeRange, boolean oldPlace, boolean ignoreCrystals) {
+    public static List<BlockPos> getPlacePositions(double placeRange, boolean oldPlace, boolean ignoreCrystals) {
         return getPlaceArea(mc.player.getBlockPos(), placeRange, (int) placeRange, false, true, 0).stream().filter(pos -> canPlaceCrystalAt(pos, oldPlace, ignoreCrystals)).collect(Collectors.toList());
     }
 
-    public static List<BlockPos> getPlaceArea(BlockPos pos, float range, int height, boolean hollow, boolean sphere, int plus_y) {
+    private static List<BlockPos> getPlaceArea(BlockPos pos, double range, int height, boolean hollow, boolean sphere, int plus_y) {
         ArrayList<BlockPos> areaBlocks = new ArrayList<>();
 
         int playerX = pos.getX();
@@ -70,21 +70,20 @@ public class CrystalUtils {
         int playerZ = pos.getZ();
 
         int x = playerX - (int) range;
-        while ((float) x <= (float) playerX + range) {
+        while ((double) x <= (double) playerX + range) {
 
             int z = playerZ - (int) range;
-            while ((float) z <= (float) playerZ + range) {
+            while ((double) z <= (double) playerZ + range) {
 
                 int y = sphere ? playerY - (int) range : playerY;
                 while (true) {
 
-                    float f = y;
-                    float f2 = sphere ? (float) playerY + range : (float) (playerY + height);
+                    double f = sphere ? (double) playerY + range : (double) (playerY + height);
 
-                    if (!(f < f2)) break;
+                    if (!(y < f)) break;
 
                     double dist = (playerX - x) * (playerX - x) + (playerZ - z) * (playerZ - z) + (sphere ? (playerY - y) * (playerY - y) : 0);
-                    if (!(!(dist < (double) (range * range)) || hollow && dist < (double) ((range - 1.0f) * (range - 1.0f)))) {
+                    if (!(!(dist < (range * range)) || hollow && dist < ((range - 1.0f) * (range - 1.0f)))) {
                         BlockPos blockPos = new BlockPos(x, y + plus_y, z);
                         areaBlocks.add(blockPos);
                     }
