@@ -13,6 +13,7 @@ public class Prefix extends Command {
     public void run(String alias, String[] args) {
         if(args.length != 1) {
             ChatUtils.commandError(this, "Usage: " + Main.prefix + alias + " <prefix>");
+            return;
         }
 
         Main.prefix = args[0];

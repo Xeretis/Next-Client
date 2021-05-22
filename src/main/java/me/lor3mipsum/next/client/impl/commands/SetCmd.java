@@ -2,7 +2,6 @@ package me.lor3mipsum.next.client.impl.commands;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
-import me.lor3mipsum.next.api.util.entity.FakePlayerUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.api.util.player.ChatUtils;
 import me.lor3mipsum.next.client.core.command.Command;
@@ -27,14 +26,14 @@ public class SetCmd extends Command {
         Module mod = Main.moduleManager.getModule(args[0], false);
 
         if (mod == null) {
-            ChatUtils.commandError(this, "The module " + Formatting.WHITE + args[0] + Formatting.RED + " doesn't exist");
+            ChatUtils.commandError(this, Formatting.WHITE + args[0] + Formatting.RED + " isn't a valid module");
             return;
         }
 
         Setting toSet = Main.settingManager.getByConfigName(mod, args[1]);
 
         if (toSet == null) {
-            ChatUtils.commandError(this, "The module " + Formatting.WHITE + args[0] + Formatting.RED + " does not have any setting called " + Formatting.WHITE + args[1]);
+            ChatUtils.commandError(this, "The module " + Formatting.WHITE + args[0] + Formatting.RED + " doesn't have any setting called " + Formatting.WHITE + args[1]);
             return;
         }
 
@@ -42,7 +41,7 @@ public class SetCmd extends Command {
             int key = KeyboardUtils.getKeyFromName(args[2]);
 
             if (key == -2) {
-                ChatUtils.commandError(this, "Unknown key: " + Formatting.WHITE + args[2]);
+                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " isn't a valid key");
                 return;
             }
 
@@ -54,7 +53,7 @@ public class SetCmd extends Command {
             try {
                 value = Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
-                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " is not a valid integer setting");
+                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " isn't a valid integer setting");
                 return;
             }
 
@@ -66,7 +65,7 @@ public class SetCmd extends Command {
             try {
                 value = Double.parseDouble(args[2]);
             } catch (NumberFormatException e) {
-                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " is not a valid double setting");
+                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " isn't a valid double setting");
                 return;
             }
 
@@ -74,7 +73,7 @@ public class SetCmd extends Command {
 
         } else if (toSet instanceof BooleanSetting) {
             if (!(args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("toggle"))) {
-                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " is not a valid boolean setting");
+                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " isn't a valid boolean setting");
                 return;
             }
 
@@ -85,9 +84,8 @@ public class SetCmd extends Command {
                 toSet.setValue(Boolean.parseBoolean(args[2]));
 
         } else if (toSet instanceof EnumSetting) {
-            String value = args[2];
             if (!((EnumSetting) toSet).getModes().contains(args[2])) {
-                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " is not a valid mode setting");
+                ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " isn't a valid mode setting");
                 return;
             }
             while (!toSet.getValue().toString().equals(args[2]))
@@ -102,7 +100,7 @@ public class SetCmd extends Command {
             if (args.length >= 4)
                 if (args[2].equalsIgnoreCase("rainbow")) {
                     if (!(args[3].equalsIgnoreCase("true") || args[3].equalsIgnoreCase("false") || args[3].equalsIgnoreCase("toggle"))) {
-                        ChatUtils.commandError(this, Formatting.WHITE + args[3] + Formatting.RED + " is not a valid rainbow value");
+                        ChatUtils.commandError(this, Formatting.WHITE + args[3] + Formatting.RED + " isn't a valid rainbow value");
                         return;
                     }
 
@@ -124,7 +122,7 @@ public class SetCmd extends Command {
                 try {
                     value = Integer.parseInt(args[2]);
                 } catch (NumberFormatException e) {
-                    ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " is not a valid color setting");
+                    ChatUtils.commandError(this, Formatting.WHITE + args[2] + Formatting.RED + " isn't a valid color setting");
                     return;
                 }
 
