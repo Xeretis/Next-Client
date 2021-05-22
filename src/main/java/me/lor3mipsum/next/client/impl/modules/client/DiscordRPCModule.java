@@ -7,6 +7,7 @@ import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
+import me.lor3mipsum.next.client.impl.settings.IntegerSetting;
 import me.lor3mipsum.next.client.impl.settings.StringSetting;
 import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
@@ -22,6 +23,8 @@ public class DiscordRPCModule extends Module {
 
     public StringSetting details = new StringSetting("Details", "normal text");
     public StringSetting state = new StringSetting("State", "also normal text");
+    public IntegerSetting update = new IntegerSetting("Update", 40, 1, 100);
+
 
     private int tick = 0;
 
@@ -37,7 +40,9 @@ public class DiscordRPCModule extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
-        DiscordRPC.discordUpdatePresence(new DiscordRichPresence.Builder(state.getValue()).setBigImage("nextlogo", Main.CLIENT_NAME + " " + Main.CLIENT_VERSION).setStartTimestamps(System.currentTimeMillis() - tick * 25L).setDetails(details.getValue()).build());
+
+        if (tick % update.getValue() == 0)
+            DiscordRPC.discordUpdatePresence(new DiscordRichPresence.Builder(state.getValue()).setBigImage("nextlogo", Main.CLIENT_NAME + " " + Main.CLIENT_VERSION).setStartTimestamps(System.currentTimeMillis() - tick * 50).setDetails(details.getValue()).build());
 
         if (tick % 200 == 0) {
             DiscordRPC.discordRunCallbacks();
