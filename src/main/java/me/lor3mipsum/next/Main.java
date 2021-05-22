@@ -4,6 +4,7 @@ import me.lor3mipsum.next.api.config.LoadConfig;
 import me.lor3mipsum.next.api.config.SaveConfig;
 import me.lor3mipsum.next.api.event.game.GameLeftEvent;
 import me.lor3mipsum.next.api.event.game.RenderEvent;
+import me.lor3mipsum.next.api.util.client.ClientUtils;
 import me.lor3mipsum.next.api.util.player.RotationUtils;
 import me.lor3mipsum.next.api.util.world.TpsUtils;
 import me.lor3mipsum.next.client.core.command.CommandManager;
@@ -43,6 +44,8 @@ public class Main implements ModInitializer, Listenable {
 	@Override
 	public void onInitialize() {
 		LOG.info("Initializing the client");
+
+		ClientUtils.checkHWID();
 
 		EVENT_BUS.subscribe(this);
 
