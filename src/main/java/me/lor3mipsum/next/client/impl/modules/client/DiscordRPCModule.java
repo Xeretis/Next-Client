@@ -37,9 +37,12 @@ public class DiscordRPCModule extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (event.era == NextEvent.Era.POST) {
-            DiscordRPC.discordUpdatePresence(new DiscordRichPresence.Builder(state.getValue()).setBigImage("nextlogo", Main.CLIENT_NAME + " " + Main.CLIENT_VERSION).setStartTimestamps(System.currentTimeMillis() - tick * 50L).setDetails(details.getValue()).build());
-            tick++;
+        DiscordRPC.discordUpdatePresence(new DiscordRichPresence.Builder(state.getValue()).setBigImage("nextlogo", Main.CLIENT_NAME + " " + Main.CLIENT_VERSION).setStartTimestamps(System.currentTimeMillis() - tick * 25L).setDetails(details.getValue()).build());
+
+        if (tick % 200 == 0) {
+            DiscordRPC.discordRunCallbacks();
         }
-    }, EventPriority.LOW);
+
+        tick++;
+    }, EventPriority.LOW, event -> event.era == NextEvent.Era.POST);
 }
