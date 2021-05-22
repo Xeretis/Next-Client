@@ -1,6 +1,7 @@
 package me.lor3mipsum.next.api.config;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.client.core.command.macro.Macro;
 import me.lor3mipsum.next.client.core.gui.GuiConfig;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.Module;
@@ -35,6 +36,7 @@ public class SaveConfig {
             saveModules();
             saveFriends();
             saveEnemies();
+            saveMacros();
             saveClientData();
             saveGuiPositions();
         } catch (IOException e) {
@@ -175,6 +177,35 @@ public class SaveConfig {
     private static void saveGuiPositions() throws IOException {
         registerFiles(mainDir, "GuiPanels");
         NextGui.gui.saveConfig(new GuiConfig(rootDir + mainDir));
+    }
+
+    private static void saveMacros() throws IOException {
+        registerFiles(otherDir, "Macros");
+
+        DumperOptions options = new DumperOptions();
+        options.setIndent(4);
+        options.setPrettyFlow(true);
+
+        Yaml yaml  = new Yaml(options);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(rootDir + otherDir + "Macros" + ".yaml"), StandardCharsets.UTF_8);
+
+        Map<String, Object> mainMap = new LinkedHashMap<>();
+
+        for (Macro macro : Main.macroManager.getMacros()) {
+            Map<String, Object> macroMap = new LinkedHashMap<>();
+
+            macroMap.put("Key", macro.getKey());
+            macroMap.put("Command", macro.getCommand());
+
+            mainMap.put(macro.getName(), macroMap);
+        }
+
+        StringWriter writer = new StringWriter();
+        yaml.dump(mainMap, writer);
+
+        fileOutputStreamWriter.write(writer.toString());
+        fileOutputStreamWriter.close();
+
     }
 
     private static void saveClientData() throws IOException {

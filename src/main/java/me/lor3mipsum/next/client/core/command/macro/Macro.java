@@ -26,6 +26,6 @@ public class Macro {
     }
 
     public void run() {
-        Main.commandManager.executeCommand(command);
+        Main.commandManager.executeCommand(Main.prefix + command);
     }
 }

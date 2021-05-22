@@ -2,6 +2,7 @@ package me.lor3mipsum.next.api.config;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.util.misc.NextColor;
+import me.lor3mipsum.next.client.core.command.macro.Macro;
 import me.lor3mipsum.next.client.core.gui.GuiConfig;
 import me.lor3mipsum.next.client.core.gui.NextGui;
 import me.lor3mipsum.next.client.core.module.Module;
@@ -32,6 +33,7 @@ public class LoadConfig {
             loadModules();
             loadFriends();
             loadEnemies();
+            loadMacros();
             loadClientData();
             loadGuiPositions();
         } catch (IOException e) {
@@ -141,11 +143,36 @@ public class LoadConfig {
         NextGui.gui.loadConfig(new GuiConfig(rootDir + mainDir));
     }
 
+    private static void loadMacros() throws IOException {
+        Yaml yaml = new Yaml();
+        String macrosLocation = rootDir + otherDir;
+
+        if(!Files.exists(Paths.get(macrosLocation + "Macros" + ".yaml")))
+            return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(macrosLocation + "Macros" + ".yaml"));
+
+        try {
+
+            Map<String, Object> mainMap = yaml.load(inputStream);
+
+            mainMap.forEach((name, map) -> {
+                Map<String, Object> macroMap = (Map<String, Object>) map;
+                Main.macroManager.addMacro(new Macro(name, (int) macroMap.get("Key"), (String) macroMap.get("Command")));
+            });
+
+        } catch (Exception e) {
+            Backup.backup("Failed to load macros");
+            Main.LOG.error("Failed to load macros");
+            Main.LOG.error(e.getMessage(), e);
+        }
+    }
+
     private static void loadClientData() throws IOException {
         Yaml yaml = new Yaml();
         String clientDataLocation = rootDir + mainDir;
 
-        if(!Files.exists(Paths.get(clientDataLocation)))
+        if(!Files.exists(Paths.get(clientDataLocation + "ClientData" + ".yaml")))
             return;
 
         InputStream inputStream = Files.newInputStream(Paths.get(clientDataLocation + "ClientData" + ".yaml"));
