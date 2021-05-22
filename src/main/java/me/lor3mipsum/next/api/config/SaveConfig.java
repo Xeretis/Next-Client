@@ -122,18 +122,13 @@ public class SaveConfig {
 
         Map<String, Object> mainMap = new LinkedHashMap<>();
 
-        List<Map<String, Object>> friends = new ArrayList<>();
-
         for (Friend friend : Main.socialManager.getFriends()) {
             Map<String, Object> friendMap = new LinkedHashMap<>();
 
-            friendMap.put("Name", friend.getName());
             friendMap.put("Level", friend.getLevel());
 
-            friends.add(friendMap);
+            mainMap.put(friend.getName(), friendMap);
         }
-
-        mainMap.put("Friends", friends);
 
         StringWriter writer = new StringWriter();
         yaml.dump(mainMap, writer);
@@ -154,18 +149,14 @@ public class SaveConfig {
 
         Map<String, Object> mainMap = new LinkedHashMap<>();
 
-        List<Map<String, Object>> enemies = new ArrayList<>();
 
         for (Enemy enemy : Main.socialManager.getEnemies()) {
             Map<String, Object> enemyMap = new LinkedHashMap<>();
 
-            enemyMap.put("Name", enemy.getName());
             enemyMap.put("Level", enemy.getLevel());
 
-            enemies.add(enemyMap);
+            mainMap.put(enemy.getName(), enemyMap);
         }
-
-        mainMap.put("Enemies", enemies);
 
         StringWriter writer = new StringWriter();
         yaml.dump(mainMap, writer);

@@ -102,10 +102,9 @@ public class LoadConfig {
 
             Map<String, Object> mainMap = yaml.load(inputStream);
 
-            List<Map<String, Object>> friends = (List<Map<String, Object>>) mainMap.get("Friends");
-
-            for (Map<String, Object> friendMap : friends)
-                Main.socialManager.addFriend(new Friend( (String) friendMap.get("Name"), (int) friendMap.get("Level")));
+            mainMap.forEach((name, map) -> {
+                Main.socialManager.addFriend(new Friend(name, (int) ((Map<String, Object>) map).get("Level")));
+            });
 
         } catch (Exception e) {
             Backup.backup("Failed to load friends");
@@ -127,10 +126,9 @@ public class LoadConfig {
 
             Map<String, Object> mainMap = yaml.load(inputStream);
 
-            List<Map<String, Object>> enemies = (List<Map<String, Object>>) mainMap.get("Enemies");
-
-            for (Map<String, Object> enemyMap : enemies)
-                Main.socialManager.addEnemy(new Enemy( (String) enemyMap.get("Name"), (int) enemyMap.get("Level")));
+            mainMap.forEach((name, map) -> {
+                Main.socialManager.addEnemy(new Enemy(name, (int) ((Map<String, Object>) map).get("Level")));
+            });
 
         } catch (Exception e) {
             Backup.backup("Failed to load enemies");
