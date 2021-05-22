@@ -108,7 +108,7 @@ public class CrystalUtils {
         return false;
     }
 
-    public static LivingEntity getPredictedPosition(LivingEntity entity, double ticks) {
+    public static LivingEntity getPredictedPosition(LivingEntity entity, double ticks, PredictMode pMode) {
 
         if (ticks == 0) return entity;
 
@@ -118,28 +118,46 @@ public class CrystalUtils {
         double motionY = entity.getY() - entity.prevY;
         double motionZ = entity.getZ() - entity.prevZ;
 
-        boolean shouldStrafe = false;
-
         double motion = Math.sqrt(motionX * motionX + motionZ * motionZ + motionY * motionY);
 
-        if (!(motion > 0.1)) {
+        if (motion < 0.1) {
             return entity;
         }
 
-        if (motion > 0.31) {
-            shouldStrafe = true;
-        }
+        if (pMode == PredictMode.Strafe) {
+            boolean shouldStrafe = false;
 
-        for (int i = 0; i < ticks; i++) {
-            if (entity.isOnGround()) {
-                motionY = shouldStrafe ? 0.4 : -0.07840015258789;
-            }else {
-                motionY -= 0.08;
-                motionY *= 0.9800000190734863D;
+            if (motion > 0.31) {
+                shouldStrafe = true;
             }
-            e.setBoundingBox(e.getBoundingBox().offset(motionX, motionY, motionZ));
+
+            for (int i = 0; i < ticks; i++) {
+                if (entity.isOnGround()) {
+                    motionY = shouldStrafe ? 0.4 : -0.07840015258789;
+                }else {
+                    motionY -= 0.08;
+                    motionY *= 0.9800000190734863D;
+                }
+                e.setBoundingBox(e.getBoundingBox().offset(motionX, motionY, motionZ));
+            }
+        } else {
+
+            double unitSlopeX = motionX / motion;
+            double unitSlopeY = motionY / motion;
+            double unitSlopeZ = motionZ / motion;
+
+            double x = e.prevX + unitSlopeX * ticks;
+            double y = e.prevY + unitSlopeY * ticks;
+            double z = e.prevZ + unitSlopeZ * ticks;
+
+            e.setBoundingBox(e.getBoundingBox().offset(x, y, z));
         }
 
         return e;
+    }
+
+    public enum PredictMode {
+        Strafe,
+        Line
     }
 }
