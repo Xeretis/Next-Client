@@ -23,7 +23,7 @@ public class Fullbright extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player != null && !hasSet) {
+        if (mc.options != null && !hasSet) {
             mc.options.gamma = 1000;
             hasSet = true;
         }
@@ -31,6 +31,7 @@ public class Fullbright extends Module {
 
     @Override
     public void onDisable() {
-        mc.options.gamma = prevGamma;
+        if (mc.options != null)
+            mc.options.gamma = prevGamma;
     }
 }

@@ -27,13 +27,13 @@ public class CustomFOV extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player != null) {
+        if (mc.options != null)
             mc.options.fov = fov.getValue();
-        }
     }, event -> event.era == NextEvent.Era.POST);
 
     @Override
     public void onDisable() {
-        mc.options.fov = prevFov;
+        if (mc.options != null)
+            mc.options.fov = prevFov;
     }
 }
