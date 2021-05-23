@@ -28,7 +28,8 @@
     "ClientPlayNetworkHandlerMixin",
     "ClientWorldMixin",
     "LivingEntityMixin",
-    "accessor.HorseScreenHandlerAccessor"
+    "accessor.HorseScreenHandlerAccessor",
+    "accessor.BlockHitResultAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
