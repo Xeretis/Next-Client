@@ -122,7 +122,6 @@ public class CrystalAura extends Module {
     private boolean alreadyAttacking;
     private boolean placeTimeoutFlag;
     private boolean hasPacketBroke;
-    private boolean isRotating;
     private boolean didAnything;
     private boolean facePlacing;
 
@@ -157,6 +156,29 @@ public class CrystalAura extends Module {
             mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
 
         breakDelayCounter = 0;
+    }
+
+    private void doCrystalAura() {
+        if (mc.player == null || mc.world == null)
+            return;
+
+        didAnything = false;
+
+        //TODO: SHOULD PAUSE
+
+        if (cPlace.getValue() && placeDelayCounter > placeTimeout && (facePlaceDelayCounter >= facePlaceDelay.getValue() || !facePlacing)) {
+            this.placeCrystal();
+        }
+        if (this.cBreak.getValue() && breakDelayCounter > breakTimeout && !hasPacketBroke) {
+            this.breakCrystal();
+        }
+
+        if (!didAnything)
+            target = null;
+
+        breakDelayCounter++;
+        placeDelayCounter++;
+        facePlaceDelayCounter++;
     }
 
     private void placeCrystal() {
