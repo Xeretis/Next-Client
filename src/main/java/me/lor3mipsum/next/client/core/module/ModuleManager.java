@@ -39,8 +39,8 @@ public class ModuleManager implements Listenable {
             if (moduleClass.isAnnotationPresent(Mod.class)) {
                 Module loadedModule = moduleClass.getDeclaredConstructor().newInstance();
                 if (loadedModule.getEnabled()) {
-                    Main.EVENT_BUS.subscribe(loadedModule);
                     loadedModule.onEnable();
+                    Main.EVENT_BUS.subscribe(loadedModule);
                 }
                 Main.settingManager.registerObject(loadedModule.getName(), loadedModule);
                 modules.add(loadedModule);
