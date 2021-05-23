@@ -1,11 +1,30 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
+import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.util.entity.DamageUtils;
+import me.lor3mipsum.next.api.util.entity.EntityUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
+import me.lor3mipsum.next.api.util.player.InventoryUtils;
+import me.lor3mipsum.next.api.util.player.RotationUtils;
+import me.lor3mipsum.next.api.util.world.CrystalUtils;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
+import net.minecraft.entity.DamageUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(name = "CrystalAura", description = "Crystals go brrr", category = Category.COMBAT)
 public class CrystalAura extends Module {
@@ -50,6 +69,7 @@ public class CrystalAura extends Module {
 
     public SettingSeparator predictionsSep = new SettingSeparator("Predictions");
 
+    public EnumSetting<EntityUtils.PredictMode> predictMode = new EnumSetting<>("Predict Mode", EntityUtils.PredictMode.Line);
     public BooleanSetting targetPredict = new BooleanSetting("Target Predict", true);
     public BooleanSetting selfPredict = new BooleanSetting("Self Predict", false);
     public IntegerSetting targetPredictTicks = new IntegerSetting("Target Predict Ticks", 2, 0, 20);
@@ -88,6 +108,142 @@ public class CrystalAura extends Module {
         Sound,
         Instant,
         None
+    }
+
+    private final List<EndCrystalEntity> attemptedCrystals = new ArrayList<>();
+
+    private PlayerEntity target;
+    private BlockPos renderBlock;
+
+    private boolean alreadyAttacking;
+    private boolean placeTimeoutFlag;
+    private boolean hasPacketBroke;
+    private boolean isRotating;
+    private boolean didAnything;
+    private boolean facePlacing;
+
+    private int placeTimeout;
+    private int breakTimeout;
+    private int breakDelayCounter;
+    private int placeDelayCounter;
+    private int facePlaceDelayCounter;
+
+    int oldSlot;
+
+    private void breakCrystal() {
+        EndCrystalEntity crystal = getBestCrystal();
+
+        if (crystal == null) return;
+
+        if (antiWeakness.getValue() &&  mc.player.hasStatusEffect(StatusEffects.WEAKNESS))
+            if (!mc.player.hasStatusEffect(StatusEffects.STRENGTH))
+                doWeaknessSwitch();
+
+
+        didAnything = true;
+
+        if (rotate.getValue())
+            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(crystal), RotationUtils.getPitch(crystal), 30, () -> mc.interactionManager.attackEntity(mc.player, crystal));
+        else
+            mc.interactionManager.attackEntity(mc.player, crystal);
+
+        if (swing.getValue())
+            mc.player.swingHand(Hand.MAIN_HAND);
+        else
+            mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
+
+        breakDelayCounter = 0;
+    }
+
+    private EndCrystalEntity getBestCrystal() {
+        double bestDamage = 0;
+        EndCrystalEntity bestCrystal = null;
+
+        for (Entity e : mc.world.getEntities()) {
+
+            if (!(e instanceof EndCrystalEntity)) continue;
+
+            EndCrystalEntity crystal = (EndCrystalEntity) e;
+
+            for (PlayerEntity target : mc.world.getPlayers()) {
+                double targetDamage = getFinalDamage(crystal, target);
+                if (targetDamage == 0) continue;
+
+                if (targetDamage > bestDamage) {
+                    bestDamage = targetDamage;
+                    this.target = target;
+                    bestCrystal = crystal;
+                }
+            }
+        }
+
+        return bestCrystal;
+    }
+
+    private double getFinalDamage(EndCrystalEntity crystal, PlayerEntity target) {
+        if (this.isPlayerValid(target)) {
+            if (mc.player.canSee(crystal))
+                if (mc.player.distanceTo(crystal) > breakRange.getValue())
+                    return 0;
+            else
+                if (mc.player.distanceTo(crystal) > wallsBreakRange.getValue())
+                    return 0;
+
+            if (!crystal.isAlive()) return 0;
+
+            if (attemptedCrystals.contains(crystal)) return 0;
+
+            double miniumDamage;
+            if (DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target) >= minHpPlace.getValue()) {
+                facePlacing = false;
+                miniumDamage = this.minHpBreak.getValue();
+            } else if ((target.getHealth() <= facePlaceHp.getValue() && facePlace.getValue()) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue())) {
+                miniumDamage = 0.5;
+                facePlacing = true;
+            } else {
+                facePlacing = false;
+                miniumDamage = this.minHpBreak.getValue();
+            }
+
+            double targetDamage = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
+            if (targetDamage < miniumDamage && target.getHealth() - targetDamage > 0) return 0;
+
+            double selfDamage = 0;
+            if(!ignoreSelfDamage.getValue()) {
+                PlayerEntity selfDmgTarget = mc.player;
+
+                if (selfPredict.getValue())
+                    selfDmgTarget = EntityUtils.getPredictedEntity(mc.player, selfPredictTicks.getValue(), predictMode.getValue());
+
+                selfDamage = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, selfDmgTarget);
+            }
+
+            if (selfDamage > maxSelfDamage.getValue()) return 0;
+            if (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()) return 0;
+            if (DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) return 0;
+
+            return targetDamage;
+        }
+
+        return 0;
+    }
+
+    private boolean isPlayerValid(PlayerEntity player) {
+        if (mc.player.isDead() || player == mc.player) return false;
+        if (Main.socialManager.isFriend(player.getName().getString())) return false;
+        if (player.distanceTo(mc.player) > 15) return false;
+
+        return true;
+    }
+
+    private void doWeaknessSwitch() {
+        if (mc.player != null && !(mc.player.getMainHandStack().getItem() instanceof ToolItem && mc.player.getOffHandStack().getItem() instanceof SwordItem)) {
+            int slot = InventoryUtils.findItemInHotbar(itemStack -> itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof SwordItem).slot;
+            if (slot != -1 && slot < 9) {
+                oldSlot = mc.player.inventory.selectedSlot;
+                InventoryUtils.select(slot);
+            }
+        }
     }
 
 }
