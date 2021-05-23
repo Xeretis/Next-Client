@@ -49,7 +49,7 @@ public class LoadConfig {
 
         for (Module module : Main.moduleManager.getModules()) {
             if (!Files.exists(Paths.get(modulesLocation + module.getName() + ".yaml")))
-                return;
+                continue;
 
             InputStream inputStream = Files.newInputStream(Paths.get(modulesLocation + module.getName() + ".yaml"));
 
