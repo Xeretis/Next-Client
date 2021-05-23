@@ -48,8 +48,11 @@ public class LoadConfig {
             return;
 
         for (Module module : Main.moduleManager.getModules()) {
-            if (!Files.exists(Paths.get(modulesLocation + module.getName() + ".yaml")))
+            if (!Files.exists(Paths.get(modulesLocation + module.getName() + ".yaml"))) {
+                Main.LOG.warn("Skipped loading module '" + module.getName() + "'");
                 continue;
+            }
+
 
             InputStream inputStream = Files.newInputStream(Paths.get(modulesLocation + module.getName() + ".yaml"));
 
