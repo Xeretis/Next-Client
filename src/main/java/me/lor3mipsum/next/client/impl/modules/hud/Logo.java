@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 import java.awt.*;
 
 @Mod(name = "Logo", description = "The logo of the client", category = Category.HUD)
-@HudMod(posX = 0, posY = 0)
+@HudMod(posX = -1, posY = -1)
 public class Logo extends HudModule {
     public DoubleSetting scale = new DoubleSetting("Scale", 1, 0.1, 5);
     public ColorSetting color = new ColorSetting("Color", false, new NextColor(255, 255, 255, 255));
