@@ -39,6 +39,9 @@ public class Coordinates extends HudModule {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player == null || mc.world == null || mc.gameRenderer == null)
+            return;
+
         double x1 = mc.gameRenderer.getCamera().getPos().x;
         double y1 = mc.gameRenderer.getCamera().getPos().y - mc.player.getEyeHeight(mc.player.getPose());
         double z1 = mc.gameRenderer.getCamera().getPos().z;
