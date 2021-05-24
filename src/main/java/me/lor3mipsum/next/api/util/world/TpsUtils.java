@@ -1,7 +1,7 @@
 package me.lor3mipsum.next.api.util.world;
 
 import me.lor3mipsum.next.api.event.game.GameJoinedEvent;
-import me.lor3mipsum.next.api.event.network.PacketReciveEvent;
+import me.lor3mipsum.next.api.event.network.PacketReceiveEvent;
 import me.lor3mipsum.next.api.util.misc.MathUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
@@ -20,7 +20,7 @@ public class TpsUtils implements Listenable {
     private long timeGameJoined;
 
     @EventHandler
-    private Listener<PacketReciveEvent> onPacketReceive = new Listener<>(event -> {
+    private Listener<PacketReceiveEvent> onPacketReceive = new Listener<>(event -> {
         if (event.packet instanceof WorldTimeUpdateS2CPacket) {
             if (timeLastTimeUpdate != -1L) {
                 float timeElapsed = (float) (System.currentTimeMillis() - timeLastTimeUpdate) / 1000.0F;

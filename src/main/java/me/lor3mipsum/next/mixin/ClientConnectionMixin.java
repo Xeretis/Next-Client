@@ -2,7 +2,7 @@ package me.lor3mipsum.next.mixin;
 
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.network.ConnectToServerEvent;
-import me.lor3mipsum.next.api.event.network.PacketReciveEvent;
+import me.lor3mipsum.next.api.event.network.PacketReceiveEvent;
 import me.lor3mipsum.next.api.event.network.PacketSendEvent;
 import me.lor3mipsum.next.api.event.network.PacketSentEvent;
 import net.minecraft.network.ClientConnection;
@@ -20,7 +20,7 @@ import java.net.InetAddress;
 public class ClientConnectionMixin {
     @Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
     private static <T extends PacketListener> void onHandlePacket(Packet<T> packet, PacketListener listener, CallbackInfo info) {
-        PacketReciveEvent event = new PacketReciveEvent(packet);
+        PacketReceiveEvent event = new PacketReceiveEvent(packet);
 
         Main.EVENT_BUS.post(event);
 

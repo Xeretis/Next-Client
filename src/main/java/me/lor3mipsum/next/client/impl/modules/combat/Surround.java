@@ -11,6 +11,7 @@ import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.BooleanSetting;
 import me.lor3mipsum.next.client.impl.settings.IntegerSetting;
+import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.item.Items;
@@ -113,7 +114,7 @@ public class Surround extends Module {
             InventoryUtils.select(preSlot);
             preSlot = -1;
         }
-    }, event -> event.era == NextEvent.Era.POST);
+    }, EventPriority.HIGHEST, event -> event.era == NextEvent.Era.POST);
 
     private int findSlot() {
 

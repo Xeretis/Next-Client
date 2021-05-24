@@ -2,9 +2,9 @@ package me.lor3mipsum.next.api.event.network;
 
 import net.minecraft.network.Packet;
 
-public class PacketReciveEvent extends PacketEvent{
+public class PacketReceiveEvent extends PacketEvent{
 
-    public PacketReciveEvent(Packet<?> packet) {
+    public PacketReceiveEvent(Packet<?> packet) {
         super(packet);
     }
 

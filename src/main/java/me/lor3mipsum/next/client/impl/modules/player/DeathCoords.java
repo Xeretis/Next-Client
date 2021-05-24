@@ -1,8 +1,7 @@
 package me.lor3mipsum.next.client.impl.modules.player;
 
-import me.lor3mipsum.next.api.event.network.PacketReciveEvent;
+import me.lor3mipsum.next.api.event.network.PacketReceiveEvent;
 import me.lor3mipsum.next.api.util.player.ChatUtils;
-import me.lor3mipsum.next.client.core.command.annotation.Cmd;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
@@ -15,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 public class DeathCoords extends Module {
 
     @EventHandler
-    private Listener<PacketReciveEvent> onPacketRecive = new Listener<>(event -> {
+    private Listener<PacketReceiveEvent> onPacketRecive = new Listener<>(event -> {
         if (event.packet instanceof HealthUpdateS2CPacket) {
             HealthUpdateS2CPacket packet = (HealthUpdateS2CPacket) event.packet;
 

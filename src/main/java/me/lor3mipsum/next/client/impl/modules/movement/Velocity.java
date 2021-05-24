@@ -1,6 +1,6 @@
 package me.lor3mipsum.next.client.impl.modules.movement;
 
-import me.lor3mipsum.next.api.event.network.PacketReciveEvent;
+import me.lor3mipsum.next.api.event.network.PacketReceiveEvent;
 import me.lor3mipsum.next.api.event.player.PlayerPushedEvent;
 import me.lor3mipsum.next.api.util.misc.ReflectUtils;
 import me.lor3mipsum.next.client.core.module.Category;
@@ -29,7 +29,7 @@ public class Velocity extends Module {
     });
 
     @EventHandler
-    private Listener<PacketReciveEvent> onPacketRecive = new Listener<>(event -> {
+    private Listener<PacketReceiveEvent> onPacketRecive = new Listener<>(event -> {
         if (mc.player == null)
             return;
 

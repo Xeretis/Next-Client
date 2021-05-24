@@ -1,17 +1,28 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.event.NextEvent;
+import me.lor3mipsum.next.api.event.client.TickEvent;
+import me.lor3mipsum.next.api.event.network.PacketReceiveEvent;
+import me.lor3mipsum.next.api.event.network.PacketSendEvent;
+import me.lor3mipsum.next.api.event.network.PlaySoundPacketEvent;
+import me.lor3mipsum.next.api.event.world.WorldRenderEvent;
 import me.lor3mipsum.next.api.util.entity.DamageUtils;
 import me.lor3mipsum.next.api.util.entity.EntityUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.api.util.player.InventoryUtils;
 import me.lor3mipsum.next.api.util.player.RotationUtils;
+import me.lor3mipsum.next.api.util.render.RenderUtils;
+import me.lor3mipsum.next.api.util.render.color.QuadColor;
 import me.lor3mipsum.next.api.util.world.CrystalUtils;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
 import me.lor3mipsum.next.client.impl.settings.*;
+import me.zero.alpine.event.EventPriority;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -20,7 +31,10 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -94,7 +108,6 @@ public class CrystalAura extends Module {
 
     public BooleanSetting facePlace = new BooleanSetting("FacePlace", true);
     public IntegerSetting facePlaceHp = new IntegerSetting("FacePlace Hp", 10, 0, 36);
-    public IntegerSetting facePlaceDelay = new IntegerSetting("FacePlace Delay", 5, 0, 20);
 
     public SettingSeparator armorBreakerSep = new SettingSeparator("ArmorBreaker");
 
@@ -114,270 +127,130 @@ public class CrystalAura extends Module {
         None
     }
 
-    private final List<EndCrystalEntity> attemptedCrystals = new ArrayList<>();
+    private final List<Integer> attackedCrystals = new ArrayList<>();
+    private final List<Entity> placedCrystals = new ArrayList<>();
 
     private PlayerEntity target;
     private BlockPos renderBlock;
 
-    private boolean alreadyAttacking;
-    private boolean placeTimeoutFlag;
-    private boolean hasPacketBroke;
-    private boolean didAnything;
     private boolean facePlacing;
 
-    private int placeTimeout;
-    private int breakTimeout;
     private int breakDelayCounter;
     private int placeDelayCounter;
-    private int facePlaceDelayCounter;
 
     int oldSlot;
 
-    private void breakCrystal() {
-        EndCrystalEntity crystal = getBestCrystal();
-
-        if (crystal == null) return;
-
-        if (antiWeakness.getValue() &&  mc.player.hasStatusEffect(StatusEffects.WEAKNESS))
-            if (!mc.player.hasStatusEffect(StatusEffects.STRENGTH))
-                doWeaknessSwitch();
+    @EventHandler
+    private Listener<PacketSendEvent> onPacketSend = new Listener<>(event -> {
 
 
-        didAnything = true;
 
-        if (rotate.getValue())
-            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(crystal), RotationUtils.getPitch(crystal), 30, () -> mc.interactionManager.attackEntity(mc.player, crystal));
-        else
-            mc.interactionManager.attackEntity(mc.player, crystal);
 
-        if (swing.getValue())
-            mc.player.swingHand(Hand.MAIN_HAND);
-        else
-            mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
 
+    }, EventPriority.HIGH);
+
+    @EventHandler
+    private Listener<PacketReceiveEvent> onPacketReceive = new Listener<>(event -> {
+
+
+
+    }, EventPriority.HIGH);
+
+    @EventHandler
+    private Listener<PlaySoundPacketEvent> onPlaySound = new Listener<>(event -> {
+
+
+
+
+
+    }, EventPriority.HIGH, event -> event.packet.getCategory().getName().equals(SoundCategory.BLOCKS.getName()) && event.packet.getSound().getId().getPath().equals("entity.generic.explode"));
+
+    @EventHandler
+    private Listener<TickEvent> onTick = new Listener<>(event -> {
+
+
+
+
+
+    }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
+
+    @EventHandler
+    private Listener<WorldRenderEvent> onWorldRender = new Listener<>(event -> {
+        if (renderBlock == null) return;
+
+        RenderUtils.drawBoxBoth(renderBlock, QuadColor.single(sidesColor.getValue().getRGB()), QuadColor.single(linesColor.getValue().getRGB()), lineWidth.getValue().floatValue());
+    });
+
+    @Override
+    public void onEnable() {
         breakDelayCounter = 0;
+        placeDelayCounter = 0;
+
+        attackedCrystals.clear();
+        placedCrystals.clear();
+    }
+
+    @Override
+    public void onDisable() {
+        if (switchBack.getValue() && oldSlot != -1)
+            InventoryUtils.select(oldSlot);
+
+        if (resetRotate.getValue())
+            RotationUtils.rotateToCam();
     }
 
     private void doCrystalAura() {
-        if (mc.player == null || mc.world == null)
-            return;
-
-        didAnything = false;
-
-        //TODO: SHOULD PAUSE
-
-        if (cPlace.getValue() && placeDelayCounter > placeTimeout && (facePlaceDelayCounter >= facePlaceDelay.getValue() || !facePlacing)) {
-            this.placeCrystal();
-        }
-        if (this.cBreak.getValue() && breakDelayCounter > breakTimeout && !hasPacketBroke) {
-            this.breakCrystal();
-        }
-
-        if (!didAnything)
-            target = null;
-
-        breakDelayCounter++;
-        placeDelayCounter++;
-        facePlaceDelayCounter++;
-    }
-
-    private void placeCrystal() {
-        BlockPos targetBlock = this.getBestBlock();
-        if (targetBlock == null) return;
-
-        placeDelayCounter = 0;
-        facePlaceDelayCounter = 0;
-        alreadyAttacking = false;
-
-        if (autoSwitch.getValue())
-            doSwitch();
-
-        Hand hand;
-
-        if(mc.player.getOffHandStack().getItem() == Items.END_CRYSTAL)
-            hand = Hand.OFF_HAND;
-        else if (mc.player.getMainHandStack().getItem() == Items.END_CRYSTAL)
-            hand = Hand.MAIN_HAND;
-        else
-            return;
-
-        didAnything = true;
-
-        if (rotate.getValue())
-            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(new Vec3d(targetBlock.getX(), targetBlock.getY() + 0.5, targetBlock.getZ()), Direction.UP, targetBlock, false)));
-        else
-            mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(new Vec3d(targetBlock.getX(), targetBlock.getY() + 0.5, targetBlock.getZ()), Direction.UP, targetBlock, false));
-
-        if (swing.getValue())
-            mc.player.swingHand(Hand.MAIN_HAND);
-        else
-            mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
 
     }
 
-    private BlockPos getBestBlock() {
-        if (getBestCrystal() != null && cancelMode.getValue() == CancelMode.None) {
-            placeTimeoutFlag = true;
-            return null;
-        }
+    private DmgResult getPlaceDmg(BlockPos blockPos, PlayerEntity target) {
+        DmgResult result = new DmgResult();
 
-        if (placeTimeoutFlag) {
-            placeTimeoutFlag = false;
-            return null;
-        }
+        PlayerEntity tempTarget = target;
 
-        double bestDamage = 0;
-        BlockPos bestPos = null;
+        if (targetPredict.getValue())
+            tempTarget = EntityUtils.getPredictedEntity(target, targetPredictTicks.getValue(), predictMode.getValue());
 
-        for (PlayerEntity player : mc.world.getPlayers()) {
-            if (player.distanceTo(mc.player) > 15) continue;
+        PlayerEntity tempSelf = target;
 
-            PlayerEntity targetPlayer = player;
+        if (selfPredict.getValue())
+            tempSelf = EntityUtils.getPredictedEntity(mc.player, selfPredictTicks.getValue(), predictMode.getValue());
 
-            if (targetPredict.getValue())
-                targetPlayer = EntityUtils.getPredictedEntity(player, targetPredictTicks.getValue(), predictMode.getValue());
+        result.valid = true;
 
-            for (BlockPos blockPos : CrystalUtils.getPlacePositions(this.placeRange.getValue().floatValue(), oldPlace.getValue(), !crystalCheck.getValue())) {
-                double targetDamage = getFinalPlaceDamage(blockPos, target);
+        result.targetDmg = DamageUtils.getExplosionDamage(CrystalUtils.getCrystalPos(blockPos), 6f, tempTarget);
+        result.selfDmg = DamageUtils.getExplosionDamage(CrystalUtils.getCrystalPos(blockPos), 6f, tempSelf);
 
-                if (targetDamage == 0) continue;
+        if (target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2)
+            return result;
 
-                if (targetDamage > bestDamage) {
-                    bestDamage = targetDamage;
-                    bestPos = blockPos;
-                    target = player;
-                }
-            }
+        if (result.targetDmg < minHpPlace.getValue())
+            result.valid = false;
 
-        }
+        if (result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue())
+            result.valid = false;
 
-        renderBlock = bestPos;
-
-        return bestPos;
+        return result;
     }
 
-    private EndCrystalEntity getBestCrystal() {
-        double bestDamage = 0;
-        EndCrystalEntity bestCrystal = null;
+    private DmgResult getBreakDmg(EndCrystalEntity crystal, PlayerEntity target) {
+        DmgResult result = new DmgResult();
 
-        for (Entity e : mc.world.getEntities()) {
+        result.valid = true;
 
-            if (!(e instanceof EndCrystalEntity)) continue;
+        result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
+        result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player);
 
-            EndCrystalEntity crystal = (EndCrystalEntity) e;
+        if (target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2)
+            return result;
 
-            for (PlayerEntity target : mc.world.getPlayers()) {
-                double targetDamage = getFinalBreakDamage(crystal, target);
-                if (targetDamage == 0) continue;
+        if (result.targetDmg < minHpBreak.getValue())
+            result.valid = false;
 
-                if (targetDamage > bestDamage) {
-                    bestDamage = targetDamage;
-                    this.target = target;
-                    bestCrystal = crystal;
-                }
-            }
-        }
+        if (result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue())
+            result.valid = false;
 
-        return bestCrystal;
-    }
-
-    private double getFinalPlaceDamage(BlockPos blockPos, PlayerEntity target) {
-        if (this.isPlayerValid(target)) {
-
-            if (!CrystalUtils.canSeePos(blockPos) && raytrace.getValue()) return 0;
-
-            if (!CrystalUtils.canSeePos(blockPos))
-                if (mc.player.getPos().distanceTo(Vec3d.of(blockPos)) > wallsPlaceRange.getValue().floatValue())
-                    return 0;
-            else
-                if (mc.player.getPos().distanceTo(Vec3d.of(blockPos)) > placeRange.getValue().floatValue())
-                    return 0;
-
-            double miniumDamage;
-            if ((target.getHealth() <= facePlaceHp.getValue() && facePlace.getValue()) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue())) {
-                miniumDamage = 0.5;
-                facePlacing = true;
-            } else {
-                miniumDamage = this.minHpPlace.getValue();
-                facePlacing = false;
-            }
-
-            double targetDamage = DamageUtils.getExplosionDamage(CrystalUtils.getCrystalPos(blockPos), 6f, target);
-
-            if (targetDamage < miniumDamage && target.getHealth() - targetDamage > 0) return 0;
-
-            double selfDamage = 0;
-            if(!ignoreSelfDamage.getValue()) {
-                PlayerEntity selfDmgTarget = mc.player;
-
-                if (selfPredict.getValue())
-                    selfDmgTarget = EntityUtils.getPredictedEntity(mc.player, selfPredictTicks.getValue(), predictMode.getValue());
-
-                selfDamage = DamageUtils.getExplosionDamage(CrystalUtils.getCrystalPos(blockPos), 6f, mc.player);
-            }
-
-            if (selfDamage > maxSelfDamage.getValue()) return 0;
-            if (DamageUtils.willExplosionKill(CrystalUtils.getCrystalPos(blockPos), 6f, mc.player) && antiSuicide.getValue()) return 0;
-            if (DamageUtils.willExplosionPop(CrystalUtils.getCrystalPos(blockPos), 6f, mc.player) && antiPop.getValue()) return 0;
-
-            return targetDamage;
-        }
-
-        return 0;
-    }
-
-
-    private double getFinalBreakDamage(EndCrystalEntity crystal, PlayerEntity target) {
-        if (this.isPlayerValid(target)) {
-            if (mc.player.canSee(crystal))
-                if (mc.player.distanceTo(crystal) > breakRange.getValue())
-                    return 0;
-            else
-                if (mc.player.distanceTo(crystal) > wallsBreakRange.getValue())
-                    return 0;
-
-            if (!crystal.isAlive()) return 0;
-
-            if (attemptedCrystals.contains(crystal)) return 0;
-
-            double miniumDamage;
-            if ((target.getHealth() <= facePlaceHp.getValue() && facePlace.getValue()) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue())) {
-                miniumDamage = 0.5;
-                facePlacing = true;
-            } else {
-                facePlacing = false;
-                miniumDamage = this.minHpBreak.getValue();
-            }
-
-            double targetDamage = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
-            if (targetDamage < miniumDamage && target.getHealth() - targetDamage > 0) return 0;
-
-            double selfDamage = 0;
-            if(!ignoreSelfDamage.getValue()) {
-                PlayerEntity selfDmgTarget = mc.player;
-
-                if (selfPredict.getValue())
-                    selfDmgTarget = EntityUtils.getPredictedEntity(mc.player, selfPredictTicks.getValue(), predictMode.getValue());
-
-                selfDamage = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, selfDmgTarget);
-            }
-
-            if (selfDamage > maxSelfDamage.getValue()) return 0;
-            if (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()) return 0;
-            if (DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) return 0;
-
-            return targetDamage;
-        }
-
-        return 0;
-    }
-
-    private boolean isPlayerValid(PlayerEntity player) {
-        if (mc.player.isDead() || player == mc.player) return false;
-        if (Main.socialManager.isFriend(player.getName().getString())) return false;
-        if (player.distanceTo(mc.player) > 15) return false;
-
-        return true;
+        return result;
     }
 
     private void doSwitch() {
@@ -398,6 +271,12 @@ public class CrystalAura extends Module {
                 InventoryUtils.select(slot);
             }
         }
+    }
+
+    private class DmgResult {
+        public boolean valid;
+        public float targetDmg;
+        public float selfDmg;
     }
 
 }
