@@ -170,6 +170,8 @@ public class EntityUtils {
         Vec3d predictedPos = getPredictedPosition(currentTarget, ticks, mode);
 
         entity.copyPositionAndRotation(currentTarget);
+        entity.getAttributes().setFrom(currentTarget.getAttributes());
+
 
         entity.setPos(predictedPos.x, predictedPos.y, predictedPos.z);
 

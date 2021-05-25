@@ -1,15 +1,13 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
-import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
-import me.lor3mipsum.next.api.event.network.PacketReceiveEvent;
-import me.lor3mipsum.next.api.event.network.PacketSendEvent;
-import me.lor3mipsum.next.api.event.network.PlaySoundPacketEvent;
+import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
 import me.lor3mipsum.next.api.event.world.WorldRenderEvent;
 import me.lor3mipsum.next.api.util.entity.DamageUtils;
 import me.lor3mipsum.next.api.util.entity.EntityUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
+import me.lor3mipsum.next.api.util.misc.Timer;
 import me.lor3mipsum.next.api.util.player.InventoryUtils;
 import me.lor3mipsum.next.api.util.player.RotationUtils;
 import me.lor3mipsum.next.api.util.render.RenderUtils;
@@ -31,15 +29,15 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +126,6 @@ public class CrystalAura extends Module {
     }
 
     private final List<Integer> attackedCrystals = new ArrayList<>();
-    private final List<Entity> placedCrystals = new ArrayList<>();
 
     private PlayerEntity target;
     private BlockPos renderBlock;
@@ -138,41 +135,42 @@ public class CrystalAura extends Module {
     private int breakDelayCounter;
     private int placeDelayCounter;
 
+    private
+
+    Timer lastPlaceOrBreak = new Timer();
+
     int oldSlot;
 
     @EventHandler
-    private Listener<PacketSendEvent> onPacketSend = new Listener<>(event -> {
+    private Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
 
+        if (cancelMode.getValue() == CancelMode.Sound) {
+            attackedCrystals.forEach(id -> mc.world.removeEntity(id));
+            attackedCrystals.clear();
+        }
 
-
-
-
-    }, EventPriority.HIGH);
-
-    @EventHandler
-    private Listener<PacketReceiveEvent> onPacketReceive = new Listener<>(event -> {
-
-
-
-    }, EventPriority.HIGH);
-
-    @EventHandler
-    private Listener<PlaySoundPacketEvent> onPlaySound = new Listener<>(event -> {
-
-
-
-
-
-    }, EventPriority.HIGH, event -> event.packet.getCategory().getName().equals(SoundCategory.BLOCKS.getName()) && event.packet.getSound().getId().getPath().equals("entity.generic.explode"));
+    }, EventPriority.HIGH, event -> event.sound.getCategory().getName().equals(SoundCategory.BLOCKS.getName()) && event.sound.getId().getPath().equals("entity.generic.explode"));
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
 
+        if (lastPlaceOrBreak.passed(500))
+            if (resetRotate.getValue())
+                RotationUtils.rotateToCam();
 
-
-
+        doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
+
+    @EventHandler
+    private Listener<TickEvent> onPreTick = new Listener<>(event -> {
+
+        if (cancelMode.getValue() == CancelMode.Instant) {
+            attackedCrystals.forEach(id -> mc.world.removeEntity(id));
+            attackedCrystals.clear();
+        }
+
+    }, EventPriority.HIGH, event -> event.era == NextEvent.Era.PRE);
 
     @EventHandler
     private Listener<WorldRenderEvent> onWorldRender = new Listener<>(event -> {
@@ -187,11 +185,15 @@ public class CrystalAura extends Module {
         placeDelayCounter = 0;
 
         attackedCrystals.clear();
-        placedCrystals.clear();
+
+        lastPlaceOrBreak.reset();
     }
 
     @Override
     public void onDisable() {
+        if (mc.player == null || mc.world == null)
+            return;
+
         if (switchBack.getValue() && oldSlot != -1)
             InventoryUtils.select(oldSlot);
 
@@ -200,7 +202,142 @@ public class CrystalAura extends Module {
     }
 
     private void doCrystalAura() {
+        if (mc.player == null || mc.world == null)
+            return;
 
+        if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue())
+            placeCrystal();
+
+        if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue())
+            breakCrystal();
+
+        placeDelayCounter++;
+        breakDelayCounter++;
+    }
+
+    private void placeCrystal() {
+        if (autoSwitch.getValue())
+            doSwitch();
+
+        Hand hand;
+
+        if(mc.player.getOffHandStack().getItem() == Items.END_CRYSTAL)
+            hand = Hand.OFF_HAND;
+        else if (mc.player.getMainHandStack().getItem() == Items.END_CRYSTAL)
+            hand = Hand.MAIN_HAND;
+        else
+            return;
+
+        BlockPos targetBlock = getPlace();
+
+        if (targetBlock == null) {
+            renderBlock = null;
+            return;
+        }
+
+        renderBlock = targetBlock;
+
+        placeDelayCounter = 0;
+
+        Vec3d vec = new Vec3d(targetBlock.getX(), targetBlock.getY() + 0.5, targetBlock.getZ());
+
+        if (rotate.getValue()) {
+            Vec3d finalVec = vec;
+            BlockPos finalSelectedPos = targetBlock;
+
+            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, Direction.UP, finalSelectedPos, false)));
+        } else
+            mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, Direction.UP, targetBlock, false));
+
+        lastPlaceOrBreak.reset();
+    }
+
+    private void breakCrystal() {
+        if (antiWeakness.getValue() && mc.player.hasStatusEffect(StatusEffects.WEAKNESS) && !mc.player.hasStatusEffect(StatusEffects.STRENGTH))
+            doWeaknessSwitch();
+
+        EndCrystalEntity targetEntity = getBreak();
+
+        if (targetEntity == null)
+            return;
+
+        if (rotate.getValue())
+            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
+        else
+            mc.interactionManager.attackEntity(mc.player, targetEntity);
+
+        if (swing.getValue())
+            mc.player.swingHand(Hand.MAIN_HAND);
+        else
+            mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
+
+        attackedCrystals.add(targetEntity.getEntityId());
+
+        lastPlaceOrBreak.reset();
+    }
+
+    private BlockPos getPlace() {
+        List<BlockPos> possibleLocations = CrystalUtils.getPlacePositions(placeRange.getValue(), oldPlace.getValue(), !crystalCheck.getValue());
+
+        float bestDmg = 0;
+        BlockPos bestPos = null;
+
+        for (Entity entity : mc.world.getEntities()) {
+            if (!(entity instanceof PlayerEntity) || entity == mc.player || mc.player.isDead() || mc.player.distanceTo(entity) > 15)
+                continue;
+
+            for (BlockPos pos : possibleLocations) {
+                DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
+
+                if (!rayTrace(pos))
+                    if (raytrace.getValue() || mc.player.getPos().distanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue())
+                        continue;
+
+                if (!res.valid)
+                    continue;
+
+                if (res.targetDmg > bestDmg) {
+                    bestDmg = res.targetDmg;
+                    bestPos = pos;
+                    target = (PlayerEntity) entity;
+                }
+            }
+        }
+
+        return bestPos;
+
+    }
+
+    private EndCrystalEntity getBreak() {
+        float bestDmg = 0;
+        EndCrystalEntity bestCrystal = null;
+
+        for (Entity crystal : mc.world.getEntities()) {
+            if (!(crystal instanceof EndCrystalEntity) || mc.player.isDead() || mc.player.distanceTo(crystal) > breakRange.getValue())
+                continue;
+
+            if (!mc.player.canSee(crystal))
+                if (raytrace.getValue() || mc.player.distanceTo(crystal) > wallsBreakRange.getValue())
+                    continue;
+
+            for (Entity player : mc.world.getEntities()) {
+                if (!(player instanceof PlayerEntity) || player == mc.player || mc.player.isDead() || mc.player.distanceTo(player) > 15)
+                    continue;
+
+                DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) player);
+
+                if (!res.valid)
+                    continue;
+
+                if (res.targetDmg > bestDmg) {
+                    bestDmg = res.targetDmg;
+                    bestCrystal = (EndCrystalEntity) crystal;
+                    target = (PlayerEntity) player;
+                }
+            }
+        }
+
+        return bestCrystal;
     }
 
     private DmgResult getPlaceDmg(BlockPos blockPos, PlayerEntity target) {
@@ -211,23 +348,27 @@ public class CrystalAura extends Module {
         if (targetPredict.getValue())
             tempTarget = EntityUtils.getPredictedEntity(target, targetPredictTicks.getValue(), predictMode.getValue());
 
-        PlayerEntity tempSelf = target;
+        PlayerEntity tempSelf = mc.player;
 
         if (selfPredict.getValue())
             tempSelf = EntityUtils.getPredictedEntity(mc.player, selfPredictTicks.getValue(), predictMode.getValue());
 
         result.valid = true;
 
-        result.targetDmg = DamageUtils.getExplosionDamage(CrystalUtils.getCrystalPos(blockPos), 6f, tempTarget);
-        result.selfDmg = DamageUtils.getExplosionDamage(CrystalUtils.getCrystalPos(blockPos), 6f, tempSelf);
+        result.targetDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempTarget);
+        result.selfDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempSelf);
 
-        if (target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2)
+        System.out.println("Target: " + target.getName().getString() + "Dmg: " + result.targetDmg + "SelfDmg: " + result.selfDmg + "M: place");
+
+        if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()) ||
+                (DamageUtils.willExplosionPop(blockPos, 6f, mc.player) && antiPop.getValue()) ||
+                (DamageUtils.willExplosionKill(blockPos, 6f, mc.player) && antiSuicide.getValue()))
+            result.valid = false;
+
+        if ((target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
             return result;
 
         if (result.targetDmg < minHpPlace.getValue())
-            result.valid = false;
-
-        if (result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue())
             result.valid = false;
 
         return result;
@@ -241,13 +382,17 @@ public class CrystalAura extends Module {
         result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
         result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player);
 
-        if (target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2)
+        System.out.println("Target: " + target.getName().getString() + "Dmg: " + result.targetDmg + "SelfDmg: " + result.selfDmg + "M: break");
+
+        if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()) ||
+                (DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) ||
+                (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()))
+            result.valid = false;
+
+        if ((target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
             return result;
 
         if (result.targetDmg < minHpBreak.getValue())
-            result.valid = false;
-
-        if (result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue())
             result.valid = false;
 
         return result;
@@ -273,10 +418,40 @@ public class CrystalAura extends Module {
         }
     }
 
-    private class DmgResult {
+    private boolean needsPause() {
+        if((mc.player.isUsingItem() && (mc.player.getMainHandStack().getItem().isFood() || mc.player.getOffHandStack().getItem().isFood()) && stopWhileEating.getValue())
+                || (mc.interactionManager.isBreakingBlock() && stopWhileMining.getValue()))
+            return true;
+
+        return false;
+    }
+
+    private static class DmgResult {
         public boolean valid;
         public float targetDmg;
         public float selfDmg;
     }
 
+    private boolean rayTrace(BlockPos pos) {
+        Vec3d eyesPos = new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
+
+        for (Direction direction : Direction.values()) {
+            RaycastContext raycastContext = new RaycastContext(eyesPos, new Vec3d(pos.getX() + 0.5 + direction.getVector().getX() * 0.5,
+                    pos.getY() + 0.5 + direction.getVector().getY() * 0.5,
+                    pos.getZ() + 0.5 + direction.getVector().getZ() * 0.5), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player);
+            BlockHitResult result = mc.world.raycast(raycastContext);
+            if (result != null && result.getType() == HitResult.Type.BLOCK && result.getBlockPos().equals(pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String getHudInfo() {
+        if (target != null)
+            return "[" + Formatting.WHITE + target.getName().getString() + Formatting.GRAY + "]";
+        else
+            return "";
+    }
 }

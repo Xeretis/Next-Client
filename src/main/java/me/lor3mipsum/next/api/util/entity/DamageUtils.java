@@ -8,6 +8,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -25,15 +26,24 @@ public class DamageUtils {
         Explosion explosion = new Explosion(mc.world, null, explosionPos.x, explosionPos.y, explosionPos.z, power, false, Explosion.DestructionType.DESTROY);
 
         double maxDist = power * 2;
-        if (!mc.world.getOtherEntities(null, new Box(
+//        if (!mc.world.getOtherEntities(null, new Box(
+//                MathHelper.floor(explosionPos.x - maxDist - 1.0),
+//                MathHelper.floor(explosionPos.y - maxDist - 1.0),
+//                MathHelper.floor(explosionPos.z - maxDist - 1.0),
+//                MathHelper.floor(explosionPos.x + maxDist + 1.0),
+//                MathHelper.floor(explosionPos.y + maxDist + 1.0),
+//                MathHelper.floor(explosionPos.z + maxDist + 1.0))).contains(target)) {
+//            return 0f;
+//        }
+
+        if (!new Box(
                 MathHelper.floor(explosionPos.x - maxDist - 1.0),
                 MathHelper.floor(explosionPos.y - maxDist - 1.0),
                 MathHelper.floor(explosionPos.z - maxDist - 1.0),
                 MathHelper.floor(explosionPos.x + maxDist + 1.0),
                 MathHelper.floor(explosionPos.y + maxDist + 1.0),
-                MathHelper.floor(explosionPos.z + maxDist + 1.0))).contains(target)) {
+                MathHelper.floor(explosionPos.z + maxDist + 1.0)).contains(target.getPos()))
             return 0f;
-        }
 
         if (!target.isImmuneToExplosion() && !target.isInvulnerable()) {
             double distExposure = MathHelper.sqrt(target.squaredDistanceTo(explosionPos)) / maxDist;
@@ -82,6 +92,10 @@ public class DamageUtils {
         return 0f;
     }
 
+    public static float getExplosionDamage(BlockPos pos, float power, LivingEntity entity) {
+        return getExplosionDamage(new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), power, entity);
+    }
+
     public static boolean willExplosionKill(Vec3d explosionPos, float power, LivingEntity target) {
         if (target.getMainHandStack().getItem() == Items.TOTEM_OF_UNDYING || target.getOffHandStack().getItem() == Items.TOTEM_OF_UNDYING) {
             return false;
@@ -99,6 +113,26 @@ public class DamageUtils {
     }
 
     public static boolean willExplosionPopOrKill(Vec3d explosionPos, float power, LivingEntity target) {
+        return getExplosionDamage(explosionPos, power, target) >= target.getHealth() + target.getAbsorptionAmount();
+    }
+
+    public static boolean willExplosionKill(BlockPos explosionPos, float power, LivingEntity target) {
+        if (target.getMainHandStack().getItem() == Items.TOTEM_OF_UNDYING || target.getOffHandStack().getItem() == Items.TOTEM_OF_UNDYING) {
+            return false;
+        }
+
+        return getExplosionDamage(explosionPos, power, target) >= target.getHealth() + target.getAbsorptionAmount();
+    }
+
+    public static boolean willExplosionPop(BlockPos explosionPos, float power, LivingEntity target) {
+        if (target.getMainHandStack().getItem() != Items.TOTEM_OF_UNDYING && target.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) {
+            return false;
+        }
+
+        return getExplosionDamage(explosionPos, power, target) >= target.getHealth() + target.getAbsorptionAmount();
+    }
+
+    public static boolean willExplosionPopOrKill(BlockPos explosionPos, float power, LivingEntity target) {
         return getExplosionDamage(explosionPos, power, target) >= target.getHealth() + target.getAbsorptionAmount();
     }
 }

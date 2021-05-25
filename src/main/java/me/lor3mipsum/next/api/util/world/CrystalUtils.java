@@ -52,7 +52,7 @@ public class CrystalUtils {
     }
 
     public static Vec3d getCrystalPos(BlockPos blockPos) {
-        return new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+        return Vec3d.of(blockPos).add(0.5, 0.5, 0.5);
     }
 
     public static List<BlockPos> getPlacePositions(double placeRange, boolean oldPlace, boolean ignoreCrystals) {

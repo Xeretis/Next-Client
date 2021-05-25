@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.GameMode;
 
 @SuppressWarnings("ALL")
 public class FakePlayerEntity extends OtherClientPlayerEntity {
