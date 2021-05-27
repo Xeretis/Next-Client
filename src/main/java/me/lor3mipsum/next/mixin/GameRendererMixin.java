@@ -2,6 +2,7 @@ package me.lor3mipsum.next.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.lor3mipsum.next.Main;
+import me.lor3mipsum.next.api.event.game.RenderFloatingTotemEvent;
 import me.lor3mipsum.next.api.event.game.RenderHurtcamEvent;
 import me.lor3mipsum.next.api.event.game.RenderShaderEvent;
 import me.lor3mipsum.next.client.impl.modules.exploit.NoEntityTrace;
@@ -9,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.HitResult;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
@@ -28,6 +30,16 @@ public class GameRendererMixin {
     @Inject(method = "bobViewWhenHurt", at = @At("HEAD"), cancellable = true)
     private void onBobViewWhenHurt(MatrixStack matrixStack, float f, CallbackInfo info) {
         RenderHurtcamEvent event = new RenderHurtcamEvent();
+
+        Main.EVENT_BUS.post(event);
+
+        if(event.isCancelled())
+            info.cancel();
+    }
+
+    @Inject(method = "showFloatingItem", at = @At("HEAD"), cancellable = true)
+    private void showFloatingItem(ItemStack floatingItem, CallbackInfo info) {
+        RenderFloatingTotemEvent event = new RenderFloatingTotemEvent();
 
         Main.EVENT_BUS.post(event);
 

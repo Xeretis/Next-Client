@@ -153,6 +153,8 @@ public class CrystalAura extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player == null || mc.world == null)
+            return;
 
         if (lastPlaceOrBreak.passed(500))
             if (resetRotate.getValue())
@@ -164,6 +166,8 @@ public class CrystalAura extends Module {
 
     @EventHandler
     private Listener<TickEvent> onPreTick = new Listener<>(event -> {
+        if (mc.player == null || mc.world == null)
+            return;
 
         if (cancelMode.getValue() == CancelMode.Instant) {
             attackedCrystals.forEach(id -> mc.world.removeEntity(id));

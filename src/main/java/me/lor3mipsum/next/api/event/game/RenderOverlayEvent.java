@@ -11,4 +11,10 @@ public class RenderOverlayEvent extends NextEvent {
         this.texture = texture;
         this.opacity = opacity;
     }
+
+    public RenderOverlayEvent(Identifier texture, float opacity, Era era) {
+        super(era);
+        this.texture = texture;
+        this.opacity = opacity;
+    }
 }

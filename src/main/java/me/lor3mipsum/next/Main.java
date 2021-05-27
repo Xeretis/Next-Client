@@ -27,7 +27,7 @@ import java.awt.*;
 public class Main implements ModInitializer, Listenable {
 
 	public static final String CLIENT_NAME = "Next";
-	public static final String CLIENT_VERSION = "2.0.0";
+	public static final String CLIENT_VERSION = "2.0.1";
 
 	public static final Logger LOG = LogManager.getLogger("Next");
 	public static final EventBus EVENT_BUS = new EventManager();

@@ -28,6 +28,7 @@
     "ClientPlayNetworkHandlerMixin",
     "ClientWorldMixin",
     "LivingEntityMixin",
+    "InGameOverlayRendererMixin",
     "accessor.HorseScreenHandlerAccessor",
     "accessor.BlockHitResultAccessor"
   ],
