@@ -95,6 +95,7 @@ public class CrystalAura extends Module {
 
     public BooleanSetting autoSwitch = new BooleanSetting("Auto Switch", true);
     public BooleanSetting switchBack = new BooleanSetting("Switch Back", true);
+    public IntegerSetting switchBackDelay = new IntegerSetting("Switch Back Delay", 150, 50, 500);
     public BooleanSetting antiWeakness = new BooleanSetting("Anti Weakness", true);
 
     public SettingSeparator stoppingSep = new SettingSeparator("Stopping");
@@ -130,16 +131,12 @@ public class CrystalAura extends Module {
     private PlayerEntity target;
     private BlockPos renderBlock;
 
-    private boolean facePlacing;
-
     private int breakDelayCounter;
     private int placeDelayCounter;
 
-    private
+    private Timer lastPlaceOrBreak = new Timer();
 
-    Timer lastPlaceOrBreak = new Timer();
-
-    int oldSlot;
+    private int oldSlot;
 
     @EventHandler
     private Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
@@ -156,7 +153,11 @@ public class CrystalAura extends Module {
         if (mc.player == null || mc.world == null)
             return;
 
-        if (lastPlaceOrBreak.passed(500))
+        if (lastPlaceOrBreak.passed(150))
+            if (switchBack.getValue() && oldSlot != -1)
+                InventoryUtils.select(oldSlot);
+
+        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()))
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
@@ -187,6 +188,8 @@ public class CrystalAura extends Module {
     public void onEnable() {
         breakDelayCounter = 0;
         placeDelayCounter = 0;
+
+        oldSlot = -1;
 
         attackedCrystals.clear();
 
@@ -220,6 +223,13 @@ public class CrystalAura extends Module {
     }
 
     private void placeCrystal() {
+        BlockPos targetBlock = getPlace();
+
+        if (targetBlock == null) {
+            renderBlock = null;
+            return;
+        }
+
         if (autoSwitch.getValue())
             doSwitch();
 
@@ -231,13 +241,6 @@ public class CrystalAura extends Module {
             hand = Hand.MAIN_HAND;
         else
             return;
-
-        BlockPos targetBlock = getPlace();
-
-        if (targetBlock == null) {
-            renderBlock = null;
-            return;
-        }
 
         renderBlock = targetBlock;
 
@@ -257,13 +260,13 @@ public class CrystalAura extends Module {
     }
 
     private void breakCrystal() {
-        if (antiWeakness.getValue() && mc.player.hasStatusEffect(StatusEffects.WEAKNESS) && !mc.player.hasStatusEffect(StatusEffects.STRENGTH))
-            doWeaknessSwitch();
-
         EndCrystalEntity targetEntity = getBreak();
 
         if (targetEntity == null)
             return;
+
+        if (antiWeakness.getValue() && mc.player.hasStatusEffect(StatusEffects.WEAKNESS) && !mc.player.hasStatusEffect(StatusEffects.STRENGTH))
+            doWeaknessSwitch();
 
         if (rotate.getValue())
             RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
@@ -362,8 +365,6 @@ public class CrystalAura extends Module {
         result.targetDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempTarget);
         result.selfDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempSelf);
 
-        System.out.println("Target: " + target.getName().getString() + "Dmg: " + result.targetDmg + "SelfDmg: " + result.selfDmg + "M: place");
-
         if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()) ||
                 (DamageUtils.willExplosionPop(blockPos, 6f, mc.player) && antiPop.getValue()) ||
                 (DamageUtils.willExplosionKill(blockPos, 6f, mc.player) && antiSuicide.getValue()))
@@ -385,8 +386,6 @@ public class CrystalAura extends Module {
 
         result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
         result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player);
-
-        System.out.println("Target: " + target.getName().getString() + "Dmg: " + result.targetDmg + "SelfDmg: " + result.selfDmg + "M: break");
 
         if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()) ||
                 (DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) ||
