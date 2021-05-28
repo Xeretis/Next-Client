@@ -2,10 +2,13 @@ package me.lor3mipsum.next.client.impl.modules.combat;
 
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
+import me.lor3mipsum.next.api.event.entity.EntityAddedEvent;
+import me.lor3mipsum.next.api.event.network.PacketSentEvent;
 import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
 import me.lor3mipsum.next.api.event.world.WorldRenderEvent;
 import me.lor3mipsum.next.api.util.entity.DamageUtils;
 import me.lor3mipsum.next.api.util.entity.EntityUtils;
+import me.lor3mipsum.next.api.util.misc.MathUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.api.util.misc.Timer;
 import me.lor3mipsum.next.api.util.player.InventoryUtils;
@@ -29,6 +32,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -36,6 +40,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
@@ -53,6 +58,7 @@ public class CrystalAura extends Module {
     public SettingSeparator generalSep = new SettingSeparator("General");
 
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
+    public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     public BooleanSetting antiPop = new BooleanSetting("Anti Pop", false);
     public BooleanSetting oldPlace = new BooleanSetting("Old Place", false);
@@ -80,6 +86,8 @@ public class CrystalAura extends Module {
     public SettingSeparator rotationsSep = new SettingSeparator("Rotations");
 
     public BooleanSetting rotate = new BooleanSetting("Rotate", true);
+    public EnumSetting<YawStepMode> yawStepMode = new EnumSetting<>("YawStep Mode", YawStepMode.Break);
+    public IntegerSetting yawSteps = new IntegerSetting("YawSteps", 180, 1, 180);
     public BooleanSetting raytrace = new BooleanSetting("Raytrace", false);
     public BooleanSetting resetRotate = new BooleanSetting("Reset Rotations", true);
 
@@ -126,6 +134,13 @@ public class CrystalAura extends Module {
         None
     }
 
+    public enum YawStepMode {
+        Break,
+        Place,
+        All,
+        None
+    }
+
     private final List<Integer> attackedCrystals = new ArrayList<>();
 
     private PlayerEntity target;
@@ -133,6 +148,9 @@ public class CrystalAura extends Module {
 
     private int breakDelayCounter;
     private int placeDelayCounter;
+
+    private double serverYaw;
+    private boolean canBreak;
 
     private Timer lastPlaceOrBreak = new Timer();
 
@@ -184,12 +202,34 @@ public class CrystalAura extends Module {
         RenderUtils.drawBoxBoth(renderBlock, QuadColor.single(sidesColor.getValue().getRGB()), QuadColor.single(linesColor.getValue().getRGB()), lineWidth.getValue().floatValue());
     });
 
+    @EventHandler
+    private Listener<PacketSentEvent> onPacketSent = new Listener<>(event -> {
+
+        serverYaw = ((PlayerMoveC2SPacket) event.packet).getYaw((float) serverYaw);
+    }, event -> event.packet instanceof PlayerMoveC2SPacket);
+
+    @EventHandler
+    private Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
+
+        if (fastBreak.getValue() && target != null && canBreak) {
+            DmgResult res = getBreakDmg((EndCrystalEntity) event.entity, target);
+
+            if (res.valid)
+                breakCrystal((EndCrystalEntity) event.entity);
+        }
+
+    }, event -> event.entity instanceof EndCrystalEntity);
+
     @Override
     public void onEnable() {
         breakDelayCounter = 0;
         placeDelayCounter = 0;
 
         oldSlot = -1;
+
+        canBreak = true;
+
+        serverYaw = mc.player.yaw;
 
         attackedCrystals.clear();
 
@@ -209,13 +249,15 @@ public class CrystalAura extends Module {
     }
 
     private void doCrystalAura() {
-        if (mc.player == null || mc.world == null)
+        if (mc.player == null || mc.world == null || needsPause())
             return;
+
+        canBreak = true;
 
         if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue())
             placeCrystal();
 
-        if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue())
+        if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue() && canBreak)
             breakCrystal();
 
         placeDelayCounter++;
@@ -252,7 +294,11 @@ public class CrystalAura extends Module {
             Vec3d finalVec = vec;
             BlockPos finalSelectedPos = targetBlock;
 
-            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, Direction.UP, finalSelectedPos, false)));
+            if (yawStepMode.getValue() == YawStepMode.All || yawStepMode.getValue() == YawStepMode.Place) {
+                if (doYawStep(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5))))
+                    RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, Direction.UP, finalSelectedPos, false)));
+            } else
+                RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, Direction.UP, finalSelectedPos, false)));
         } else
             mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, Direction.UP, targetBlock, false));
 
@@ -260,16 +306,23 @@ public class CrystalAura extends Module {
     }
 
     private void breakCrystal() {
-        EndCrystalEntity targetEntity = getBreak();
+        breakCrystal(getBreak());
+    }
 
+    private void breakCrystal(EndCrystalEntity targetEntity) {
         if (targetEntity == null)
             return;
 
         if (antiWeakness.getValue() && mc.player.hasStatusEffect(StatusEffects.WEAKNESS) && !mc.player.hasStatusEffect(StatusEffects.STRENGTH))
             doWeaknessSwitch();
 
-        if (rotate.getValue())
-            RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
+        if (rotate.getValue()) {
+            if (yawStepMode.getValue() == YawStepMode.All || yawStepMode.getValue() == YawStepMode.Break) {
+                if (doYawStep(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity)))
+                    RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
+            } else
+                RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
+        }
         else
             mc.interactionManager.attackEntity(mc.player, targetEntity);
 
@@ -279,6 +332,8 @@ public class CrystalAura extends Module {
             mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
 
         attackedCrystals.add(targetEntity.getEntityId());
+
+        canBreak = false;
 
         lastPlaceOrBreak.reset();
     }
@@ -400,6 +455,29 @@ public class CrystalAura extends Module {
 
         return result;
     }
+
+    public boolean doYawStep(double targetYaw, double targetPitch) {
+        targetYaw = MathHelper.wrapDegrees(targetYaw) + 180;
+        double serverYaw = MathHelper.wrapDegrees(this.serverYaw) + 180;
+
+        if (MathUtils.distanceBetweenAngles(serverYaw, targetYaw) <= yawSteps.getValue()) return true;
+
+        double delta = Math.abs(targetYaw - serverYaw);
+        double yaw = this.serverYaw;
+
+        if (serverYaw < targetYaw) {
+            if (delta < 180) yaw += yawSteps.getValue();
+            else yaw -= yawSteps.getValue();
+        }
+        else {
+            if (delta < 180) yaw -= yawSteps.getValue();
+            else yaw += yawSteps.getValue();
+        }
+
+        RotationUtils.INSTANCE.rotate(yaw, targetPitch, -100, null);
+        return false;
+    }
+
 
     private void doSwitch() {
         if (mc.player != null && mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL) {

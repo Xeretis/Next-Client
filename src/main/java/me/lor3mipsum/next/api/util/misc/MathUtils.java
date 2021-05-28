@@ -20,31 +20,36 @@ public class MathUtils {
         return Math.min(value, max);
     }
 
-    public int getRandom(int cap) {
+    public static int getRandom(int cap) {
         return rng.nextInt(cap);
     }
 
-    public int getRandom(int floor, int cap) {
+    public static int getRandom(int floor, int cap) {
         return floor + rng.nextInt(cap - floor + 1);
     }
 
-    public int randInt(int min, int max) {
+    public static int randInt(int min, int max) {
         return rng.nextInt(max - min + 1) + min;
     }
 
-    public double randDouble(double min, double max) {
+    public static double randDouble(double min, double max) {
         return min + rng.nextDouble() * (max - min);
     }
 
-    public float randFloat(float min, float max) {
+    public static float randFloat(float min, float max) {
         return min + rng.nextFloat() * (max - min);
     }
 
-    public Vec3d getVec3dOf(Entity entity) {
+    public static Vec3d getVec3dOf(Entity entity) {
         return new Vec3d(entity.getX(), entity.getY(), entity.getZ());
     }
 
-    public Vec3d getVec3dOf(BlockPos blockPos) {
+    public static Vec3d getVec3dOf(BlockPos blockPos) {
         return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    }
+
+    public static double distanceBetweenAngles(double alpha, double beta) {
+        double phi = Math.abs(beta - alpha) % 360;
+        return phi > 180 ? 360 - phi : phi;
     }
 }
