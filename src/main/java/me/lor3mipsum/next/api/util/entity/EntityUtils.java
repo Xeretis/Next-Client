@@ -128,10 +128,6 @@ public class EntityUtils {
 
         double motion = Math.sqrt(motionX * motionX + motionZ * motionZ + motionY * motionY);
 
-        if (motion < 0.1) {
-            return entity.getPos();
-        }
-
         Vec3d predictedPos = entity.getPos();
 
         if (pMode == PredictMode.Strafe) {
@@ -165,13 +161,16 @@ public class EntityUtils {
     }
 
     public static PlayerEntity getPredictedEntity(PlayerEntity currentTarget, int ticks, PredictMode mode) {
+        double motion = Math.sqrt(currentTarget.getVelocity().getX() * currentTarget.getVelocity().getX() + currentTarget.getVelocity().getZ() * currentTarget.getVelocity().getZ() + currentTarget.getVelocity().getY() * currentTarget.getVelocity().getY());
+
+        if (motion < 0.1)
+            return currentTarget;
+
         OtherClientPlayerEntity entity = new OtherClientPlayerEntity(mc.world, new GameProfile(currentTarget.getUuid(), currentTarget.getName().getString()));
 
         Vec3d predictedPos = getPredictedPosition(currentTarget, ticks, mode);
 
         entity.copyPositionAndRotation(currentTarget);
-        entity.getAttributes().setFrom(currentTarget.getAttributes());
-
 
         entity.setPos(predictedPos.x, predictedPos.y, predictedPos.z);
 
