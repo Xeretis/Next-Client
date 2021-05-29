@@ -91,6 +91,7 @@ public class CrystalAura extends Module {
     public IntegerSetting yawSteps = new IntegerSetting("YawSteps", 180, 1, 180);
     public BooleanSetting raytrace = new BooleanSetting("Raytrace", false);
     public BooleanSetting resetRotate = new BooleanSetting("Reset Rotations", true);
+    public IntegerSetting resetRotateDelay = new IntegerSetting("Reset Rotations Delay", 500, 500, 5000);
 
     public SettingSeparator predictionsSep = new SettingSeparator("Predictions");
 
@@ -177,11 +178,11 @@ public class CrystalAura extends Module {
         if (mc.player == null || mc.world == null)
             return;
 
-        if (lastPlaceOrBreak.passed(150))
+        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()))
             if (switchBack.getValue() && oldSlot != -1)
                 InventoryUtils.select(oldSlot);
 
-        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()))
+        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()))
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
