@@ -4,6 +4,8 @@ import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.entity.EntityAddedEvent;
+import me.lor3mipsum.next.api.event.entity.EntityDestroyEvent;
+import me.lor3mipsum.next.api.event.entity.EntityRemovedEvent;
 import me.lor3mipsum.next.api.event.network.PacketSentEvent;
 import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
 import me.lor3mipsum.next.api.event.world.WorldRenderEvent;
@@ -59,6 +61,7 @@ public class CrystalAura extends Module {
     public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
     public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
+    public BooleanSetting fastPlace = new BooleanSetting("Fast Place", true);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     public BooleanSetting antiPop = new BooleanSetting("Anti Pop", false);
     public BooleanSetting oldPlace = new BooleanSetting("Old Place", false);
@@ -161,7 +164,9 @@ public class CrystalAura extends Module {
     private int placeDelayCounter;
 
     private double serverYaw;
+
     private boolean canBreak;
+    private boolean canPlace;
 
     private Timer lastPlaceOrBreak = new Timer();
 
@@ -229,20 +234,65 @@ public class CrystalAura extends Module {
         if (fastBreak.getValue() && target != null && canBreak && !needsPause()) {
             DmgResult res = getBreakDmg((EndCrystalEntity) event.entity, target);
 
+            if ((DamageUtils.willExplosionPop(event.entity.getPos(), 6f, mc.player) && antiPop.getValue()) ||
+                    (DamageUtils.willExplosionKill(event.entity.getPos(), 6f, mc.player) && antiSuicide.getValue()))
+                return;
+
             if (res.valid)
                 breakCrystal((EndCrystalEntity) event.entity);
         }
 
     }, event -> event.entity instanceof EndCrystalEntity);
 
+    @EventHandler
+    private Listener<EntityRemovedEvent> onEntityRemoved = new Listener<>(event -> {
+
+        if (facePlace.getValue() && target != null && !needsPause()) {
+            PlaceResult placeRes = new PlaceResult();
+            BlockPos pos = event.entity.getBlockPos().down();
+
+            boolean throughWalls = true;
+
+            placeRes.pos = pos;
+            placeRes.dir = Direction.UP;
+
+            for (Direction d: Direction.values())
+                if (getRayTrace(pos, d)) {
+                    throughWalls = false;
+                    placeRes.dir = d;
+                    break;
+                }
+
+            if (throughWalls)
+                if (raytrace.getValue() || mc.player.getPos().squaredDistanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue() * wallsPlaceRange.getValue())
+                    return;
+
+            if ((DamageUtils.willExplosionPop(pos, 6f, mc.player) && antiPop.getValue()) ||
+                    (DamageUtils.willExplosionKill(pos, 6f, mc.player) && antiSuicide.getValue()))
+                return;
+
+            DmgResult dmgRes = getPlaceDmg(pos, target);
+
+            if (dmgRes.valid)
+                placeCrystal(placeRes);
+        }
+
+    }, event -> event.entity instanceof EndCrystalEntity);
+
     @Override
     public void onEnable() {
+        if (mc.player == null || mc.world == null) {
+            setEnabled(false);
+            return;
+        }
+
         breakDelayCounter = 0;
         placeDelayCounter = 0;
 
         oldSlot = -1;
 
         canBreak = true;
+        canPlace = true;
 
         serverYaw = mc.player.yaw;
 
@@ -268,8 +318,9 @@ public class CrystalAura extends Module {
             return;
 
         canBreak = true;
+        canPlace = true;
 
-        if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue())
+        if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue() && canPlace)
             placeCrystal();
 
         if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue() && canBreak)
@@ -280,7 +331,10 @@ public class CrystalAura extends Module {
     }
 
     private void placeCrystal() {
-        PlaceResult placeResult = getPlace();
+        placeCrystal(getPlace());
+    }
+
+    private void placeCrystal(PlaceResult placeResult) {
         BlockPos targetBlock = placeResult.pos;
         Direction targetDir = placeResult.dir;
 
@@ -318,6 +372,8 @@ public class CrystalAura extends Module {
                 RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, targetDir, finalSelectedPos, false)));
         } else
             mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false));
+
+        canPlace = false;
 
         lastPlaceOrBreak.reset();
     }
