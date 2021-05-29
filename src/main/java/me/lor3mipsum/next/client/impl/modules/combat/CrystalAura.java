@@ -57,6 +57,7 @@ public class CrystalAura extends Module {
 
     public SettingSeparator generalSep = new SettingSeparator("General");
 
+    public EnumSetting<CaEra> era = new EnumSetting<>("Era", CaEra.Post);
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
     public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
@@ -128,6 +129,11 @@ public class CrystalAura extends Module {
     public DoubleSetting lineWidth = new DoubleSetting("Line Width", 2.5, 0.1, 5);
     public BooleanSetting swing = new BooleanSetting("Swing", true);
 
+    public enum CaEra {
+        Pre,
+        Post
+    }
+
     public enum CancelMode {
         Sound,
         Instant,
@@ -179,7 +185,8 @@ public class CrystalAura extends Module {
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
-        doCrystalAura();
+        if (era.getValue() == CaEra.Post)
+            doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
 
@@ -192,6 +199,9 @@ public class CrystalAura extends Module {
             attackedCrystals.forEach(id -> mc.world.removeEntity(id));
             attackedCrystals.clear();
         }
+
+        if (era.getValue() == CaEra.Pre)
+            doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.PRE);
 
@@ -206,6 +216,7 @@ public class CrystalAura extends Module {
     private Listener<PacketSentEvent> onPacketSent = new Listener<>(event -> {
 
         serverYaw = ((PlayerMoveC2SPacket) event.packet).getYaw((float) serverYaw);
+
     }, event -> event.packet instanceof PlayerMoveC2SPacket);
 
     @EventHandler
