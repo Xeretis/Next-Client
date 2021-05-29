@@ -187,7 +187,7 @@ public class Surround extends Module {
             if (cap >= bpt.getValue())
                 return;
 
-            if (PlaceUtils.canPlace(b, true, false)) {
+            if (PlaceUtils.canPlace(b, true, true)) {
                 InventoryUtils.select(obsidian);
                 if (PlaceUtils.placeBlock(b, Hand.MAIN_HAND, true, swing.getValue(), false, rotate.getValue(), 100))
                     cap++;
