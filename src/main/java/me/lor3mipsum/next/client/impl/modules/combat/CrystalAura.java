@@ -253,12 +253,12 @@ public class CrystalAura extends Module {
                 breakCrystal((EndCrystalEntity) event.entity);
         }
 
-    }, event -> event.entity instanceof EndCrystalEntity);
+    }, EventPriority.HIGHEST, event -> event.entity instanceof EndCrystalEntity);
 
     @EventHandler
     private Listener<EntityRemovedEvent> onEntityRemoved = new Listener<>(event -> {
 
-        if (facePlace.getValue() && target != null && !needsPause()) {
+        if (facePlace.getValue() && canPlace && target != null && !needsPause()) {
             PlaceResult placeRes = new PlaceResult();
             BlockPos pos = event.entity.getBlockPos().down();
 
@@ -266,6 +266,9 @@ public class CrystalAura extends Module {
 
             placeRes.pos = pos;
             placeRes.dir = Direction.UP;
+
+            if (mc.player.getPos().squaredDistanceTo(Vec3d.of(pos)) > placeRange.getValue() * placeRange.getValue())
+                return;
 
             for (Direction d: Direction.values())
                 if (getRayTrace(pos, d)) {
@@ -288,7 +291,7 @@ public class CrystalAura extends Module {
                 placeCrystal(placeRes);
         }
 
-    }, event -> event.entity instanceof EndCrystalEntity);
+    }, EventPriority.HIGHEST, event -> event.entity instanceof EndCrystalEntity);
 
     @Override
     public void onEnable() {
