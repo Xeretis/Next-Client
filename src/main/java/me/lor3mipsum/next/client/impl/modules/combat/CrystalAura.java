@@ -58,6 +58,7 @@ public class CrystalAura extends Module {
     public SettingSeparator generalSep = new SettingSeparator("General");
 
     public EnumSetting<CaEra> era = new EnumSetting<>("Era", CaEra.Post);
+    public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
     public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
@@ -129,6 +130,11 @@ public class CrystalAura extends Module {
     public ColorSetting linesColor = new ColorSetting("Lines Color", false, new NextColor(255, 255, 255));
     public DoubleSetting lineWidth = new DoubleSetting("Line Width", 2.5, 0.1, 5);
     public BooleanSetting swing = new BooleanSetting("Swing", true);
+
+    public enum TargetingMode {
+        Closest,
+        All
+    }
 
     public enum CaEra {
         Pre,
@@ -356,20 +362,39 @@ public class CrystalAura extends Module {
         float bestDmg = 0;
         BlockPos bestPos = null;
 
-        for (Entity entity : mc.world.getEntities()) {
-            if (!(entity instanceof PlayerEntity) || entity == mc.player || mc.player.isDead() || mc.player.distanceTo(entity) > 15)
+        for (BlockPos pos : possibleLocations) {
+
+            if (!rayTrace(pos))
+                if (raytrace.getValue() || mc.player.getPos().squaredDistanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue() * wallsPlaceRange.getValue())
+                    continue;
+
+            if ((DamageUtils.willExplosionPop(pos, 6f, mc.player) && antiPop.getValue()) ||
+                    (DamageUtils.willExplosionKill(pos, 6f, mc.player) && antiSuicide.getValue()))
                 continue;
 
-            for (BlockPos pos : possibleLocations) {
-                if (!rayTrace(pos))
-                    if (raytrace.getValue() || mc.player.getPos().distanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue())
+            if (targetingMode.getValue() == TargetingMode.All)
+                for (Entity entity : mc.world.getEntities()) {
+                    if (!(entity instanceof PlayerEntity) || entity == mc.player || mc.player.isDead() || mc.player.squaredDistanceTo(entity) > 13 * 13)
                         continue;
 
-                    if ((DamageUtils.willExplosionPop(pos, 6f, mc.player) && antiPop.getValue()) ||
-                            (DamageUtils.willExplosionKill(pos, 6f, mc.player) && antiSuicide.getValue()))
+                    DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
+
+                    if (!res.valid)
                         continue;
 
-                DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
+                    if (res.targetDmg > bestDmg) {
+                        bestDmg = res.targetDmg;
+                        bestPos = pos;
+                        target = (PlayerEntity) entity;
+                    }
+                }
+            else {
+                PlayerEntity nearest = getNearestTarget();
+
+                if (nearest == null)
+                    continue;
+
+                DmgResult res = getPlaceDmg(pos, nearest);
 
                 if (!res.valid)
                     continue;
@@ -377,7 +402,7 @@ public class CrystalAura extends Module {
                 if (res.targetDmg > bestDmg) {
                     bestDmg = res.targetDmg;
                     bestPos = pos;
-                    target = (PlayerEntity) entity;
+                    target = nearest;
                 }
             }
         }
@@ -394,29 +419,47 @@ public class CrystalAura extends Module {
             if (!(crystal instanceof EndCrystalEntity) || mc.player.isDead() || mc.player.distanceTo(crystal) > breakRange.getValue())
                 continue;
 
+            if((DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) ||
+                    (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()))
+                continue;
+
             if (!mc.player.canSee(crystal))
-                if (raytrace.getValue() || mc.player.distanceTo(crystal) > wallsBreakRange.getValue())
+                if (raytrace.getValue() || mc.player.squaredDistanceTo(crystal) > wallsBreakRange.getValue() * wallsBreakRange.getValue())
                     continue;
 
-            for (Entity player : mc.world.getEntities()) {
-                if (!(player instanceof PlayerEntity) || player == mc.player || mc.player.isDead() || mc.player.distanceTo(player) > 15)
-                    continue;
+                if (targetingMode.getValue() == TargetingMode.All)
+                    for (Entity player : mc.world.getEntities()) {
+                        if (!(player instanceof PlayerEntity) || player == mc.player || mc.player.isDead() || mc.player.squaredDistanceTo(player) > 13 * 13)
+                            continue;
 
-                if((DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) ||
-                        (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()))
-                                continue;
+                        DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) player);
 
-                DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) player);
+                        if (!res.valid)
+                            continue;
 
-                if (!res.valid)
-                    continue;
+                        if (res.targetDmg > bestDmg) {
+                            bestDmg = res.targetDmg;
+                            bestCrystal = (EndCrystalEntity) crystal;
+                            target = (PlayerEntity) player;
+                        }
+                    }
+                else {
+                    PlayerEntity nearest = getNearestTarget();
 
-                if (res.targetDmg > bestDmg) {
-                    bestDmg = res.targetDmg;
-                    bestCrystal = (EndCrystalEntity) crystal;
-                    target = (PlayerEntity) player;
+                    if (nearest == null)
+                        continue;
+
+                    DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, nearest);
+
+                    if (!res.valid)
+                        continue;
+
+                    if (res.targetDmg > bestDmg) {
+                        bestDmg = res.targetDmg;
+                        bestCrystal = (EndCrystalEntity) crystal;
+                        target = nearest;
+                    }
                 }
-            }
         }
 
         return bestCrystal;
@@ -494,6 +537,24 @@ public class CrystalAura extends Module {
         return false;
     }
 
+    private PlayerEntity getNearestTarget() {
+        PlayerEntity nearestTarget = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (Entity target : mc.world.getEntities()) {
+            if (!(target instanceof PlayerEntity) || target == mc.player || mc.player.isDead() || mc.player.squaredDistanceTo(target) > 13 * 13)
+                continue;
+
+            double distance = target.squaredDistanceTo(mc.player);
+
+            if (distance < nearestDistance) {
+                nearestTarget = (PlayerEntity) target;
+                nearestDistance = distance;
+            }
+        }
+
+        return nearestTarget;
+    }
 
     private void doSwitch() {
         if (mc.player != null && mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL) {
