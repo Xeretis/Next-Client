@@ -4,7 +4,6 @@ import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.entity.EntityAddedEvent;
-import me.lor3mipsum.next.api.event.entity.EntityDestroyEvent;
 import me.lor3mipsum.next.api.event.entity.EntityRemovedEvent;
 import me.lor3mipsum.next.api.event.network.PacketSentEvent;
 import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
@@ -174,7 +173,7 @@ public class CrystalAura extends Module {
     private boolean canBreak;
     private boolean canPlace;
 
-    private Timer lastPlaceOrBreak = new Timer();
+    private final Timer lastPlaceOrBreak = new Timer();
 
     private int oldSlot;
 
@@ -233,11 +232,7 @@ public class CrystalAura extends Module {
     });
 
     @EventHandler
-    private Listener<PacketSentEvent> onPacketSent = new Listener<>(event -> {
-
-        serverYaw = ((PlayerMoveC2SPacket) event.packet).getYaw((float) serverYaw);
-
-    }, event -> event.packet instanceof PlayerMoveC2SPacket);
+    private Listener<PacketSentEvent> onPacketSent = new Listener<>(event -> serverYaw = ((PlayerMoveC2SPacket) event.packet).getYaw((float) serverYaw), event -> event.packet instanceof PlayerMoveC2SPacket);
 
     @EventHandler
     private Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
@@ -376,14 +371,12 @@ public class CrystalAura extends Module {
         Vec3d vec = new Vec3d(targetBlock.getX(), targetBlock.getY() + 0.5, targetBlock.getZ());
 
         if (rotate.getValue()) {
-            Vec3d finalVec = vec;
-            BlockPos finalSelectedPos = targetBlock;
 
             if (yawStepMode.getValue() == YawStepMode.All || yawStepMode.getValue() == YawStepMode.Place) {
                 if (doYawStep(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5))))
-                    RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, targetDir, finalSelectedPos, false)));
+                    RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false)));
             } else
-                RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, targetDir, finalSelectedPos, false)));
+                RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false)));
         } else
             mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false));
 
@@ -654,7 +647,7 @@ public class CrystalAura extends Module {
 
     private void doWeaknessSwitch() {
         if (mc.player != null && !(mc.player.getMainHandStack().getItem() instanceof ToolItem && mc.player.getOffHandStack().getItem() instanceof SwordItem)) {
-            int slot = InventoryUtils.findItemInHotbar(itemStack -> itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof SwordItem).slot;
+            int slot = InventoryUtils.findItemInHotbar(itemStack -> itemStack.getItem() instanceof ToolItem).slot;
             if (slot != -1 && slot < 9) {
                 oldSlot = mc.player.inventory.selectedSlot;
                 InventoryUtils.select(slot);
@@ -667,10 +660,7 @@ public class CrystalAura extends Module {
                 || (mc.interactionManager.isBreakingBlock() && stopWhileMining.getValue()))
             return true;
 
-        if (Main.moduleManager.getModule(Surround.class).getEnabled() && !Main.moduleManager.getModule(Surround.class).isSurrounded())
-            return true;
-
-        return false;
+        return Main.moduleManager.getModule(Surround.class).getEnabled() && !Main.moduleManager.getModule(Surround.class).isSurrounded();
     }
 
     private boolean getRayTrace(BlockPos pos, Direction dir) {
