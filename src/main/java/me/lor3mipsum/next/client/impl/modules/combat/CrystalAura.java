@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
+import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.entity.EntityAddedEvent;
@@ -588,8 +589,11 @@ public class CrystalAura extends Module {
     }
 
     private boolean needsPause() {
-        if((mc.player.isUsingItem() && (mc.player.getMainHandStack().getItem().isFood() || mc.player.getOffHandStack().getItem().isFood()) && stopWhileEating.getValue())
+        if ((mc.player.isUsingItem() && (mc.player.getMainHandStack().getItem().isFood() || mc.player.getOffHandStack().getItem().isFood()) && stopWhileEating.getValue())
                 || (mc.interactionManager.isBreakingBlock() && stopWhileMining.getValue()))
+            return true;
+
+        if (Main.moduleManager.getModule(Surround.class).getEnabled() && !Main.moduleManager.getModule(Surround.class).isSurrounded())
             return true;
 
         return false;
@@ -619,7 +623,7 @@ public class CrystalAura extends Module {
                         (dir.getAxis() == Direction.Axis.Y ? 0 : dir.getAxis() == Direction.Axis.Z ? j * box.getYLength() : i * box.getYLength()),
                         (dir.getAxis() == Direction.Axis.Z ? 0 : j * box.getZLength()));
 
-                if (eyePos.distanceTo(lookPos) > 4.55)
+                if (eyePos.distanceTo(lookPos) > 6)
                     continue;
 
                 if (mc.world.raycast(new RaycastContext(eyePos, lookPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS)
