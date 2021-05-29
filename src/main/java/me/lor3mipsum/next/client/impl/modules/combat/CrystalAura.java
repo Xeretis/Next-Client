@@ -169,7 +169,6 @@ public class CrystalAura extends Module {
 
     @EventHandler
     private Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
-
         if (cancelMode.getValue() == CancelMode.Sound) {
             attackedCrystals.forEach(id -> mc.world.removeEntity(id));
             attackedCrystals.clear();
@@ -190,7 +189,7 @@ public class CrystalAura extends Module {
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
-        if (era.getValue() == CaEra.Post)
+        if (era.getValue() == CaEra.Post && !needsPause())
             doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
@@ -205,7 +204,7 @@ public class CrystalAura extends Module {
             attackedCrystals.clear();
         }
 
-        if (era.getValue() == CaEra.Pre)
+        if (era.getValue() == CaEra.Pre && !needsPause())
             doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.PRE);
@@ -227,7 +226,7 @@ public class CrystalAura extends Module {
     @EventHandler
     private Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
 
-        if (fastBreak.getValue() && target != null && canBreak) {
+        if (fastBreak.getValue() && target != null && canBreak && !needsPause()) {
             DmgResult res = getBreakDmg((EndCrystalEntity) event.entity, target);
 
             if (res.valid)
@@ -265,7 +264,7 @@ public class CrystalAura extends Module {
     }
 
     private void doCrystalAura() {
-        if (mc.player == null || mc.world == null || needsPause())
+        if (mc.player == null || mc.world == null)
             return;
 
         canBreak = true;
@@ -281,9 +280,11 @@ public class CrystalAura extends Module {
     }
 
     private void placeCrystal() {
-        BlockPos targetBlock = getPlace();
+        PlaceResult placeResult = getPlace();
+        BlockPos targetBlock = placeResult.pos;
+        Direction targetDir = placeResult.dir;
 
-        if (targetBlock == null) {
+        if (targetBlock == null || targetDir == null) {
             renderBlock = null;
             return;
         }
@@ -312,11 +313,11 @@ public class CrystalAura extends Module {
 
             if (yawStepMode.getValue() == YawStepMode.All || yawStepMode.getValue() == YawStepMode.Place) {
                 if (doYawStep(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5))))
-                    RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, Direction.UP, finalSelectedPos, false)));
+                    RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, targetDir, finalSelectedPos, false)));
             } else
-                RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, Direction.UP, finalSelectedPos, false)));
+                RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(finalVec, targetDir, finalSelectedPos, false)));
         } else
-            mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, Direction.UP, targetBlock, false));
+            mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false));
 
         lastPlaceOrBreak.reset();
     }
@@ -354,18 +355,20 @@ public class CrystalAura extends Module {
         lastPlaceOrBreak.reset();
     }
 
-    private BlockPos getPlace() {
+    private PlaceResult getPlace() {
         List<BlockPos> possibleLocations = CrystalUtils.getPlacePositions(placeRange.getValue(), oldPlace.getValue(), !crystalCheck.getValue());
 
         float bestDmg = 0;
-        BlockPos bestPos = null;
+        PlaceResult result = new PlaceResult();
 
         for (BlockPos pos : possibleLocations) {
 
             boolean throughWalls = true;
+            result.dir = Direction.UP;
             for (Direction d: Direction.values())
                 if (getRayTrace(pos, d)) {
                     throughWalls = false;
+                    result.dir = d;
                     break;
                 }
 
@@ -389,7 +392,7 @@ public class CrystalAura extends Module {
 
                     if (res.targetDmg > bestDmg) {
                         bestDmg = res.targetDmg;
-                        bestPos = pos;
+                        result.pos = pos;
                         target = (PlayerEntity) entity;
                     }
                 }
@@ -406,13 +409,13 @@ public class CrystalAura extends Module {
 
                 if (res.targetDmg > bestDmg) {
                     bestDmg = res.targetDmg;
-                    bestPos = pos;
+                    result.pos = pos;
                     target = nearest;
                 }
             }
         }
 
-        return bestPos;
+        return result;
 
     }
 
@@ -546,6 +549,7 @@ public class CrystalAura extends Module {
         }
 
         RotationUtils.INSTANCE.rotate(yaw, targetPitch, -100, null);
+
         return false;
     }
 
@@ -599,12 +603,6 @@ public class CrystalAura extends Module {
         return false;
     }
 
-    private static class DmgResult {
-        public boolean valid;
-        public float targetDmg;
-        public float selfDmg;
-    }
-
     private boolean getRayTrace(BlockPos pos, Direction dir) {
         return getRayTrace(new Box(pos), dir, 0.01);
     }
@@ -640,5 +638,16 @@ public class CrystalAura extends Module {
             return "[" + Formatting.WHITE + target.getName().getString() + Formatting.GRAY + "]";
         else
             return "";
+    }
+
+    private static class DmgResult {
+        public boolean valid;
+        public float targetDmg;
+        public float selfDmg;
+    }
+
+    private static class PlaceResult {
+        public BlockPos pos;
+        public Direction dir;
     }
 }
