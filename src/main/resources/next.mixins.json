@@ -29,6 +29,7 @@
     "ClientWorldMixin",
     "LivingEntityMixin",
     "InGameOverlayRendererMixin",
+    "ExplosionMixin",
     "accessor.HorseScreenHandlerAccessor",
     "accessor.BlockHitResultAccessor"
   ],

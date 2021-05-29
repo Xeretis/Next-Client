@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.api.util.entity;
 
+import me.lor3mipsum.next.api.util.mixininterface.IExplosion;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.DamageUtil;
@@ -19,23 +20,15 @@ public class DamageUtils {
 
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
+    private static final Explosion explosion = new Explosion(null, null, 0, 0, 0, 6f, false, Explosion.DestructionType.DESTROY);
+
     public static float getExplosionDamage(Vec3d explosionPos, float power, LivingEntity target) {
         if (mc.world.getDifficulty() == Difficulty.PEACEFUL)
             return 0f;
 
-        Explosion explosion = new Explosion(mc.world, null, explosionPos.x, explosionPos.y, explosionPos.z, power, false, Explosion.DestructionType.DESTROY);
+        ((IExplosion) explosion).set(explosionPos, power, false);
 
         double maxDist = power * 2;
-//        if (!mc.world.getOtherEntities(null, new Box(
-//                MathHelper.floor(explosionPos.x - maxDist - 1.0),
-//                MathHelper.floor(explosionPos.y - maxDist - 1.0),
-//                MathHelper.floor(explosionPos.z - maxDist - 1.0),
-//                MathHelper.floor(explosionPos.x + maxDist + 1.0),
-//                MathHelper.floor(explosionPos.y + maxDist + 1.0),
-//                MathHelper.floor(explosionPos.z + maxDist + 1.0))).contains(target)) {
-//            return 0f;
-//        }
-
         if (!new Box(
                 MathHelper.floor(explosionPos.x - maxDist - 1.0),
                 MathHelper.floor(explosionPos.y - maxDist - 1.0),
