@@ -6,6 +6,7 @@ import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.entity.EntityAddedEvent;
 import me.lor3mipsum.next.api.event.entity.EntityRemovedEvent;
 import me.lor3mipsum.next.api.event.network.PacketSentEvent;
+import me.lor3mipsum.next.api.event.player.SendMovementPacketsEvent;
 import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
 import me.lor3mipsum.next.api.event.world.WorldRenderEvent;
 import me.lor3mipsum.next.api.util.entity.DamageUtils;
@@ -56,7 +57,7 @@ public class CrystalAura extends Module {
 
     public SettingSeparator generalSep = new SettingSeparator("General");
 
-    public EnumSetting<CaEra> era = new EnumSetting<>("Era", CaEra.Post);
+    public EnumSetting<CaLogic> logic = new EnumSetting<>("Logic", CaLogic.WorldTick);
     public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     public BooleanSetting antiPop = new BooleanSetting("Anti Pop", false);
@@ -142,9 +143,9 @@ public class CrystalAura extends Module {
         All
     }
 
-    public enum CaEra {
-        Pre,
-        Post
+    public enum CaLogic {
+        WorldTick,
+        PlayerTick
     }
 
     public enum CancelMode {
@@ -179,6 +180,7 @@ public class CrystalAura extends Module {
 
     @EventHandler
     private Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
+
         if (cancelMode.getValue() == CancelMode.Sound) {
             attackedCrystals.forEach(id -> mc.world.removeEntity(id));
             attackedCrystals.clear();
@@ -204,10 +206,18 @@ public class CrystalAura extends Module {
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
-        if (era.getValue() == CaEra.Post && !pause)
+        if (logic.getValue() == CaLogic.WorldTick && !pause)
             doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
+
+    @EventHandler
+    private Listener<SendMovementPacketsEvent> onSendMovementPackets = new Listener<>(event -> {
+
+        if (logic.getValue() == CaLogic.PlayerTick)
+            doCrystalAura();
+
+    }, EventPriority.HIGH, event -> event.era == NextEvent.Era.PRE);
 
     @EventHandler
     private Listener<TickEvent> onPreTick = new Listener<>(event -> {
@@ -218,9 +228,6 @@ public class CrystalAura extends Module {
             attackedCrystals.forEach(id -> mc.world.removeEntity(id));
             attackedCrystals.clear();
         }
-
-        if (era.getValue() == CaEra.Pre && !needsPause())
-            doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.PRE);
 
@@ -236,6 +243,8 @@ public class CrystalAura extends Module {
 
     @EventHandler
     private Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
+
+        System.out.println(canBreak);
 
         if (fastBreak.getValue() && target != null && canBreak && !needsPause()) {
             DmgResult res = getBreakDmg((EndCrystalEntity) event.entity, target);
@@ -253,7 +262,8 @@ public class CrystalAura extends Module {
     @EventHandler
     private Listener<EntityRemovedEvent> onEntityRemoved = new Listener<>(event -> {
 
-        if (facePlace.getValue() && canPlace && target != null && !needsPause()) {
+        if (fastPlace.getValue() && canPlace && target != null && !needsPause()) {
+
             PlaceResult placeRes = new PlaceResult();
             BlockPos pos = event.entity.getBlockPos().down();
 
@@ -262,7 +272,7 @@ public class CrystalAura extends Module {
             placeRes.pos = pos;
             placeRes.dir = Direction.UP;
 
-            if (mc.player.getPos().squaredDistanceTo(Vec3d.of(pos)) > placeRange.getValue() * placeRange.getValue())
+            if (mc.player.getPos().distanceTo(Vec3d.of(pos)) > placeRange.getValue())
                 return;
 
             for (Direction d: Direction.values())
