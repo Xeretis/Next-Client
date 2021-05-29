@@ -59,13 +59,19 @@ public class CrystalAura extends Module {
 
     public EnumSetting<CaEra> era = new EnumSetting<>("Era", CaEra.Post);
     public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
-    public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
-    public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
-    public BooleanSetting fastPlace = new BooleanSetting("Fast Place", true);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     public BooleanSetting antiPop = new BooleanSetting("Anti Pop", false);
+
+    public SettingSeparator placingSep = new SettingSeparator("Placing");
+
+    public BooleanSetting fastPlace = new BooleanSetting("Fast Place", true);
     public BooleanSetting oldPlace = new BooleanSetting("Old Place", false);
     public BooleanSetting crystalCheck = new BooleanSetting("Crystal Check", false);
+
+    public SettingSeparator breakingSep = new SettingSeparator("Breaking");
+
+    public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
+    public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
 
     public SettingSeparator delaysSep = new SettingSeparator("Delays");
 
