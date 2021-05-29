@@ -55,6 +55,11 @@ public class Surround extends Module {
 
     @Override
     public void onEnable() {
+        if (mc.player == null || mc.world == null) {
+            setEnabled(false);
+            return;
+        }
+
         int obby = findSlot();
 
         if (obby == -1) {
@@ -72,8 +77,6 @@ public class Surround extends Module {
         if (mc.player.inventory.selectedSlot != obby)
             preSlot = mc.player.inventory.selectedSlot;
 
-        InventoryUtils.select(obby);
-
         if (airplace.getValue())
             airPlaceTick(obby);
         else
@@ -87,6 +90,10 @@ public class Surround extends Module {
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
+
+        if (mc.player == null || mc.world == null)
+            return;
+
         if ((jump.getValue() && (mc.options.keyJump.isPressed() || mc.player.input.jumping)) || (yChange.getValue() && mc.player.prevY < mc.player.getY())) {
             setEnabled(false);
             return;
@@ -102,8 +109,6 @@ public class Surround extends Module {
 
         if (mc.player.inventory.selectedSlot != obby)
             preSlot = mc.player.inventory.selectedSlot;
-
-        InventoryUtils.select(obby);
 
         if (airplace.getValue())
             airPlaceTick(obby);
@@ -133,23 +138,23 @@ public class Surround extends Module {
                 mc.player.getBlockPos().north(), mc.player.getBlockPos().east(),
                 mc.player.getBlockPos().south(), mc.player.getBlockPos().west() }) {
 
-            if (cap >= bpt.getValue()) {
+            if (cap >= bpt.getValue())
                 return;
-            }
 
-            if (!PlaceUtils.canPlace(b, true, false)) {
+            if (!PlaceUtils.canPlace(b, true, false))
                 if (PlaceUtils.canPlace(b.down(), true, false)) {
+                    InventoryUtils.select(obsidian);
                     PlaceUtils.placeBlock(b.down(), Hand.MAIN_HAND, false, swing.getValue(), false, rotate.getValue(), 100);
                     cap++;
 
-                    if (cap >= bpt.getValue()) {
+                    if (cap >= bpt.getValue())
                         return;
-                    }
                 }
-            }
 
-            if (PlaceUtils.placeBlock(b, Hand.MAIN_HAND, false, swing.getValue(), false, rotate.getValue(), 100)) {
-                cap++;
+            if (PlaceUtils.canPlace(b, true, false)) {
+                InventoryUtils.select(obsidian);
+                if (PlaceUtils.placeBlock(b, Hand.MAIN_HAND, false, swing.getValue(), false, rotate.getValue(), 100))
+                    cap++;
             }
         }
 
@@ -158,9 +163,8 @@ public class Surround extends Module {
             mc.player.pitch = pitch;
         }
 
-        if (!keep.getValue()) {
+        if (!keep.getValue())
             setEnabled(false);
-        }
     }
 
     private void airPlaceTick(int obsidian) {
@@ -169,24 +173,24 @@ public class Surround extends Module {
         float yaw = mc.player.yaw;
         float pitch = mc.player.pitch;
 
-        if (blockunder.getValue()) {
-            if (mc.world.getBlockState(mc.player.getBlockPos().down()).getMaterial().isReplaceable()) {
+        if (blockunder.getValue())
+            if (PlaceUtils.canPlace(mc.player.getBlockPos().down(), true, true)) {
+                InventoryUtils.select(obsidian);
                 PlaceUtils.placeBlock(mc.player.getBlockPos().down(), Hand.MAIN_HAND, true, swing.getValue(), false, rotate.getValue(), 100);
                 cap++;
             }
-
-        }
 
         for (BlockPos b : new BlockPos[] {
                 mc.player.getBlockPos().north(), mc.player.getBlockPos().east(),
                 mc.player.getBlockPos().south(), mc.player.getBlockPos().west() }) {
 
-            if (cap >= bpt.getValue()) {
+            if (cap >= bpt.getValue())
                 return;
-            }
 
-            if (PlaceUtils.placeBlock(b, Hand.MAIN_HAND, true, swing.getValue(), false, rotate.getValue(), 100)) {
-                cap++;
+            if (PlaceUtils.canPlace(b, true, false)) {
+                InventoryUtils.select(obsidian);
+                if (PlaceUtils.placeBlock(b, Hand.MAIN_HAND, true, swing.getValue(), false, rotate.getValue(), 100))
+                    cap++;
             }
         }
 
@@ -195,9 +199,8 @@ public class Surround extends Module {
             mc.player.pitch = pitch;
         }
 
-        if (!keep.getValue()) {
+        if (!keep.getValue())
             setEnabled(false);
-        }
     }
 
     public boolean isSurrounded() {
@@ -208,12 +211,8 @@ public class Surround extends Module {
         surroundBlocks.add(mc.player.getBlockPos().west());
 
         for (BlockPos l_Pos : surroundBlocks)
-        {
             if (mc.world.getBlockState(l_Pos).getMaterial().isReplaceable())
-            {
                 return false;
-            }
-        }
 
         return true;
     }
