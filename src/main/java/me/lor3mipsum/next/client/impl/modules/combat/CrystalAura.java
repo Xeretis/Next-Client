@@ -192,15 +192,20 @@ public class CrystalAura extends Module {
         if (mc.player == null || mc.world == null)
             return;
 
-        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()))
+        boolean pause = needsPause();
+
+        if (pause) //to delay resetting the rotations after it's no longer paused
+            lastPlaceOrBreak.reset();
+
+        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()) && !pause)
             if (switchBack.getValue() && oldSlot != -1)
                 InventoryUtils.select(oldSlot);
 
-        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()))
+        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()) && !pause)
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
-        if (era.getValue() == CaEra.Post && !needsPause())
+        if (era.getValue() == CaEra.Post && !pause)
             doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
