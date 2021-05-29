@@ -65,6 +65,7 @@ public class CrystalAura extends Module {
     public SettingSeparator placingSep = new SettingSeparator("Placing");
 
     public BooleanSetting fastPlace = new BooleanSetting("Fast Place", true);
+    public BooleanSetting sameTick = new BooleanSetting("Same Tick Place", true);
     public BooleanSetting oldPlace = new BooleanSetting("Old Place", false);
     public BooleanSetting crystalCheck = new BooleanSetting("Crystal Check", false);
 
@@ -87,7 +88,7 @@ public class CrystalAura extends Module {
 
     public SettingSeparator damagesSep = new SettingSeparator("Damages");
 
-    public IntegerSetting minHpPlace = new IntegerSetting("Min Place Dmg", 9, 0, 36);
+    public IntegerSetting minHpPlace = new IntegerSetting("Min Place Dmg", 8, 0, 36);
     public IntegerSetting minHpBreak = new IntegerSetting("Min Break Dmg", 8, 0, 36);
     public IntegerSetting maxSelfDamage = new IntegerSetting("Max Self Dmg", 5, 0, 36);
     public BooleanSetting ignoreSelfDamage = new BooleanSetting("Ignore Self Dmg", false);
@@ -339,11 +340,11 @@ public class CrystalAura extends Module {
         canBreak = true;
         canPlace = true;
 
-        if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue() && canPlace)
-            placeCrystal();
-
         if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue() && canBreak)
             breakCrystal();
+
+        if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue() && canPlace)
+            placeCrystal();
 
         placeDelayCounter++;
         breakDelayCounter++;
@@ -424,6 +425,9 @@ public class CrystalAura extends Module {
         attackedCrystals.add(targetEntity.getEntityId());
 
         canBreak = false;
+
+        if (!sameTick.getValue())
+            canPlace = false;
 
         lastPlaceOrBreak.reset();
     }
@@ -656,7 +660,7 @@ public class CrystalAura extends Module {
     }
 
     private void doWeaknessSwitch() {
-        if (mc.player != null && !(mc.player.getMainHandStack().getItem() instanceof ToolItem && mc.player.getOffHandStack().getItem() instanceof SwordItem)) {
+        if (mc.player != null && !(mc.player.getMainHandStack().getItem() instanceof ToolItem)) {
             int slot = InventoryUtils.findItemInHotbar(itemStack -> itemStack.getItem() instanceof ToolItem).slot;
             if (slot != -1 && slot < 9) {
                 oldSlot = mc.player.inventory.selectedSlot;
