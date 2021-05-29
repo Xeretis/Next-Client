@@ -94,8 +94,8 @@ public class CrystalAura extends Module {
     public SettingSeparator rotationsSep = new SettingSeparator("Rotations");
 
     public BooleanSetting rotate = new BooleanSetting("Rotate", true);
-    public EnumSetting<YawStepMode> yawStepMode = new EnumSetting<>("YawStep Mode", YawStepMode.Break);
-    public IntegerSetting yawSteps = new IntegerSetting("YawSteps", 180, 1, 180);
+    public EnumSetting<YawStepMode> yawStepMode = new EnumSetting<>("YawStep Mode", YawStepMode.None);
+    public IntegerSetting yawSteps = new IntegerSetting("YawSteps", 30, 1, 180);
     public BooleanSetting raytrace = new BooleanSetting("Raytrace", false);
     public BooleanSetting resetRotate = new BooleanSetting("Reset Rotations", true);
     public IntegerSetting resetRotateDelay = new IntegerSetting("Reset Rotations Delay", 500, 500, 5000);
