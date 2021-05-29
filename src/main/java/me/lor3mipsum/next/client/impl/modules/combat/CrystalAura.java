@@ -349,11 +349,15 @@ public class CrystalAura extends Module {
                 continue;
 
             for (BlockPos pos : possibleLocations) {
-                DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
-
                 if (!rayTrace(pos))
                     if (raytrace.getValue() || mc.player.getPos().distanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue())
                         continue;
+
+                    if ((DamageUtils.willExplosionPop(pos, 6f, mc.player) && antiPop.getValue()) ||
+                            (DamageUtils.willExplosionKill(pos, 6f, mc.player) && antiSuicide.getValue()))
+                        continue;
+
+                DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
 
                 if (!res.valid)
                     continue;
@@ -385,6 +389,10 @@ public class CrystalAura extends Module {
             for (Entity player : mc.world.getEntities()) {
                 if (!(player instanceof PlayerEntity) || player == mc.player || mc.player.isDead() || mc.player.distanceTo(player) > 15)
                     continue;
+
+                if((DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) ||
+                        (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()))
+                                continue;
 
                 DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) player);
 
@@ -420,9 +428,7 @@ public class CrystalAura extends Module {
         result.targetDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempTarget);
         result.selfDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempSelf);
 
-        if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()) ||
-                (DamageUtils.willExplosionPop(blockPos, 6f, mc.player) && antiPop.getValue()) ||
-                (DamageUtils.willExplosionKill(blockPos, 6f, mc.player) && antiSuicide.getValue()))
+        if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()))
             result.valid = false;
 
         if ((target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
@@ -442,9 +448,7 @@ public class CrystalAura extends Module {
         result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
         result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player);
 
-        if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()) ||
-                (DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player) && antiPop.getValue()) ||
-                (DamageUtils.willExplosionKill(crystal.getPos(), 6f, mc.player) && antiSuicide.getValue()))
+        if ((result.selfDmg > maxSelfDamage.getValue() && !ignoreSelfDamage.getValue()))
             result.valid = false;
 
         if ((target.getHealth() < facePlaceHp.getValue() && facePlace.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
