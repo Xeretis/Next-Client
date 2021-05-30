@@ -272,41 +272,20 @@ public class GlyphPageFontRenderer {
         }
         int width = 0;
 
-        GlyphPage currentPage;
-
         int size = text.length();
 
-        boolean on = false;
+        char preChar = ' ';
 
         for (int i = 0; i < size; i++) {
             char character = text.charAt(i);
 
-            if (character == '§')
-                on = true;
-            else if (on && character >= '0' && character <= 'r') {
-                int colorIndex = "0123456789abcdefklmnor".indexOf(character);
-                if (colorIndex < 16) {
-                    boldStyle = false;
-                    italicStyle = false;
-                } else if (colorIndex == 17) {
-                    boldStyle = true;
-                } else if (colorIndex == 20) {
-                    italicStyle = true;
-                } else if (colorIndex == 21) {
-                    boldStyle = false;
-                    italicStyle = false;
-                }
-                i++;
-                on = false;
-            } else {
-                if (on) i--;
+            if (i != 0)
+                preChar = text.charAt(i - 1);
 
-                character = text.charAt(i);
+            if (character == '§' || preChar == '§')
+                continue;
 
-                currentPage = getCurrentGlyphPage();
-
-                width += currentPage.getWidth(character) - 8;
-            }
+            width += getCurrentGlyphPage().getWidth(character) - 8;
         }
 
         return width / 2;

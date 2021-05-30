@@ -27,7 +27,7 @@ public class FontUtils {
     public static float getStringWidth(String string) {
         if (raleway == null) raleway = GlyphPageFontRenderer.create("Raleway", 19, false, false, false);
         if (customFont.getEnabled()) {
-            return raleway.getStringWidth(string) + string.length() * 0.42f;
+            return raleway.getStringWidth(string);
         } else {
             return mc.textRenderer.getWidth(string);
         }
