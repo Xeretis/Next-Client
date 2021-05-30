@@ -13,21 +13,21 @@ public class FontUtils {
 
     private static final CustomFont customFont = Main.moduleManager.getModule(CustomFont.class);
 
-    private static GlyphPageFontRenderer arial;
+    private static GlyphPageFontRenderer raleway;
 
     public static void drawString(String text, int x, int y, Color color) {
-        if (arial == null) arial = GlyphPageFontRenderer.create("Arial", 19, false, false, false);
+        if (raleway == null) raleway = GlyphPageFontRenderer.create("Raleway", 19, false, false, false);
         if (customFont.getEnabled()) {
-            arial.drawString(text, x-2, y-2, (color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24), customFont.shadow.getValue());
+            raleway.drawString(text, x-2, y-3, (color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24), customFont.shadow.getValue());
         } else {
             mc.textRenderer.drawWithShadow(new MatrixStack(), text, x, y, color.getRGB());
         }
     }
 
     public static float getStringWidth(String string) {
-        if (arial == null) arial = GlyphPageFontRenderer.create("Arial", 19, false, false, false);
+        if (raleway == null) raleway = GlyphPageFontRenderer.create("Raleway", 19, false, false, false);
         if (customFont.getEnabled()) {
-            return arial.getStringWidth(string);
+            return raleway.getStringWidth(string);
         } else {
             return mc.textRenderer.getWidth(string);
         }

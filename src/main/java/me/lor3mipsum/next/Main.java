@@ -73,6 +73,15 @@ public class Main implements ModInitializer, Listenable {
 		EVENT_BUS.subscribe(RotationUtils.INSTANCE);
 		EVENT_BUS.subscribe(TpsUtils.INSTANCE);
 		LOG.info("Registered the utils");
+
+		try {
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/assets/next/fonts/Raleway-Medium.ttf")));
+			LOG.info("Loaded the custom font");
+		} catch (Exception e) {
+			LOG.error("Failed to load the custom font");
+			LOG.error(e.getMessage(), e);
+		}
 	}
 
 	@EventHandler
