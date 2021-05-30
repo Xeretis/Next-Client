@@ -90,8 +90,9 @@ public class CrystalAura extends Module {
     public IntegerSetting minHpPlace = new IntegerSetting("Min Place Dmg", 8, 0, 36);
     public IntegerSetting minHpBreak = new IntegerSetting("Min Break Dmg", 8, 0, 36);
     public IntegerSetting maxSelfDamage = new IntegerSetting("Max Self Dmg", 5, 0, 36);
-    public IntegerSetting lethalMultiplier = new IntegerSetting("Lethal Multiplier", 1, 1, 5);
     public BooleanSetting ignoreSelfDamage = new BooleanSetting("Ignore Self Dmg", false);
+    public IntegerSetting lethalMultiplier = new IntegerSetting("Lethal Multiplier", 1, 1, 5);
+    public IntegerSetting safety = new IntegerSetting("Safety Pct", 26, 0, 100);
 
     public SettingSeparator rotationsSep = new SettingSeparator("Rotations");
 
@@ -581,7 +582,7 @@ public class CrystalAura extends Module {
         if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
             return result;
 
-        if (result.targetDmg < minHpPlace.getValue() && result.targetDmg * lethalMultiplier.getValue() < target.getHealth())
+        if ((result.targetDmg < minHpPlace.getValue() && result.targetDmg * lethalMultiplier.getValue() < target.getHealth()) || result.selfDmg / result.targetDmg * 100 > safety.getValue())
             result.valid = false;
 
         return result;
@@ -601,7 +602,7 @@ public class CrystalAura extends Module {
         if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
             return result;
 
-        if (result.targetDmg < minHpBreak.getValue() && result.targetDmg * lethalMultiplier.getValue() < target.getHealth())
+        if ((result.targetDmg < minHpBreak.getValue() && result.targetDmg * lethalMultiplier.getValue() < target.getHealth()) || result.selfDmg / result.targetDmg * 100 > safety.getValue())
             result.valid = false;
 
         return result;
