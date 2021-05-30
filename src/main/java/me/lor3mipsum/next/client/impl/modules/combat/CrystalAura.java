@@ -458,7 +458,7 @@ public class CrystalAura extends Module {
 
             if (targetingMode.getValue() == TargetingMode.All)
                 for (Entity entity : mc.world.getEntities()) {
-                    if (!(entity instanceof PlayerEntity) || entity == mc.player || mc.player.isDead() || mc.player.squaredDistanceTo(entity) > 13 * 13)
+                    if (!(entity instanceof PlayerEntity) || entity == mc.player || Main.socialManager.isFriend(entity.getName().getString()) || mc.player.isDead() || mc.player.squaredDistanceTo(entity) > 13 * 13)
                         continue;
 
                     DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
@@ -519,11 +519,11 @@ public class CrystalAura extends Module {
                     continue;
 
             if (targetingMode.getValue() == TargetingMode.All)
-                for (Entity player : mc.world.getEntities()) {
-                    if (!(player instanceof PlayerEntity) || player == mc.player || mc.player.isDead() || mc.player.squaredDistanceTo(player) > 13 * 13)
+                for (Entity entity : mc.world.getEntities()) {
+                    if (!(entity instanceof PlayerEntity) || entity == mc.player || Main.socialManager.isFriend(entity.getName().getString()) || mc.player.isDead() || mc.player.squaredDistanceTo(entity) > 13 * 13)
                         continue;
 
-                    DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) player);
+                    DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) entity);
 
                     if (!res.valid)
                         continue;
@@ -531,7 +531,7 @@ public class CrystalAura extends Module {
                     if (res.targetDmg > bestDmg) {
                         bestDmg = res.targetDmg;
                         bestCrystal = (EndCrystalEntity) crystal;
-                        target = (PlayerEntity) player;
+                        target = (PlayerEntity) entity;
                     }
                 }
             else {
