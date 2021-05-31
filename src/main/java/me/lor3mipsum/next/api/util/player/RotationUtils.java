@@ -141,14 +141,14 @@ public class RotationUtils implements Listenable {
                 resetRotation();
             }
         }
-    }, EventPriority.HIGHEST);
+    });
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.era == NextEvent.Era.PRE) {
             rotationTimer++;
         }
-    }, EventPriority.HIGHEST);
+    });
 
     public void rotate(double yaw, double pitch, int priority, boolean clientSide, Runnable callback) {
         Rotation rotation = rotationPool.get();
