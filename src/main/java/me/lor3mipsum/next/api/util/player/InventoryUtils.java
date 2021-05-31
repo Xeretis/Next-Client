@@ -1,5 +1,6 @@
 package me.lor3mipsum.next.api.util.player;
 
+import me.lor3mipsum.next.api.util.mixininterface.IClientPlayerInteractionManager;
 import me.lor3mipsum.next.mixin.accessor.HorseScreenHandlerAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
@@ -10,7 +11,6 @@ import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -38,7 +38,7 @@ public class InventoryUtils {
 
     public static void select(int slot) {
         mc.player.inventory.selectedSlot = slot;
-        mc.player.networkHandler.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
+        ((IClientPlayerInteractionManager) mc.interactionManager).syncSlot();
     }
 
     //Actions

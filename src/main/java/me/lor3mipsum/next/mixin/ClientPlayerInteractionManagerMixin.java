@@ -5,6 +5,7 @@ import me.lor3mipsum.next.api.event.player.AttackBlockEvent;
 import me.lor3mipsum.next.api.event.player.AttackEntityEvent;
 import me.lor3mipsum.next.api.event.player.BreakBlockEvent;
 import me.lor3mipsum.next.api.event.player.InteractItemEvent;
+import me.lor3mipsum.next.api.util.mixininterface.IClientPlayerInteractionManager;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,13 +15,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class ClientPlayerInteractionManagerMixin {
+public abstract class ClientPlayerInteractionManagerMixin implements IClientPlayerInteractionManager {
+
+    @Shadow protected abstract void syncSelectedSlot();
+
     @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
     private void onAttackEntity(PlayerEntity player, Entity target, CallbackInfo info) {
         AttackEntityEvent event = new AttackEntityEvent(target);
@@ -52,5 +57,10 @@ public class ClientPlayerInteractionManagerMixin {
         Main.EVENT_BUS.post(event);
 
         if (event.toReturn != null) info.setReturnValue(event.toReturn);
+    }
+
+    @Override
+    public void syncSlot() {
+        syncSelectedSlot();
     }
 }

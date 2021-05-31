@@ -196,20 +196,22 @@ public class CrystalAura extends Module {
         if (mc.player == null || mc.world == null)
             return;
 
-        boolean pause = needsPause();
+        if (needsPause()) {
+            lastPlaceOrBreak.reset(); //to delay resetting the rotations after it's no longer paused
+            return;
+        }
 
-        if (pause) //to delay resetting the rotations after it's no longer paused
-            lastPlaceOrBreak.reset();
-
-        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()) && !pause)
-            if (switchBack.getValue() && oldSlot != -1)
+        if (lastPlaceOrBreak.passed(switchBackDelay.getValue()))
+            if (switchBack.getValue() && oldSlot != -1) {
                 InventoryUtils.select(oldSlot);
+                oldSlot = -1;
+            }
 
-        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()) && !pause)
+        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()))
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
-        if (logic.getValue() == CaLogic.WorldTick && !pause)
+        if (logic.getValue() == CaLogic.WorldTick)
             doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
@@ -246,8 +248,6 @@ public class CrystalAura extends Module {
 
     @EventHandler
     private Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
-
-        System.out.println(canBreak);
 
         if (fastBreak.getValue() && target != null && canBreak && !needsPause()) {
             DmgResult res = getBreakDmg((EndCrystalEntity) event.entity, target);
@@ -653,6 +653,7 @@ public class CrystalAura extends Module {
 
     private void doSwitch() {
         if (mc.player != null && mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL) {
+            System.out.println("here");
             int slot = InventoryUtils.findItemInHotbar(Items.END_CRYSTAL).slot;
             if (slot != -1 && slot < 9) {
                 oldSlot = mc.player.inventory.selectedSlot;
