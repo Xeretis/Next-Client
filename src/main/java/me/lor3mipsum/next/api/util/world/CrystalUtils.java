@@ -97,7 +97,7 @@ public class CrystalUtils {
     public static boolean getArmorBreaker(PlayerEntity player, int percent) {
         for (ItemStack itemStack : player.getArmorItems()) {
             if (itemStack.isEmpty() || !itemStack.isDamageable()) continue;
-            if ((((itemStack.getMaxDamage() - itemStack.getDamage()) / itemStack.getMaxDamage()) * 100) <= percent) return true;
+            if (((itemStack.getDamage() / itemStack.getMaxDamage()) * 100) <= percent) return true;
         }
         return false;
     }
