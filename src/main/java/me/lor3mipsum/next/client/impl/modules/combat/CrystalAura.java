@@ -518,13 +518,17 @@ public class CrystalAura extends Module {
                 continue;
 
             boolean throughWalls = true;
-            for (Direction d: Direction.values())
-                if (getRayTrace(crystal.getBoundingBox(), d, -0.001)) {
-                    throughWalls = false;
-                    break;
-                }
 
-            if (raytraceMode.getValue() == RaytraceMode.Full ? throughWalls : mc.player.canSee(crystal))
+            if (raytraceMode.getValue() == RaytraceMode.Full)
+                for (Direction d: Direction.values())
+                    if (getRayTrace(crystal.getBoundingBox(), d, -0.001)) {
+                        throughWalls = false;
+                        break;
+                    }
+            else
+                throughWalls = !mc.player.canSee(crystal);
+
+            if (throughWalls)
                 if (raytrace.getValue() || mc.player.squaredDistanceTo(crystal) > wallsBreakRange.getValue() * wallsBreakRange.getValue())
                     continue;
 
