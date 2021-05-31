@@ -58,6 +58,7 @@ public class CrystalAura extends Module {
 
     public EnumSetting<CaLogic> logic = new EnumSetting<>("Logic", CaLogic.WorldTick);
     public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
+    public EnumSetting<RaytraceMode> raytraceMode = new EnumSetting<>("Raytrace Mode", RaytraceMode.Full);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     public BooleanSetting antiPop = new BooleanSetting("Anti Pop", false);
 
@@ -149,6 +150,11 @@ public class CrystalAura extends Module {
     public enum CaLogic {
         WorldTick,
         PlayerTick
+    }
+
+    public enum RaytraceMode {
+        Full,
+        Line
     }
 
     public enum CancelMode {
@@ -442,8 +448,9 @@ public class CrystalAura extends Module {
 
         for (BlockPos pos : possibleLocations) {
 
-            boolean throughWalls = true;
             result.dir = Direction.UP;
+
+            boolean throughWalls = true;
             for (Direction d: Direction.values())
                 if (getRayTrace(pos, d)) {
                     throughWalls = false;
@@ -451,7 +458,7 @@ public class CrystalAura extends Module {
                     break;
                 }
 
-            if (throughWalls)
+            if (raytraceMode.getValue() == RaytraceMode.Full ? throughWalls : CrystalUtils.canSeePos(pos))
                 if (raytrace.getValue() || mc.player.getPos().squaredDistanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue() * wallsPlaceRange.getValue())
                     continue;
 
@@ -517,7 +524,7 @@ public class CrystalAura extends Module {
                     break;
                 }
 
-            if (throughWalls)
+            if (raytraceMode.getValue() == RaytraceMode.Full ? throughWalls : mc.player.canSee(crystal))
                 if (raytrace.getValue() || mc.player.squaredDistanceTo(crystal) > wallsBreakRange.getValue() * wallsBreakRange.getValue())
                     continue;
 
