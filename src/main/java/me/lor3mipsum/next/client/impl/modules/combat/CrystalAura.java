@@ -580,7 +580,7 @@ public class CrystalAura extends Module {
         if (!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue())
             result.valid = false;
 
-        if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
+        if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (armorBreaker.getValue() && CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && result.targetDmg > 0.5))
             return result;
 
         if ((result.targetDmg < minHpPlace.getValue() && result.targetDmg * lethalMultiplier.getValue() < target.getHealth()) || (useSafety.getValue() && result.selfDmg / result.targetDmg * 100 > safety.getValue()))
@@ -600,7 +600,7 @@ public class CrystalAura extends Module {
         if (!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue())
             result.valid = false;
 
-        if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && armorBreaker.getValue() && result.targetDmg > 0.5))
+        if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (armorBreaker.getValue() && CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && result.targetDmg > 0.5))
             return result;
 
         if ((result.targetDmg < minHpBreak.getValue() && result.targetDmg * lethalMultiplier.getValue() < target.getHealth()) || (useSafety.getValue() && result.selfDmg / result.targetDmg * 100 > safety.getValue()))
