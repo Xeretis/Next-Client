@@ -4,6 +4,7 @@ import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.player.SendMovementPacketsEvent;
 import me.lor3mipsum.next.api.util.misc.Pool;
+import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
@@ -140,14 +141,14 @@ public class RotationUtils implements Listenable {
                 resetRotation();
             }
         }
-    });
+    }, EventPriority.HIGHEST);
 
     @EventHandler
     private Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.era == NextEvent.Era.PRE) {
             rotationTimer++;
         }
-    });
+    }, EventPriority.HIGHEST);
 
     public void rotate(double yaw, double pitch, int priority, boolean clientSide, Runnable callback) {
         Rotation rotation = rotationPool.get();
