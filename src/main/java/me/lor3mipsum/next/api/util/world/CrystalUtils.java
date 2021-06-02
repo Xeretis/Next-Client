@@ -7,10 +7,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
@@ -45,10 +45,6 @@ public class CrystalUtils {
         }
 
         return true;
-    }
-
-    public static boolean canSeePos(BlockPos pos) {
-        return mc.world.raycast(new RaycastContext(new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ()), Vec3d.of(pos), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS;
     }
 
     public static Vec3d getCrystalPos(BlockPos blockPos) {
@@ -92,6 +88,39 @@ public class CrystalUtils {
         }
 
         return areaBlocks;
+    }
+
+    public static boolean getLineRayTrace(BlockPos pos) {
+        return mc.world.raycast(new RaycastContext(new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ()), Vec3d.of(pos), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS;
+    }
+
+    public static boolean getFullRayTrace(BlockPos pos, Direction dir) {
+        return getFullRayTrace(new Box(pos), dir, 0.01);
+    }
+
+    public static boolean getFullRayTrace(Box box, Direction dir, double extrude) {
+        Vec3d eyePos = new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ());
+        Vec3d blockPos = new Vec3d(box.minX, box.minY, box.minZ).add(
+                (dir == Direction.WEST ? -extrude : dir.getOffsetX() * box.getXLength() + extrude),
+                (dir == Direction.DOWN ? -extrude : dir.getOffsetY() * box.getYLength() + extrude),
+                (dir == Direction.NORTH ? -extrude : dir.getOffsetZ() * box.getZLength() + extrude));
+
+        for (double i = 0; i <= 1; i += 1d / 5.0) {
+            for (double j = 0; j <= 1; j += 1d / 5.0) {
+                Vec3d lookPos = blockPos.add(
+                        (dir.getAxis() == Direction.Axis.X ? 0 : i * box.getXLength()),
+                        (dir.getAxis() == Direction.Axis.Y ? 0 : dir.getAxis() == Direction.Axis.Z ? j * box.getYLength() : i * box.getYLength()),
+                        (dir.getAxis() == Direction.Axis.Z ? 0 : j * box.getZLength()));
+
+                if (eyePos.distanceTo(lookPos) > 6)
+                    continue;
+
+                if (mc.world.raycast(new RaycastContext(eyePos, lookPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     public static boolean getArmorBreaker(PlayerEntity player, int percent) {

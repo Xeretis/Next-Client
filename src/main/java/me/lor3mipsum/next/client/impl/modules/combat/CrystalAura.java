@@ -39,9 +39,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
-import net.minecraft.world.RaycastContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -285,7 +283,7 @@ public class CrystalAura extends Module {
                 return;
 
             for (Direction d: Direction.values())
-                if (getRayTrace(pos, d)) {
+                if (CrystalUtils.getFullRayTrace(pos, d)) {
                     throughWalls = false;
                     placeRes.dir = d;
                     break;
@@ -452,13 +450,13 @@ public class CrystalAura extends Module {
 
             boolean throughWalls = true;
             for (Direction d: Direction.values())
-                if (getRayTrace(pos, d)) {
+                if (CrystalUtils.getFullRayTrace(pos, d)) {
                     throughWalls = false;
                     result.dir = d;
                     break;
                 }
 
-            if (raytraceMode.getValue() == RaytraceMode.Full ? throughWalls : CrystalUtils.canSeePos(pos))
+            if (raytraceMode.getValue() == RaytraceMode.Full ? throughWalls : CrystalUtils.getLineRayTrace(pos))
                 if (raytrace.getValue() || mc.player.getPos().squaredDistanceTo(Vec3d.of(pos)) > wallsPlaceRange.getValue() * wallsPlaceRange.getValue())
                     continue;
 
@@ -521,7 +519,7 @@ public class CrystalAura extends Module {
 
             if (raytraceMode.getValue() == RaytraceMode.Full)
                 for (Direction d: Direction.values())
-                    if (getRayTrace(crystal.getBoundingBox(), d, -0.001)) {
+                    if (CrystalUtils.getFullRayTrace(crystal.getBoundingBox(), d, -0.001)) {
                         throughWalls = false;
                         break;
                     }
@@ -689,35 +687,6 @@ public class CrystalAura extends Module {
             return true;
 
         return Main.moduleManager.getModule(Surround.class).getEnabled() && !Main.moduleManager.getModule(Surround.class).isSurrounded();
-    }
-
-    private boolean getRayTrace(BlockPos pos, Direction dir) {
-        return getRayTrace(new Box(pos), dir, 0.01);
-    }
-
-    private boolean getRayTrace(Box box, Direction dir, double extrude) {
-        Vec3d eyePos = new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ());
-        Vec3d blockPos = new Vec3d(box.minX, box.minY, box.minZ).add(
-                (dir == Direction.WEST ? -extrude : dir.getOffsetX() * box.getXLength() + extrude),
-                (dir == Direction.DOWN ? -extrude : dir.getOffsetY() * box.getYLength() + extrude),
-                (dir == Direction.NORTH ? -extrude : dir.getOffsetZ() * box.getZLength() + extrude));
-
-        for (double i = 0; i <= 1; i += 1d / 5.0) {
-            for (double j = 0; j <= 1; j += 1d / 5.0) {
-                Vec3d lookPos = blockPos.add(
-                        (dir.getAxis() == Direction.Axis.X ? 0 : i * box.getXLength()),
-                        (dir.getAxis() == Direction.Axis.Y ? 0 : dir.getAxis() == Direction.Axis.Z ? j * box.getYLength() : i * box.getYLength()),
-                        (dir.getAxis() == Direction.Axis.Z ? 0 : j * box.getZLength()));
-
-                if (eyePos.distanceTo(lookPos) > 6)
-                    continue;
-
-                if (mc.world.raycast(new RaycastContext(eyePos, lookPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player)).getType() == HitResult.Type.MISS)
-                    return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
