@@ -31,6 +31,7 @@
     "InGameOverlayRendererMixin",
     "ExplosionMixin",
     "accessor.HorseScreenHandlerAccessor",
+    "accessor.ClientPlayerInteractionManagerAccessor",
     "accessor.BlockHitResultAccessor"
   ],
   "injectors": {
