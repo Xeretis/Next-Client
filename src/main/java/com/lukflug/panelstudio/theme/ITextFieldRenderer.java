@@ -11,5 +11,5 @@ public interface ITextFieldRenderer {
 	
 	public Rectangle getTextArea (Context context, String title);
 	
-	public int transformToCharPos (Context context, String content, int boxPosition);
+	public int transformToCharPos (Context context, String title, String content, int boxPosition);
 }

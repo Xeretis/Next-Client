@@ -1,5 +1,12 @@
 package com.lukflug.panelstudio.widget;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+
 import com.lukflug.panelstudio.base.Context;
 import com.lukflug.panelstudio.base.IInterface;
 import com.lukflug.panelstudio.base.IToggleable;
@@ -9,14 +16,16 @@ import com.lukflug.panelstudio.theme.ITextFieldRenderer;
 
 public abstract class TextField extends FocusableComponent {
 	protected IStringSetting setting;
+	protected ITextFieldKeys keys;
 	private int position,select=-1;
 	protected int boxPosition=0;
 	protected IToggleable insertMode;
 	protected ITextFieldRenderer renderer;
 	
-	public TextField (IStringSetting setting, int position, IToggleable insertMode, ITextFieldRenderer renderer) {
+	public TextField (IStringSetting setting, ITextFieldKeys keys, int position, IToggleable insertMode, ITextFieldRenderer renderer) {
 		super(setting);
 		this.setting=setting;
+		this.keys=keys;
 		this.position=position;
 		this.insertMode=insertMode;
 		this.renderer=renderer;
@@ -25,14 +34,14 @@ public abstract class TextField extends FocusableComponent {
 	@Override
 	public void render (Context context) {
 		super.render(context);
-		boxPosition=renderer.renderTextField(context,title,hasFocus(context),setting.getValue(),getPosition(),getSelect(),boxPosition,insertMode.isOn());
+		boxPosition=renderer.renderTextField(context,getTitle(),hasFocus(context),setting.getValue(),getPosition(),getSelect(),boxPosition,insertMode.isOn());
 	}
 	
 	@Override
 	public void handleButton (Context context, int button) {
 		super.handleButton(context,button);
-		if (context.isClicked()) {
-			int pos=renderer.transformToCharPos(context,setting.getValue(),boxPosition);
+		if (button==IInterface.LBUTTON && context.isClicked(button)) {
+			int pos=renderer.transformToCharPos(context,getTitle(),setting.getValue(),boxPosition);
 			if (pos>=0) setPosition(context.getInterface(),pos);
 			unselect();
 		}
@@ -46,7 +55,7 @@ public abstract class TextField extends FocusableComponent {
 			int pos=getPosition();
 			int sel=getSelect();
 			String s=setting.getValue();
-			if (isBackspaceKey(scancode) && (getPosition()>0||sel>=0)) {
+			if (keys.isBackspaceKey(scancode) && (pos>0||sel>=0)) {
 				if (sel<0) {
 					setPosition(context.getInterface(),pos-1);
 					setting.setValue(s.substring(0,pos-1)+s.substring(pos));
@@ -60,7 +69,7 @@ public abstract class TextField extends FocusableComponent {
 					setting.setValue(s.substring(0,pos)+s.substring(sel));
 				}
 				unselect();
-			} else if (isDeleteKey(scancode) && (getPosition()<setting.getValue().length()||sel>=0)) {
+			} else if (keys.isDeleteKey(scancode) && (pos<setting.getValue().length()||sel>=0)) {
 				if (sel<0) {
 					setting.setValue(s.substring(0,pos)+s.substring(pos+1));
 				} else {
@@ -73,11 +82,54 @@ public abstract class TextField extends FocusableComponent {
 					setting.setValue(s.substring(0,pos)+s.substring(sel));
 				}
 				unselect();
-			} else if (isInsertKey(scancode)) insertMode.toggle();
-			else if (isLeftKey(scancode)) setPosition(context.getInterface(),getPosition()-1);
-			else if (isRightKey(scancode)) setPosition(context.getInterface(),getPosition()+1);
-			else if (isHomeKey(scancode)) setPosition(context.getInterface(),0);
-			else if (isEndKey(scancode)) setPosition(context.getInterface(),setting.getValue().length());
+			} else if (keys.isInsertKey(scancode)) insertMode.toggle();
+			else if (keys.isLeftKey(scancode)) {
+				if (sel<0||context.getInterface().getModifier(IInterface.SHIFT)) setPosition(context.getInterface(),pos-1);
+				else setPosition(context.getInterface(),Math.min(pos,sel));
+			} else if (keys.isRightKey(scancode)) {
+				if (sel<0||context.getInterface().getModifier(IInterface.SHIFT)) setPosition(context.getInterface(),getPosition()+1);
+				else setPosition(context.getInterface(),Math.max(pos,sel));
+			} else if (keys.isHomeKey(scancode)) setPosition(context.getInterface(),0);
+			else if (keys.isEndKey(scancode)) setPosition(context.getInterface(),setting.getValue().length());
+			else if (context.getInterface().getModifier(IInterface.CTRL) && keys.isCopyKey(scancode) && sel>=0) {
+				StringSelection selection=new StringSelection(s.substring(Math.min(pos,sel),Math.max(pos,sel)));
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection,selection);
+			} else if (context.getInterface().getModifier(IInterface.CTRL) && keys.isPasteKey(scancode)) {
+				try {
+					Transferable t=Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+					if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+						String selection=(String)t.getTransferData(DataFlavor.stringFlavor);
+						if (sel<0) {
+							setting.setValue(s.substring(0,pos)+selection+s.substring(pos));
+						} else {
+							if (pos>sel) {
+								int temp=sel;
+								sel=pos;
+								pos=temp;
+								setPosition(context.getInterface(),pos);
+							}
+							setting.setValue(s.substring(0,pos)+selection+s.substring(sel));
+						}
+						position=pos+selection.length();
+						select=pos;
+					}
+				} catch (IOException e) {
+				} catch (UnsupportedFlavorException e) {
+				}
+			} else if (context.getInterface().getModifier(IInterface.CTRL) && keys.isCutKey(scancode) && sel>=0) {
+				StringSelection selection=new StringSelection(s.substring(Math.min(pos,sel),Math.max(pos,sel)));
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection,selection);
+				if (pos>sel) {
+					int temp=sel;
+					sel=pos;
+					pos=temp;
+					setPosition(context.getInterface(),pos);
+				}
+				setting.setValue(s.substring(0,pos)+s.substring(sel));
+			} else if (context.getInterface().getModifier(IInterface.CTRL) && keys.isAllKey(scancode)) {
+				select=0;
+				position=s.length();
+			}
 		}
 	}
 	
@@ -100,7 +152,7 @@ public abstract class TextField extends FocusableComponent {
 				setting.setValue(s.substring(0,pos)+character+s.substring(sel));
 				unselect();
 			}
-			setPositionNoSelect(pos+1);
+			position=pos+1;
 		}
 	}
 	
@@ -134,10 +186,6 @@ public abstract class TextField extends FocusableComponent {
 		this.position=position;
 	}
 	
-	protected void setPositionNoSelect (int position) {
-		this.position=position;
-	}
-	
 	protected int getSelect() {
 		if (select>setting.getValue().length()) select=setting.getValue().length();
 		if (select==getPosition()) select=-1;
@@ -149,18 +197,4 @@ public abstract class TextField extends FocusableComponent {
 	}
 	
 	public abstract boolean allowCharacter (char character);
-	
-	public abstract boolean isBackspaceKey (int scancode);
-	
-	public abstract boolean isDeleteKey (int scancode);
-	
-	public abstract boolean isInsertKey (int scancode);
-	
-	public abstract boolean isLeftKey (int scancode);
-	
-	public abstract boolean isRightKey (int scancode);
-	
-	public abstract boolean isHomeKey (int scancode);
-	
-	public abstract boolean isEndKey (int scancode);
 }

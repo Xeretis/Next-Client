@@ -12,6 +12,7 @@ import com.lukflug.panelstudio.popup.PanelPositioner;
 import com.lukflug.panelstudio.popup.PopupTuple;
 import com.lukflug.panelstudio.setting.*;
 import com.lukflug.panelstudio.theme.*;
+import com.lukflug.panelstudio.widget.ITextFieldKeys;
 import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.util.render.font.FontUtils;
@@ -279,14 +280,70 @@ public class NextGui extends MinecraftHUDGUI {
             }
         };
 
-        IComponentGenerator generator=new ComponentGenerator(scancode -> scancode == GLFW.GLFW_KEY_DELETE, scancode -> true, scancode -> scancode == GLFW.GLFW_KEY_BACKSPACE, scancode -> scancode == GLFW.GLFW_KEY_DELETE, scancode -> scancode == GLFW.GLFW_KEY_INSERT, scancode -> scancode == GLFW.GLFW_KEY_LEFT, scancode -> scancode == GLFW.GLFW_KEY_RIGHT, scancode -> scancode == GLFW.GLFW_KEY_HOME || scancode == GLFW.GLFW_KEY_KP_7, scancode -> scancode == GLFW.GLFW_KEY_END || scancode == GLFW.GLFW_KEY_KP_1) {
+        IComponentGenerator generator=new ComponentGenerator(scancode -> scancode == GLFW.GLFW_KEY_DELETE, scancode -> true, new ITextFieldKeys() {
+
             @Override
-            public IComponent getBooleanComponent (IBooleanSetting setting, Supplier<Animation> animation, ThemeTuple theme, int colorLevel, boolean isContainer) {
+            public boolean isBackspaceKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_BACKSPACE;
+            }
+
+            @Override
+            public boolean isDeleteKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_DELETE;
+            }
+
+            @Override
+            public boolean isInsertKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_INSERT;
+            }
+
+            @Override
+            public boolean isLeftKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_LEFT;
+            }
+
+            @Override
+            public boolean isRightKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_RIGHT;
+            }
+
+            @Override
+            public boolean isHomeKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_HOME || scancode == GLFW.GLFW_KEY_KP_7;
+            }
+
+            @Override
+            public boolean isEndKey(int scancode) {
+                return scancode == GLFW.GLFW_KEY_END || scancode == GLFW.GLFW_KEY_KP_1;
+            }
+
+            @Override
+            public boolean isCopyKey(int scancode) {
+                return false;
+            }
+
+            @Override
+            public boolean isPasteKey(int scancode) {
+                return false;
+            }
+
+            @Override
+            public boolean isCutKey(int scancode) {
+                return false;
+            }
+
+            @Override
+            public boolean isAllKey(int scancode) {
+                return false;
+            }
+        }) {
+            @Override
+            public IComponent getBooleanComponent (IBooleanSetting setting, Supplier<Animation> animation, IComponentAdder adder, ThemeTuple theme, int colorLevel, boolean isContainer) {
                 return new ToggleSwitch(setting,theme.getToggleSwitchRenderer(isContainer));
             }
 
             @Override
-            public IComponent getColorComponent (IColorSetting setting, Supplier<Animation> animation, ThemeTuple theme, int colorLevel, boolean isContainer) {
+            public IComponent getColorComponent (IColorSetting setting, Supplier<Animation> animation, IComponentAdder adder, ThemeTuple theme, int colorLevel, boolean isContainer) {
                 return new NextColorComponent(setting,animation.get(),new ThemeTuple(theme.theme,theme.logicalLevel,colorLevel));
             }
 
@@ -629,11 +686,6 @@ public class NextGui extends MinecraftHUDGUI {
     }
 
     @Override
-    protected HUDGUI getHUDGUI() {
-        return gui;
-    }
-
-    @Override
     protected GUIInterface getInterface() {
         return guiInterface;
     }
@@ -641,6 +693,11 @@ public class NextGui extends MinecraftHUDGUI {
     @Override
     protected int getScrollSpeed() {
         return ((Number) Main.moduleManager.getModule(ClickGuiModule.class).scrollSpeed.getValue()).intValue();
+    }
+
+    @Override
+    protected HUDGUI getGUI() {
+        return gui;
     }
 
     private static final class NextColorScheme implements IColorScheme {

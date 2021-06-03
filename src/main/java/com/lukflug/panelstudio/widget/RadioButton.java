@@ -6,6 +6,7 @@ import com.lukflug.panelstudio.base.IInterface;
 import com.lukflug.panelstudio.component.FocusableComponent;
 import com.lukflug.panelstudio.setting.AnimatedEnum;
 import com.lukflug.panelstudio.setting.IEnumSetting;
+import com.lukflug.panelstudio.setting.ILabeled;
 import com.lukflug.panelstudio.theme.IRadioRenderer;
 
 public abstract class RadioButton extends FocusableComponent {
@@ -25,17 +26,32 @@ public abstract class RadioButton extends FocusableComponent {
 	@Override
 	public void render (Context context) {
 		super.render(context);
-		renderer.renderItem(context,setting.getAllowedValues(),hasFocus(context),(int)setting.getValueIndex(),animation.getValue(),horizontal);
+		ILabeled[] values=IEnumSetting.getVisibleValues(setting);
+		String compare=setting.getValueName();
+		int value=-1;
+		for (int i=0;i<values.length;i++) {
+			if (values[i].getDisplayName().equals(compare)) {
+				value=i;
+				break;
+			}
+		}
+		renderer.renderItem(context,values,hasFocus(context),value,animation.getValue(),horizontal);
 	}
 	
 	@Override
 	public void handleButton (Context context, int button) {
 		super.handleButton(context,button);
-		if (button==IInterface.LBUTTON && context.isClicked()) {
-			for (int i=0;i<setting.getAllowedValues().length;i++) {
-				if (renderer.getItemRect(context,setting.getAllowedValues(),i,horizontal).contains(context.getInterface().getMouse())) {
-					setting.setValueIndex(i);
-					return;
+		if (button==IInterface.LBUTTON && context.isClicked(button)) {
+			int index=0;
+			ILabeled[] values=setting.getAllowedValues();
+			ILabeled[] visibleValues=IEnumSetting.getVisibleValues(setting);
+			for (int i=0;i<values.length;i++) {
+				if (values[i].isVisible().isOn()) {
+					if (renderer.getItemRect(context,visibleValues,index,horizontal).contains(context.getInterface().getMouse())) {
+						setting.setValueIndex(i);
+						return;
+					}
+					index++;
 				}
 			}
 		}
@@ -52,7 +68,7 @@ public abstract class RadioButton extends FocusableComponent {
 
 	@Override
 	protected int getHeight() {
-		return renderer.getDefaultHeight(setting.getAllowedValues(),horizontal);
+		return renderer.getDefaultHeight(IEnumSetting.getVisibleValues(setting),horizontal);
 	}
 	
 	protected abstract boolean isUpKey (int key);

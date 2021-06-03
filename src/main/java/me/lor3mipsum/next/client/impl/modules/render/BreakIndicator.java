@@ -26,7 +26,7 @@ import java.util.Map;
 
 @Mod(name = "BreakIndicator", description = "Fancy indication of your block breaking status", category = Category.RENDER)
 public class BreakIndicator extends Module {
-    public BooleanSetting text = new BooleanSetting("DrawProgress", false);
+
     public ColorSetting startLine = new ColorSetting("StartLineColor", false, new NextColor(255, 50, 50, 255));
     public ColorSetting startSide = new ColorSetting("StartSideColor", false, new NextColor(255, 50, 50, 100));
     public ColorSetting endLine = new ColorSetting("EndLineColor", false, new NextColor(50, 255, 50, 255));
@@ -109,9 +109,6 @@ public class BreakIndicator extends Module {
                     (int) Math.round(startLine.getValue().getBlue() + (endLine.getValue().getBlue() - startLine.getValue().getBlue()) * progress),
                     (int) Math.round(startLine.getValue().getAlpha() + (endLine.getValue().getAlpha() - startLine.getValue().getAlpha()) * progress)
             );
-
-//            if (text.isOn())
-//                WorldRenderUtils.drawText(Math.round(progress * 100) + "%", pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5);
 
             RenderUtils.drawBoxBoth(new Box(x1, y1, z1, x2, y2, z2), QuadColor.single(currentSide.getRGB()), QuadColor.single(currentLine.getRGB()), lineWidth.getValue().floatValue());
 

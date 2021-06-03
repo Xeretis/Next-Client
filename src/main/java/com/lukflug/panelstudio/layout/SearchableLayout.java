@@ -1,14 +1,15 @@
 package com.lukflug.panelstudio.layout;
 
 import java.awt.Point;
+import java.util.Comparator;
 import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.lukflug.panelstudio.base.Animation;
 import com.lukflug.panelstudio.base.Context;
 import com.lukflug.panelstudio.base.IBoolean;
-import com.lukflug.panelstudio.component.FocusableComponent;
 import com.lukflug.panelstudio.component.HorizontalComponent;
 import com.lukflug.panelstudio.component.IComponent;
 import com.lukflug.panelstudio.component.IScrollSize;
@@ -21,90 +22,70 @@ import com.lukflug.panelstudio.setting.IBooleanSetting;
 import com.lukflug.panelstudio.setting.IClient;
 import com.lukflug.panelstudio.setting.IEnumSetting;
 import com.lukflug.panelstudio.setting.ILabeled;
+import com.lukflug.panelstudio.setting.IModule;
 import com.lukflug.panelstudio.setting.ISetting;
 import com.lukflug.panelstudio.theme.ITheme;
 import com.lukflug.panelstudio.theme.ThemeTuple;
 import com.lukflug.panelstudio.widget.Button;
-import com.lukflug.panelstudio.widget.RadioButton;
+import com.lukflug.panelstudio.widget.ITextFieldKeys;
 import com.lukflug.panelstudio.widget.ScrollBarComponent;
-import com.lukflug.panelstudio.widget.ToggleButton;
+import com.lukflug.panelstudio.widget.SearchableRadioButton;
 
-public class CSGOLayout implements ILayout,IScrollSize {
-	protected ILabeled label;
+public class SearchableLayout implements ILayout,IScrollSize {
+	protected ILabeled titleLabel,searchLabel;
 	protected Point position;
 	protected int width;
 	protected Supplier<Animation> animation;
 	protected String enabledButton;
-	protected boolean horizontal,moduleColumn;
 	protected int weight;
 	protected ChildMode colorType;
 	protected ChildUtil util;
+	protected Comparator<IModule> comparator;
+	protected IntPredicate charFilter;
+	protected ITextFieldKeys keys;
 	
-	public CSGOLayout (ILabeled label, Point position, int width, int popupWidth, Supplier<Animation> animation, String enabledButton, boolean horizontal, boolean moduleColumn, int weight, ChildMode colorType, PopupTuple popupType) {
-		this.label=label;
+	public SearchableLayout (ILabeled titleLabel, ILabeled searchLabel, Point position, int width, int popupWidth, Supplier<Animation> animation, String enabledButton, int weight, ChildMode colorType, PopupTuple popupType, Comparator<IModule> comparator, IntPredicate charFilter, ITextFieldKeys keys) {
+		this.titleLabel=titleLabel;
+		this.searchLabel=searchLabel;
 		this.position=position;
 		this.width=width;
 		this.animation=animation;
 		this.enabledButton=enabledButton;
-		this.horizontal=horizontal;
-		this.moduleColumn=moduleColumn;
 		this.weight=weight;
 		this.colorType=colorType;
+		this.comparator=comparator;
+		this.charFilter=charFilter;
+		this.keys=keys;
 		util=new ChildUtil(popupWidth,animation,popupType);
 	}
 	
 	@Override
 	public void populateGUI (IComponentAdder gui, IComponentGenerator components, IClient client, ITheme theme) {
-		Button<Void> title=new Button<Void>(label,()->null,theme.getButtonRenderer(Void.class,0,0,true));
-		HorizontalContainer window=new HorizontalContainer(label,theme.getContainerRenderer(0,horizontal?1:0,true));
-		IEnumSetting catSelect;
-		if (horizontal) {
-			VerticalContainer container=new VerticalContainer(label,theme.getContainerRenderer(0,0,false));
-			catSelect=addContainer(label,client.getCategories().map(cat->cat),container,new ThemeTuple(theme,0,1),true,button->button,()->true);
-			container.addComponent(window);
-			gui.addComponent(title,container,new ThemeTuple(theme,0,0),position,width,animation);
-		} else {
-			catSelect=addContainer(label,client.getCategories().map(cat->cat),window,new ThemeTuple(theme,0,1),false,button->wrapColumn(button,new ThemeTuple(theme,0,1),1),()->true);
-			gui.addComponent(title,window,new ThemeTuple(theme,0,0),position,width,animation);
-		}
-		client.getCategories().forEach(category->{
-			if (moduleColumn) {
-				IEnumSetting modSelect=addContainer(category,category.getModules().map(mod->mod),window,new ThemeTuple(theme,1,1),false,button->wrapColumn(button,new ThemeTuple(theme,0,1),1),()->catSelect.getValueName()==category.getDisplayName());
-				category.getModules().forEach(module->{
-					VerticalContainer container=new VerticalContainer(module,theme.getContainerRenderer(1,1,false));
-					window.addComponent(wrapColumn(container,new ThemeTuple(theme,1,1),weight),()->catSelect.getValueName()==category.getDisplayName()&&modSelect.getValueName()==module.getDisplayName());
-					if (module.isEnabled()!=null) container.addComponent(components.getComponent(new IBooleanSetting() {
-						@Override
-						public String getDisplayName() {
-							return enabledButton;
-						}
+		Button<Void> title=new Button<Void>(titleLabel,()->null,theme.getButtonRenderer(Void.class,0,0,true));
+		HorizontalContainer window=new HorizontalContainer(titleLabel,theme.getContainerRenderer(0,0,true));
+		Supplier<Stream<IModule>> modules=()->client.getCategories().flatMap(cat->cat.getModules()).sorted(comparator);
+		IEnumSetting modSelect=addContainer(searchLabel,modules.get().map(mod->mod),window,new ThemeTuple(theme,0,1),false,button->wrapColumn(button,new ThemeTuple(theme,0,1),1),()->true);
+		gui.addComponent(title,window,new ThemeTuple(theme,0,0),position,width,animation);
+		modules.get().forEach(module->{
+			VerticalContainer container=new VerticalContainer(module,theme.getContainerRenderer(1,1,false));
+			window.addComponent(wrapColumn(container,new ThemeTuple(theme,1,1),weight),()->modSelect.getValueName()==module.getDisplayName());
+			if (module.isEnabled()!=null) container.addComponent(components.getComponent(new IBooleanSetting() {
+				@Override
+				public String getDisplayName() {
+					return enabledButton;
+				}
 
-						@Override
-						public void toggle() {
-							module.isEnabled().toggle();
-						}
+				@Override
+				public void toggle() {
+					module.isEnabled().toggle();
+				}
 
-						@Override
-						public boolean isOn() {
-							return module.isEnabled().isOn();
-						}
-					},animation,gui,new ThemeTuple(theme,1,2),2,false));
-					module.getSettings().forEach(setting->addSettingsComponent(setting,container,gui,components,new ThemeTuple(theme,2,2)));
-				});
-			} else {
-				VerticalContainer categoryContent=new VerticalContainer(category,theme.getContainerRenderer(0,1,false));
-				window.addComponent(wrapColumn(categoryContent,new ThemeTuple(theme,0,1),1),()->catSelect.getValueName()==category.getDisplayName());
-				category.getModules().forEach(module->{
-					int graphicalLevel=1;
-					FocusableComponent moduleTitle;
-					if (module.isEnabled()==null) moduleTitle=new Button<Void>(module,()->null,theme.getButtonRenderer(Void.class,1,1,true));
-					else moduleTitle=new ToggleButton(module,module.isEnabled(),theme.getButtonRenderer(Boolean.class,1,1,true));
-					VerticalContainer moduleContainer=new VerticalContainer(module,theme.getContainerRenderer(1,graphicalLevel,false));
-					if (module.isEnabled()==null) util.addContainer(module,moduleTitle,moduleContainer,()->null,Void.class,categoryContent,gui,new ThemeTuple(theme,1,graphicalLevel),ChildMode.DOWN);
-					else util.addContainer(module,moduleTitle,moduleContainer,()->module.isEnabled(),IBoolean.class,categoryContent,gui,new ThemeTuple(theme,1,graphicalLevel),ChildMode.DOWN);
-					module.getSettings().forEach(setting->addSettingsComponent(setting,moduleContainer,gui,components,new ThemeTuple(theme,2,graphicalLevel+1)));
-				});
-			}
+				@Override
+				public boolean isOn() {
+					return module.isEnabled().isOn();
+				}
+			},animation,gui,new ThemeTuple(theme,1,2),2,false));
+			module.getSettings().forEach(setting->addSettingsComponent(setting,container,gui,components,new ThemeTuple(theme,2,2)));
 		});
 	}
 	
@@ -126,7 +107,7 @@ public class CSGOLayout implements ILayout,IScrollSize {
 		}
 	}
 	
-	protected <T extends IComponent> IEnumSetting addContainer (ILabeled label, Stream<ILabeled> labels, IContainer<T> window, ThemeTuple theme, boolean horizontal, Function<RadioButton,T> container, IBoolean visible) {
+	protected <T extends IComponent> IEnumSetting addContainer (ILabeled label, Stream<ILabeled> labels, IContainer<T> window, ThemeTuple theme, boolean horizontal, Function<SearchableRadioButton,T> container, IBoolean visible) {
 		IEnumSetting setting=new IEnumSetting() {
 			private int state=0;
 			private ILabeled array[]=labels.toArray(ILabeled[]::new);
@@ -177,17 +158,27 @@ public class CSGOLayout implements ILayout,IScrollSize {
 				return array;
 			}
 		};
-		RadioButton button=new RadioButton(setting,theme.getRadioRenderer(true),animation.get(),horizontal) {
+		SearchableRadioButton button=new SearchableRadioButton(setting,theme,true,keys) {
+			@Override
+			protected Animation getAnimation() {
+				return animation.get();
+			}
+
+			@Override
+			public boolean allowCharacter(char character) {
+				return charFilter.test(character);
+			}
+			
 			@Override
 			protected boolean isUpKey (int key) {
 				if (horizontal) return isLeftKey(key);
-				else return CSGOLayout.this.isUpKey(key);
+				else return SearchableLayout.this.isUpKey(key);
 			}
 
 			@Override
 			protected boolean isDownKey (int key) {
 				if (horizontal) return isRightKey(key);
-				else return CSGOLayout.this.isDownKey(key);
+				else return SearchableLayout.this.isDownKey(key);
 			}
 		};
 		window.addComponent(container.apply(button),visible);
@@ -198,7 +189,7 @@ public class CSGOLayout implements ILayout,IScrollSize {
 		return new HorizontalComponent<ScrollBarComponent<Void,IComponent>>(new ScrollBarComponent<Void,IComponent>(button,theme.getScrollBarRenderer(Void.class),theme.getEmptySpaceRenderer(Void.class,false),theme.getEmptySpaceRenderer(Void.class,true)) {
 			@Override
 			public int getScrollHeight (Context context, int componentHeight) {
-				return CSGOLayout.this.getScrollHeight(context,componentHeight);
+				return SearchableLayout.this.getScrollHeight(context,componentHeight);
 			}
 			
 			@Override

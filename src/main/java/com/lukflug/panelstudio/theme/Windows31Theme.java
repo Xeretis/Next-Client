@@ -198,8 +198,19 @@ public class Windows31Theme extends ThemeBase {
 
 	@Override
 	public IButtonRenderer<Void> getSmallButtonRenderer(int symbol, int logicalLevel, int graphicalLevel, boolean container) {
-		// TODO Auto-generated method stub
-		return null;
+		return new IButtonRenderer<Void>() {
+			@Override
+			public void renderButton(Context context, String title, boolean focus, Void state) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public int getDefaultHeight() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		};
 	}
 
 	@Override
@@ -252,7 +263,7 @@ public class Windows31Theme extends ThemeBase {
 	}
 	
 	@Override
-	public ITextFieldRenderer getTextRenderer (int logicalLevel, int graphicalLevel, boolean container) {
+	public ITextFieldRenderer getTextRenderer (boolean embed, int logicalLevel, int graphicalLevel, boolean container) {
 		return new ITextFieldRenderer() {
 			@Override
 			public int renderTextField (Context context, String title, boolean focus, String content, int position, int select, int boxPosition, boolean insertMode) {
@@ -270,7 +281,7 @@ public class Windows31Theme extends ThemeBase {
 			}
 			
 			@Override
-			public int transformToCharPos(Context context, String content, int boxPosition) {
+			public int transformToCharPos(Context context, String title, String content, int boxPosition) {
 				// TODO Auto-generated method stub
 				return -1;
 			}
@@ -331,6 +342,29 @@ public class Windows31Theme extends ThemeBase {
 			public Rectangle getOffField(Context context) {
 				// TODO Auto-generated method stub
 				return null;
+			}
+		};
+	}
+	
+	@Override
+	public IColorPickerRenderer getColorPickerRenderer() {
+		return new IColorPickerRenderer() {
+			@Override
+			public void renderPicker(Context context, boolean focus, Color color) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public Color transformPoint(Context context, Color color, Point point) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public int getDefaultHeight(int width) {
+				// TODO Auto-generated method stub
+				return 0;
 			}
 		};
 	}
