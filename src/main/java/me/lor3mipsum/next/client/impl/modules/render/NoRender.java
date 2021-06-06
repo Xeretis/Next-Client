@@ -23,6 +23,7 @@ public class NoRender extends Module {
     public BooleanSetting explosions = new BooleanSetting("Explosions", true);
     public BooleanSetting campfire = new BooleanSetting("Campfire", true);
     public BooleanSetting bossbar = new BooleanSetting("Bossbar", true);
+    public BooleanSetting fog = new BooleanSetting("Fog", true);
 
     @EventHandler
     private Listener<RenderHurtcamEvent> onHurtcam = new Listener<>(event -> {

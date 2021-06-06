@@ -30,6 +30,7 @@
     "LivingEntityMixin",
     "InGameOverlayRendererMixin",
     "ExplosionMixin",
+    "BackgroundRendererMixin",
     "accessor.HorseScreenHandlerAccessor",
     "accessor.ClientPlayerInteractionManagerAccessor",
     "accessor.BlockHitResultAccessor"
