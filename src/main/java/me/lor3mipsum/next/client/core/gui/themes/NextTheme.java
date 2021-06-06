@@ -72,11 +72,11 @@ public class NextTheme extends ThemeBase {
 
             @Override
             public void renderBackground (Context context, boolean focus) {
-                if (graphicalLevel>0 && (graphicalLevel != 1 && clickGuiModule.csgoLayout.getValue())) {
+                if (graphicalLevel>0 && (graphicalLevel != 1 && clickGuiModule.layout.getValue() != ClickGuiModule.Layout.Normal)) {
                     Color color=getBackgroundColor(focus);
                     context.getInterface().fillRect(context.getRect(),color,color,color,color);
                 }
-                if (graphicalLevel == 1 && clickGuiModule.csgoLayout.getValue()) {
+                if (graphicalLevel == 1 && clickGuiModule.layout.getValue() != ClickGuiModule.Layout.Normal) {
                     Color color=getMainColor(focus, false);
                     context.getInterface().fillRect(context.getRect(),color,color,color,color);
                 }

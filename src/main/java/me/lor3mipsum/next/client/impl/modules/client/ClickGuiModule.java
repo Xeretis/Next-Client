@@ -24,10 +24,10 @@ public class ClickGuiModule extends Module {
         Screen
     }
 
-    public enum ColorModel {
-        Picker,
-        RGB,
-        HSB
+    public enum Layout {
+        CSGO,
+        Normal,
+        Searchable
     }
 
     public SettingSeparator generalSep = new SettingSeparator("General");
@@ -36,7 +36,7 @@ public class ClickGuiModule extends Module {
     public IntegerSetting scrollSpeed = new IntegerSetting("Scroll Speed", 10, 0, 100);
     public EnumSetting<ScrollMode> scrollMode = new EnumSetting<>("Scroll Model", ScrollMode.Container);
     public EnumSetting<DescriptionMode> descriptionMode = new EnumSetting<>("Desc Mode", DescriptionMode.Mouse);
-    public BooleanSetting csgoLayout = new BooleanSetting("CSGO Layout", true);
+    public EnumSetting<Layout> layout = new EnumSetting<>("Layout", Layout.CSGO);
 
     public SettingSeparator colorSep = new SettingSeparator("Colors");
 

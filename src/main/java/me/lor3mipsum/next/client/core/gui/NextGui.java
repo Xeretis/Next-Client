@@ -11,15 +11,15 @@ import com.lukflug.panelstudio.popup.MousePositioner;
 import com.lukflug.panelstudio.popup.PanelPositioner;
 import com.lukflug.panelstudio.popup.PopupTuple;
 import com.lukflug.panelstudio.setting.*;
-import com.lukflug.panelstudio.theme.*;
-import com.lukflug.panelstudio.widget.ColorPickerComponent;
+import com.lukflug.panelstudio.theme.IColorScheme;
+import com.lukflug.panelstudio.theme.ITheme;
+import com.lukflug.panelstudio.theme.ThemeTuple;
 import com.lukflug.panelstudio.widget.ITextFieldKeys;
 import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
-import me.lor3mipsum.next.api.util.render.font.FontUtils;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
-import me.lor3mipsum.next.client.core.gui.components.NextColorComponent;
+import me.lor3mipsum.next.api.util.render.font.FontUtils;
 import me.lor3mipsum.next.client.core.gui.components.NextColorPickerComponent;
 import me.lor3mipsum.next.client.core.gui.themes.NextTheme;
 import me.lor3mipsum.next.client.core.module.Category;
@@ -265,7 +265,7 @@ public class NextGui extends MinecraftHUDGUI {
             public boolean removeComponent(IFixedComponent component) {
                 return gui.removeComponent(component);
             }
-        }, false, () -> !clickGuiModule.csgoLayout.getValue(), title -> title) {
+        }, false, () -> clickGuiModule.layout.getValue() == ClickGuiModule.Layout.Normal, title -> title) {
             @Override
             protected IResizable getResizable (int width) {
                 return resizable.apply(width);
@@ -282,7 +282,7 @@ public class NextGui extends MinecraftHUDGUI {
             }
         };
 
-        IComponentGenerator generator=new ComponentGenerator(scancode -> scancode == GLFW.GLFW_KEY_DELETE, scancode -> true, new ITextFieldKeys() {
+        ITextFieldKeys textFieldKeys = new ITextFieldKeys() {
 
             @Override
             public boolean isBackspaceKey(int scancode) {
@@ -338,7 +338,9 @@ public class NextGui extends MinecraftHUDGUI {
             public boolean isAllKey(int scancode) {
                 return false;
             }
-        }) {
+        };
+
+        IComponentGenerator generator=new ComponentGenerator(scancode -> scancode == GLFW.GLFW_KEY_DELETE, scancode -> true, textFieldKeys) {
             @Override
             public IComponent getBooleanComponent (IBooleanSetting setting, Supplier<Animation> animation, IComponentAdder adder, ThemeTuple theme, int colorLevel, boolean isContainer) {
                 return new ToggleSwitch(setting,theme.getToggleSwitchRenderer(isContainer));
@@ -359,7 +361,7 @@ public class NextGui extends MinecraftHUDGUI {
         //CSGO Layout
         PopupTuple csgoPopup=new PopupTuple(new CenteredPositioner(()->new Rectangle(new Point(0,0),guiInterface.getWindowSize())),true,new IScrollSize() {});
 
-        IComponentAdder horizontalCSGOAdder=new PanelAdder(gui,true,()->clickGuiModule.csgoLayout.getValue(),title->title) {
+        IComponentAdder horizontalCSGOAdder=new PanelAdder(gui,true,()-> clickGuiModule.layout.getValue() == ClickGuiModule.Layout.CSGO, title->title) {
             @Override
             protected IResizable getResizable (int width) {
                 return resizable.apply(width);
@@ -394,6 +396,42 @@ public class NextGui extends MinecraftHUDGUI {
         };
 
         horizontalCSGOLayout.populateGUI(horizontalCSGOAdder,generator,client, theme);
+
+        IComponentAdder searchableAdder =new PanelAdder(gui,true,()-> clickGuiModule.layout.getValue() == ClickGuiModule.Layout.Searchable, title->title) {
+            @Override
+            protected IResizable getResizable (int width) {
+                return resizable.apply(width);
+            }
+        };
+
+        ILayout searchableLayout=new SearchableLayout(new Labeled("Next Client",null,()->true), new Labeled("Search", null, ()->true), new Point(100,100),480, WIDTH, animation,"Enabled",1, ChildUtil.ChildMode.DOWN, csgoPopup, Comparator.comparing(ILabeled::getDisplayName), a -> true, textFieldKeys) {
+            @Override
+            public int getScrollHeight (Context context, int componentHeight) {
+                return 320;
+            }
+
+            @Override
+            protected boolean isUpKey (int key) {
+                return key==GLFW.GLFW_KEY_UP;
+            }
+
+            @Override
+            protected boolean isDownKey (int key) {
+                return key==GLFW.GLFW_KEY_DOWN;
+            }
+
+            @Override
+            protected boolean isLeftKey (int key) {
+                return key==GLFW.GLFW_KEY_LEFT;
+            }
+
+            @Override
+            protected boolean isRightKey (int key) {
+                return key==GLFW.GLFW_KEY_RIGHT;
+            }
+        };
+
+        searchableLayout.populateGUI(searchableAdder,generator,client, theme);
     }
 
     private ISetting<?> createSetting (Setting<?> setting) {
