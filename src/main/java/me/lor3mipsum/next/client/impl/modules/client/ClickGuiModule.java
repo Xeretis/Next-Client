@@ -25,6 +25,7 @@ public class ClickGuiModule extends Module {
     }
 
     public enum ColorModel {
+        Picker,
         RGB,
         HSB
     }
@@ -35,7 +36,6 @@ public class ClickGuiModule extends Module {
     public IntegerSetting scrollSpeed = new IntegerSetting("Scroll Speed", 10, 0, 100);
     public EnumSetting<ScrollMode> scrollMode = new EnumSetting<>("Scroll Model", ScrollMode.Container);
     public EnumSetting<DescriptionMode> descriptionMode = new EnumSetting<>("Desc Mode", DescriptionMode.Mouse);
-    public EnumSetting<ColorModel> colorMode = new EnumSetting<>("Color Mode", ColorModel.RGB);
     public BooleanSetting csgoLayout = new BooleanSetting("CSGO Layout", true);
 
     public SettingSeparator colorSep = new SettingSeparator("Colors");

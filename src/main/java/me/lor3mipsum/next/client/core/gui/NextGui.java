@@ -12,6 +12,7 @@ import com.lukflug.panelstudio.popup.PanelPositioner;
 import com.lukflug.panelstudio.popup.PopupTuple;
 import com.lukflug.panelstudio.setting.*;
 import com.lukflug.panelstudio.theme.*;
+import com.lukflug.panelstudio.widget.ColorPickerComponent;
 import com.lukflug.panelstudio.widget.ITextFieldKeys;
 import com.lukflug.panelstudio.widget.ToggleSwitch;
 import me.lor3mipsum.next.Main;
@@ -19,6 +20,7 @@ import me.lor3mipsum.next.api.util.render.font.FontUtils;
 import me.lor3mipsum.next.api.util.client.KeyboardUtils;
 import me.lor3mipsum.next.api.util.misc.NextColor;
 import me.lor3mipsum.next.client.core.gui.components.NextColorComponent;
+import me.lor3mipsum.next.client.core.gui.components.NextColorPickerComponent;
 import me.lor3mipsum.next.client.core.gui.themes.NextTheme;
 import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.HudModule;
@@ -344,7 +346,7 @@ public class NextGui extends MinecraftHUDGUI {
 
             @Override
             public IComponent getColorComponent (IColorSetting setting, Supplier<Animation> animation, IComponentAdder adder, ThemeTuple theme, int colorLevel, boolean isContainer) {
-                return new NextColorComponent(setting,animation.get(),new ThemeTuple(theme.theme,theme.logicalLevel,colorLevel));
+                return new NextColorPickerComponent(setting, new ThemeTuple(theme.theme,theme.logicalLevel,colorLevel));
             }
 
         };
@@ -604,7 +606,7 @@ public class NextGui extends MinecraftHUDGUI {
 
                 @Override
                 public boolean hasHSBModel() {
-                    return Main.moduleManager.getModule(ClickGuiModule.class).colorMode.getValue() == ClickGuiModule.ColorModel.HSB;
+                    return true;
                 }
 
                 @Override
