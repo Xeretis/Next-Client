@@ -397,6 +397,7 @@ public class NextGui extends MinecraftHUDGUI {
 
         horizontalCSGOLayout.populateGUI(horizontalCSGOAdder,generator,client, theme);
 
+        //Searchable layout
         IComponentAdder searchableAdder =new PanelAdder(gui,true,()-> clickGuiModule.layout.getValue() == ClickGuiModule.Layout.Searchable, title->title) {
             @Override
             protected IResizable getResizable (int width) {
@@ -404,7 +405,7 @@ public class NextGui extends MinecraftHUDGUI {
             }
         };
 
-        ILayout searchableLayout=new SearchableLayout(new Labeled("Next Client",null,()->true), new Labeled("Search", null, ()->true), new Point(100,100),480, WIDTH, animation,"Enabled",3, ChildUtil.ChildMode.DOWN, csgoPopup, Comparator.comparing(ILabeled::getDisplayName), a -> true, textFieldKeys) {
+        ILayout searchableLayout=new SearchableLayout(new Labeled("Next Client",null,()->true), new Labeled("Search", null, ()->true), new Point(100,100),480, WIDTH, animation,"Enabled",2, ChildUtil.ChildMode.DOWN, csgoPopup, Comparator.comparing(ILabeled::getDisplayName), a -> true, textFieldKeys) {
             @Override
             public int getScrollHeight (Context context, int componentHeight) {
                 return 320;
