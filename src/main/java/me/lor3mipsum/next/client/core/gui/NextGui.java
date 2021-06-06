@@ -404,7 +404,7 @@ public class NextGui extends MinecraftHUDGUI {
             }
         };
 
-        ILayout searchableLayout=new SearchableLayout(new Labeled("Next Client",null,()->true), new Labeled("Search", null, ()->true), new Point(100,100),480, WIDTH, animation,"Enabled",1, ChildUtil.ChildMode.DOWN, csgoPopup, Comparator.comparing(ILabeled::getDisplayName), a -> true, textFieldKeys) {
+        ILayout searchableLayout=new SearchableLayout(new Labeled("Next Client",null,()->true), new Labeled("Search", null, ()->true), new Point(100,100),480, WIDTH, animation,"Enabled",3, ChildUtil.ChildMode.DOWN, csgoPopup, Comparator.comparing(ILabeled::getDisplayName), a -> true, textFieldKeys) {
             @Override
             public int getScrollHeight (Context context, int componentHeight) {
                 return 320;
