@@ -5,6 +5,7 @@ import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
 import me.lor3mipsum.next.api.event.entity.EntityAddedEvent;
 import me.lor3mipsum.next.api.event.entity.EntityRemovedEvent;
+import me.lor3mipsum.next.api.event.network.PacketSendEvent;
 import me.lor3mipsum.next.api.event.network.PacketSentEvent;
 import me.lor3mipsum.next.api.event.player.SendMovementPacketsEvent;
 import me.lor3mipsum.next.api.event.world.PlaySoundEvent;
@@ -35,6 +36,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.ToolItem;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -75,8 +77,9 @@ public class CrystalAura extends Module {
 
     public SettingSeparator delaysSep = new SettingSeparator("Delays");
 
-    public IntegerSetting breakDelay = new IntegerSetting("Break Delay", 2, 0, 20);
     public IntegerSetting placeDelay = new IntegerSetting("Place Delay", 2, 0, 20);
+    public IntegerSetting breakDelay = new IntegerSetting("Break Delay", 2, 0, 20);
+    public IntegerSetting switchBreakDelay = new IntegerSetting("Switch Break Delay", 10, 0, 20);
 
     public SettingSeparator rangesSep = new SettingSeparator("Ranges");
 
@@ -176,6 +179,7 @@ public class CrystalAura extends Module {
 
     private int breakDelayCounter;
     private int placeDelayCounter;
+    private int switchBreakDelayCounter;
 
     private double serverYaw;
 
@@ -252,9 +256,14 @@ public class CrystalAura extends Module {
     private Listener<PacketSentEvent> onPacketSent = new Listener<>(event -> serverYaw = ((PlayerMoveC2SPacket) event.packet).getYaw((float) serverYaw), event -> event.packet instanceof PlayerMoveC2SPacket);
 
     @EventHandler
+    private Listener<PacketSendEvent> onPacketSend = new Listener<>(event -> {
+        switchBreakDelayCounter = 0;
+    }, event -> event.packet instanceof UpdateSelectedSlotC2SPacket);
+
+    @EventHandler
     private Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
 
-        if (fastBreak.getValue() && target != null && canBreak && !needsPause()) {
+        if (fastBreak.getValue() && switchBreakDelayCounter > switchBreakDelay.getValue() && target != null && canBreak && !needsPause()) {
             DmgResult res = getBreakDmg((EndCrystalEntity) event.entity, target);
 
             if ((DamageUtils.willExplosionPop(event.entity.getPos(), 6f, mc.player) && antiPop.getValue()) ||
@@ -315,6 +324,7 @@ public class CrystalAura extends Module {
 
         breakDelayCounter = 0;
         placeDelayCounter = 0;
+        switchBreakDelayCounter = switchBreakDelay.getValue();
 
         oldSlot = -1;
 
@@ -341,13 +351,13 @@ public class CrystalAura extends Module {
     }
 
     private void doCrystalAura() {
-        if (mc.player == null || mc.world == null)
+        if (mc.player == null || mc.world == null || needsPause())
             return;
 
         canBreak = true;
         canPlace = true;
 
-        if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue() && canBreak)
+        if (cBreak.getValue() && breakDelayCounter > breakDelay.getValue() && switchBreakDelayCounter > switchBreakDelay.getValue() && canBreak)
             breakCrystal();
 
         if (cPlace.getValue() && placeDelayCounter > placeDelay.getValue() && canPlace)
@@ -355,6 +365,7 @@ public class CrystalAura extends Module {
 
         placeDelayCounter++;
         breakDelayCounter++;
+        switchBreakDelayCounter++;
     }
 
     private void placeCrystal() {
