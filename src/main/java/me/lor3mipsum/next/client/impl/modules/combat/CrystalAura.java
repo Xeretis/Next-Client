@@ -56,7 +56,6 @@ public class CrystalAura extends Module {
 
     public SettingSeparator generalSep = new SettingSeparator("General");
 
-    public EnumSetting<CaLogic> logic = new EnumSetting<>("Logic", CaLogic.WorldTick);
     public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
     public EnumSetting<RaytraceMode> raytraceMode = new EnumSetting<>("Raytrace Mode", RaytraceMode.Full);
     public BooleanSetting terrainIgnore = new BooleanSetting("Terrain Ignore", false);
@@ -149,11 +148,6 @@ public class CrystalAura extends Module {
         All
     }
 
-    public enum CaLogic {
-        WorldTick,
-        PlayerTick
-    }
-
     public enum RaytraceMode {
         Full,
         Line
@@ -201,7 +195,8 @@ public class CrystalAura extends Module {
     }, EventPriority.HIGH, event -> event.sound.getCategory().getName().equals(SoundCategory.BLOCKS.getName()) && event.sound.getId().getPath().equals("entity.generic.explode"));
 
     @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
+    private Listener<SendMovementPacketsEvent> onSendMovementPackets = new Listener<>(event -> {
+
         if (mc.player == null || mc.world == null)
             return;
 
@@ -220,16 +215,7 @@ public class CrystalAura extends Module {
             if (resetRotate.getValue())
                 RotationUtils.rotateToCam();
 
-        if (logic.getValue() == CaLogic.WorldTick)
-            doCrystalAura();
-
-    }, EventPriority.HIGH, event -> event.era == NextEvent.Era.POST);
-
-    @EventHandler
-    private Listener<SendMovementPacketsEvent> onSendMovementPackets = new Listener<>(event -> {
-
-        if (logic.getValue() == CaLogic.PlayerTick)
-            doCrystalAura();
+        doCrystalAura();
 
     }, EventPriority.HIGH, event -> event.era == NextEvent.Era.PRE);
 
@@ -351,7 +337,7 @@ public class CrystalAura extends Module {
     }
 
     private void doCrystalAura() {
-        if (mc.player == null || mc.world == null || needsPause())
+        if (mc.player == null || mc.world == null)
             return;
 
         canBreak = true;
