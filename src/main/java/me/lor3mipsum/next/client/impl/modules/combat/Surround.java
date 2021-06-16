@@ -102,7 +102,7 @@ public class Surround extends Module {
         int obby = findSlot();
 
         if (obby == -1) {
-            ChatUtils.moduleError(this, "No obsidian" + (echest.getValue() ? "/echest " : "") + " found in hotbar");
+            ChatUtils.moduleError(this, "No obsidian" + (echest.getValue() ? "/echest" : "") + " found in hotbar");
             setEnabled(false);
             return;
         }
