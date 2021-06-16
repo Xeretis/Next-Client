@@ -1,5 +1,7 @@
 package me.lor3mipsum.next.client.impl.modules.combat;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.lor3mipsum.next.Main;
 import me.lor3mipsum.next.api.event.NextEvent;
 import me.lor3mipsum.next.api.event.client.TickEvent;
@@ -43,7 +45,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mod(name = "CrystalAura", description = "Crystals go brrr", category = Category.COMBAT)
@@ -73,6 +74,7 @@ public class CrystalAura extends Module {
 
     public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
+    public IntegerSetting breakAttempts = new IntegerSetting("Break Attempts", 2, 1, 10, true, value -> value >= 1);
 
     public SettingSeparator delaysSep = new SettingSeparator("Delays");
 
@@ -166,7 +168,7 @@ public class CrystalAura extends Module {
         None
     }
 
-    private final List<Integer> attackedCrystals = new ArrayList<>();
+    private final Int2IntMap attackedCrystals = new Int2IntOpenHashMap();
 
     private PlayerEntity target;
     private BlockPos renderBlock;
@@ -188,7 +190,7 @@ public class CrystalAura extends Module {
     private Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
 
         if (cancelMode.getValue() == CancelMode.Sound) {
-            attackedCrystals.forEach(id -> mc.world.removeEntity(id));
+            attackedCrystals.forEach((id, value) -> mc.world.removeEntity(id));
             attackedCrystals.clear();
         }
 
@@ -225,7 +227,7 @@ public class CrystalAura extends Module {
             return;
 
         if (cancelMode.getValue() == CancelMode.Instant) {
-            attackedCrystals.forEach(id -> mc.world.removeEntity(id));
+            attackedCrystals.forEach((id, value) -> mc.world.removeEntity(id));
             attackedCrystals.clear();
         }
 
@@ -310,7 +312,7 @@ public class CrystalAura extends Module {
 
         breakDelayCounter = 0;
         placeDelayCounter = 0;
-        switchBreakDelayCounter = switchBreakDelay.getValue();
+        switchBreakDelayCounter = 0;
 
         oldSlot = -1;
 
@@ -426,7 +428,10 @@ public class CrystalAura extends Module {
         else
             mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
 
-        attackedCrystals.add(targetEntity.getEntityId());
+        if (attackedCrystals.get(targetEntity.getEntityId()) != 0)
+            attackedCrystals.put(targetEntity.getEntityId(), attackedCrystals.get(targetEntity.getEntityId()) + 1);
+        else
+            attackedCrystals.put(targetEntity.getEntityId(), 1);
 
         canBreak = false;
 
@@ -604,7 +609,7 @@ public class CrystalAura extends Module {
         result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target, terrainIgnore.getValue());
         result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player, terrainIgnore.getValue());
 
-        if (!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue())
+        if ((!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue()) || attackedCrystals.get(crystal.getEntityId()) > breakAttempts.getValue())
             result.valid = false;
 
         if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (armorBreaker.getValue() && CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && result.targetDmg > 0.5))
