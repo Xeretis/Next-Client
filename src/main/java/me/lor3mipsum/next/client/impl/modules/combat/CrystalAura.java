@@ -57,6 +57,7 @@ public class CrystalAura extends Module {
     public EnumSetting<CaLogic> logic = new EnumSetting<>("Logic", CaLogic.WorldTick);
     public EnumSetting<TargetingMode> targetingMode = new EnumSetting<>("Targeting", TargetingMode.All);
     public EnumSetting<RaytraceMode> raytraceMode = new EnumSetting<>("Raytrace Mode", RaytraceMode.Full);
+    public BooleanSetting terrainIgnore = new BooleanSetting("Terrain Ignore", false);
     public BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     public BooleanSetting antiPop = new BooleanSetting("Anti Pop", false);
 
@@ -583,8 +584,8 @@ public class CrystalAura extends Module {
 
         result.valid = true;
 
-        result.targetDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempTarget);
-        result.selfDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempSelf);
+        result.targetDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempTarget, terrainIgnore.getValue());
+        result.selfDmg = DamageUtils.getExplosionDamage(blockPos, 6f, tempSelf, terrainIgnore.getValue());
 
         if (!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue())
             result.valid = false;
@@ -603,8 +604,8 @@ public class CrystalAura extends Module {
 
         result.valid = true;
 
-        result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target);
-        result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player);
+        result.targetDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, target, terrainIgnore.getValue());
+        result.selfDmg = DamageUtils.getExplosionDamage(crystal.getPos(), 6f, mc.player, terrainIgnore.getValue());
 
         if (!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue())
             result.valid = false;
