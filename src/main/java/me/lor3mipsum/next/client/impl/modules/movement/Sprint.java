@@ -17,6 +17,7 @@ public class Sprint extends Module {
 
     public EnumSetting<SprintMode> mode = new EnumSetting<>("Mode", SprintMode.Normal);
     public BooleanSetting stationary = new BooleanSetting("When Stationary", false);
+    public BooleanSetting noCollision = new BooleanSetting("No Collision Check", false);
 
     public enum SprintMode {
         Normal,
@@ -30,11 +31,11 @@ public class Sprint extends Module {
 
         switch (mode.getValue()) {
             case Normal:
-                if((stationary.getValue() || mc.options.keyForward.isPressed()) && !mc.options.keyBack.isPressed() && !mc.options.keyRight.isPressed() && !mc.options.keyLeft.isPressed() && !mc.player.isSneaking() && !mc.player.horizontalCollision)
+                if((stationary.getValue() || mc.options.keyForward.isPressed()) && !mc.options.keyBack.isPressed() && !mc.options.keyRight.isPressed() && !mc.options.keyLeft.isPressed() && !mc.player.isSneaking() && !(mc.player.horizontalCollision && !noCollision.getValue()))
                     mc.player.setSprinting(true);
                 break;
             case Boost:
-                if ((stationary.getValue() || mc.options.keyForward.isPressed()) || mc.options.keyBack.isPressed() || mc.options.keyRight.isPressed() || mc.options.keyLeft.isPressed() && !mc.player.isSneaking() && !mc.player.horizontalCollision)
+                if ((stationary.getValue() || mc.options.keyForward.isPressed()) || mc.options.keyBack.isPressed() || mc.options.keyRight.isPressed() || mc.options.keyLeft.isPressed() && !mc.player.isSneaking() && !(mc.player.horizontalCollision && !noCollision.getValue()))
                     mc.player.setSprinting(true);
                 break;
         }

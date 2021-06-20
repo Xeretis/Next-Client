@@ -75,10 +75,9 @@ public class ModuleManager implements Listenable {
 
     @EventHandler
     private Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (event.action == KeyboardUtils.KeyAction.Repeat || event.action == KeyboardUtils.KeyAction.Release) return;
         if (MinecraftClient.getInstance().currentScreen == null)
             for(Module mod : modules)
                 if (mod.getBind() == event.key)
                     mod.toggle();
-    });
+    }, event -> event.action == KeyboardUtils.KeyAction.Press);
 }
