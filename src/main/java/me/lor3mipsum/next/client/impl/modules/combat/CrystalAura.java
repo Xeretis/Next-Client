@@ -141,8 +141,8 @@ public class CrystalAura extends Module {
 
     public SettingSeparator renderSep = new SettingSeparator("Render");
 
-    public ColorSetting sidesColor = new ColorSetting("Sides Color", false, new NextColor(255, 255, 255));
-    public ColorSetting linesColor = new ColorSetting("Lines Color", false, new NextColor(255, 255, 100));
+    public ColorSetting sidesColor = new ColorSetting("Sides Color", false, new NextColor(255, 255, 100));
+    public ColorSetting linesColor = new ColorSetting("Lines Color", false, new NextColor(255, 255, 255));
     public DoubleSetting lineWidth = new DoubleSetting("Line Width", 2.5, 0.1, 5);
     public BooleanSetting tracer = new BooleanSetting("Tracer", true);
     public ColorSetting tracerColor = new ColorSetting("Tracer Color", false, new NextColor(255, 255, 255));
