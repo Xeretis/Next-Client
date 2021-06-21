@@ -20,6 +20,7 @@ import me.lor3mipsum.next.api.util.misc.Timer;
 import me.lor3mipsum.next.api.util.player.InventoryUtils;
 import me.lor3mipsum.next.api.util.player.RotationUtils;
 import me.lor3mipsum.next.api.util.render.RenderUtils;
+import me.lor3mipsum.next.api.util.render.color.LineColor;
 import me.lor3mipsum.next.api.util.render.color.QuadColor;
 import me.lor3mipsum.next.api.util.world.CrystalUtils;
 import me.lor3mipsum.next.client.core.module.Category;
@@ -141,8 +142,11 @@ public class CrystalAura extends Module {
     public SettingSeparator renderSep = new SettingSeparator("Render");
 
     public ColorSetting sidesColor = new ColorSetting("Sides Color", false, new NextColor(255, 255, 255));
-    public ColorSetting linesColor = new ColorSetting("Lines Color", false, new NextColor(255, 255, 255));
+    public ColorSetting linesColor = new ColorSetting("Lines Color", false, new NextColor(255, 255, 100));
     public DoubleSetting lineWidth = new DoubleSetting("Line Width", 2.5, 0.1, 5);
+    public BooleanSetting tracer = new BooleanSetting("Tracer", true);
+    public ColorSetting tracerColor = new ColorSetting("Tracer Color", false, new NextColor(255, 255, 255));
+    public DoubleSetting tracerWidth = new DoubleSetting("Tracer Width", 2.5, 0.1, 5);
     public BooleanSetting swing = new BooleanSetting("Swing", true);
 
     public enum TargetingMode {
@@ -238,6 +242,9 @@ public class CrystalAura extends Module {
         if (renderBlock == null) return;
 
         RenderUtils.drawBoxBoth(renderBlock, QuadColor.single(sidesColor.getValue().getRGB()), QuadColor.single(linesColor.getValue().getRGB()), lineWidth.getValue().floatValue());
+
+        if (target != null && tracer.getValue())
+            RenderUtils.drawLine(renderBlock.getX() + 0.5, renderBlock.getY() + 0.5, renderBlock.getZ() + 0.5, target.getX(), target.getY(), target.getZ(), LineColor.single(tracerColor.getValue().getRGB()), tracerWidth.getValue().floatValue());
     });
 
     @EventHandler
