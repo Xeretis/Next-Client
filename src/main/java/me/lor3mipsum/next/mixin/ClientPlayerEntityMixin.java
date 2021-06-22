@@ -77,7 +77,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
     }
 
     @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z"))
-    private boolean proxy_tickMovement_isUsingItem(ClientPlayerEntity player) {
+    private boolean isUsingItem(ClientPlayerEntity player) {
         if (Main.moduleManager.getModule(NoSlow.class).items.getValue() && Main.moduleManager.getModule(NoSlow.class).getEnabled()) return false;
         return player.isUsingItem();
     }

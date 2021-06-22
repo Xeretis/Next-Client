@@ -76,6 +76,7 @@ public class CrystalAura extends Module {
     public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
     public IntegerSetting breakAttempts = new IntegerSetting("Break Attempts", 2, 1, 10, true, value -> value >= 1);
+    public IntegerSetting ticksExisted = new IntegerSetting("Ticks existed", 0, 0, 20);
 
     public SettingSeparator delaysSep = new SettingSeparator("Delays");
 
@@ -518,7 +519,7 @@ public class CrystalAura extends Module {
         EndCrystalEntity bestCrystal = null;
 
         for (Entity crystal : mc.world.getEntities()) {
-            if (!(crystal instanceof EndCrystalEntity) || mc.player.isDead() || mc.player.distanceTo(crystal) > breakRange.getValue())
+            if (!(crystal instanceof EndCrystalEntity) || mc.player.isDead() || mc.player.distanceTo(crystal) > breakRange.getValue() || crystal.age < ticksExisted.getValue())
                 continue;
 
             if((antiPop.getValue() && DamageUtils.willExplosionPop(crystal.getPos(), 6f, mc.player)) ||
