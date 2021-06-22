@@ -673,7 +673,6 @@ public class CrystalAura extends Module {
 
     private void doSwitch() {
         if (mc.player != null && mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL) {
-            System.out.println("here");
             int slot = InventoryUtils.findItemInHotbar(Items.END_CRYSTAL).slot;
             if (slot != -1 && slot < 9) {
                 oldSlot = mc.player.inventory.selectedSlot;
