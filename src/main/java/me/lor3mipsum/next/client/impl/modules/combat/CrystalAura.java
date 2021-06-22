@@ -191,6 +191,8 @@ public class CrystalAura extends Module {
 
     private int oldSlot;
 
+    boolean rotateWasReset;
+
     @EventHandler
     private Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
 
@@ -218,9 +220,10 @@ public class CrystalAura extends Module {
                 oldSlot = -1;
             }
 
-        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()))
-            if (resetRotate.getValue())
-                RotationUtils.rotateToCam();
+        if (lastPlaceOrBreak.passed(resetRotateDelay.getValue()) && !rotateWasReset && resetRotate.getValue()) {
+            RotationUtils.rotateToCam();
+            rotateWasReset = true;
+        }
 
         doCrystalAura();
 
@@ -324,6 +327,8 @@ public class CrystalAura extends Module {
 
         oldSlot = -1;
 
+        rotateWasReset = false;
+
         canBreak = true;
         canPlace = true;
 
@@ -396,12 +401,13 @@ public class CrystalAura extends Module {
         Vec3d vec = new Vec3d(targetBlock.getX(), targetBlock.getY() + 0.5, targetBlock.getZ());
 
         if (rotate.getValue()) {
-
             if (yawStepMode.getValue() == YawStepMode.All || yawStepMode.getValue() == YawStepMode.Place) {
                 if (doYawStep(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5))))
                     RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false)));
             } else
                 RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), RotationUtils.getPitch(Vec3d.of(targetBlock).add(0.5, 1.0, 0.5)), 25, () -> mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false)));
+
+            rotateWasReset = false;
         } else
             mc.interactionManager.interactBlock(mc.player, mc.world, hand, new BlockHitResult(vec, targetDir, targetBlock, false));
 
@@ -427,6 +433,8 @@ public class CrystalAura extends Module {
                     RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
             } else
                 RotationUtils.INSTANCE.rotate(RotationUtils.getYaw(targetEntity), RotationUtils.getPitch(targetEntity), 30, () -> mc.interactionManager.attackEntity(mc.player, targetEntity));
+
+            rotateWasReset = false;
         }
         else
             mc.interactionManager.attackEntity(mc.player, targetEntity);
