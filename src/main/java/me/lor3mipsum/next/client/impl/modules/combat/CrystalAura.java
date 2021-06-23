@@ -27,11 +27,13 @@ import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
+import me.lor3mipsum.next.client.core.social.SocialManager;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,13 +69,16 @@ public class CrystalAura extends Module {
     public SettingSeparator placingSep = new SettingSeparator("Placing");
 
     public BooleanSetting fastPlace = new BooleanSetting("Fast Place", true);
+    public BooleanSetting friendProtectPlace = new BooleanSetting("Friend Protect Place", false);
     public BooleanSetting sameTick = new BooleanSetting("Same Tick Place", true);
     public BooleanSetting oldPlace = new BooleanSetting("Old Place", false);
     public BooleanSetting crystalCheck = new BooleanSetting("Crystal Check", false);
 
     public SettingSeparator breakingSep = new SettingSeparator("Breaking");
 
+    public BooleanSetting antiWeakness = new BooleanSetting("Anti Weakness", true);
     public BooleanSetting fastBreak = new BooleanSetting("Fast Break", true);
+    public BooleanSetting friendProtectBreak = new BooleanSetting("Friend Protect Break", false);
     public EnumSetting<CancelMode> cancelMode = new EnumSetting<>("Cancel Mode", CancelMode.Instant);
     public IntegerSetting breakAttempts = new IntegerSetting("Break Attempts", 2, 1, 10, true, value -> value >= 1);
     public IntegerSetting ticksExisted = new IntegerSetting("Ticks existed", 0, 0, 20);
@@ -123,7 +128,6 @@ public class CrystalAura extends Module {
     public BooleanSetting autoSwitch = new BooleanSetting("Auto Switch", true);
     public BooleanSetting switchBack = new BooleanSetting("Switch Back", true);
     public IntegerSetting switchBackDelay = new IntegerSetting("Switch Back Delay", 150, 50, 500);
-    public BooleanSetting antiWeakness = new BooleanSetting("Anti Weakness", true);
 
     public SettingSeparator stoppingSep = new SettingSeparator("Stopping");
 
@@ -608,6 +612,15 @@ public class CrystalAura extends Module {
         if (!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue())
             result.valid = false;
 
+        if (friendProtectPlace.getValue())
+            for (Entity e : mc.world.getOtherEntities(null, new Box(blockPos).offset(new Vec3d(-7, -6, -7)).stretch(14, 15, 14))) {
+                if (!(e instanceof PlayerEntity) && !Main.socialManager.isFriend(e.getName().getString()))
+                    continue;
+
+                if (DamageUtils.willExplosionPopOrKill(blockPos, 6f, (LivingEntity) e))
+                    result.valid = false;
+            }
+
         if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (armorBreaker.getValue() && CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && result.targetDmg > 0.5))
             return result;
 
@@ -627,6 +640,15 @@ public class CrystalAura extends Module {
 
         if ((!ignoreSelfDamage.getValue() && result.selfDmg > maxSelfDamage.getValue()) || attackedCrystals.get(crystal.getEntityId()) > breakAttempts.getValue())
             result.valid = false;
+
+        if (friendProtectBreak.getValue())
+            for (Entity e : mc.world.getOtherEntities(null, new Box(crystal.getBlockPos()).offset(new Vec3d(-7, -7, -7)).stretch(14, 14, 14))) {
+                if (!(e instanceof PlayerEntity) && !Main.socialManager.isFriend(e.getName().getString()))
+                    continue;
+
+                if (DamageUtils.willExplosionPopOrKill(crystal.getPos(), 6f, (LivingEntity) e))
+                    result.valid = false;
+            }
 
         if ((facePlace.getValue() && target.getHealth() < facePlaceHp.getValue() && result.targetDmg > 2) || (armorBreaker.getValue() && CrystalUtils.getArmorBreaker(target, armorBreakerPct.getValue()) && result.targetDmg > 0.5))
             return result;
