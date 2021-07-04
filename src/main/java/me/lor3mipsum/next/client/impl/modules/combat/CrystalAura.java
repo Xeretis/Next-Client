@@ -686,7 +686,7 @@ public class CrystalAura extends Module {
         double nearestDistance = Double.MAX_VALUE;
 
         for (Entity target : mc.world.getEntities()) {
-            if (!(target instanceof PlayerEntity) || target == mc.player || mc.player.isDead() || mc.player.squaredDistanceTo(target) > 13 * 13)
+            if (!(target instanceof PlayerEntity) || ((PlayerEntity) target).isDead() || target == mc.player || mc.player.squaredDistanceTo(target) > 13 * 13)
                 continue;
 
             double distance = target.squaredDistanceTo(mc.player);
