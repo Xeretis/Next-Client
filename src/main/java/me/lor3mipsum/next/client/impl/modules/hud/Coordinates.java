@@ -27,6 +27,7 @@ public class Coordinates extends HudModule {
 
     public BooleanSetting sortRight = new BooleanSetting("SortRight", false);
     public BooleanSetting sortUp = new BooleanSetting("SortUp", false);
+    public BooleanSetting camera = new BooleanSetting("Camera Coords", false);
     public IntegerSetting decimals = new IntegerSetting("Decimals", 1, 0, 5);
     public ColorSetting color = new ColorSetting("Color", false, new NextColor(255, 255, 255, 255));
 
@@ -42,9 +43,9 @@ public class Coordinates extends HudModule {
         if (mc.player == null || mc.world == null || mc.gameRenderer == null)
             return;
 
-        double x1 = mc.gameRenderer.getCamera().getPos().x;
-        double y1 = mc.gameRenderer.getCamera().getPos().y - mc.player.getEyeHeight(mc.player.getPose());
-        double z1 = mc.gameRenderer.getCamera().getPos().z;
+        double x1 = camera.getValue() ? mc.gameRenderer.getCamera().getPos().x : mc.player.getX();
+        double y1 = camera.getValue() ? mc.gameRenderer.getCamera().getPos().y - mc.player.getEyeHeight(mc.player.getPose()) : mc.player.getY();
+        double z1 = camera.getValue() ? mc.gameRenderer.getCamera().getPos().z : mc.player.getZ();
 
         coordinateString[0] = "XYZ " + getFormattedCoords(x1, y1, z1);
 
