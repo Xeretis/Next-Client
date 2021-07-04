@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 public class DeathCoords extends Module {
 
     @EventHandler
-    private Listener<PacketReceiveEvent> onPacketRecive = new Listener<>(event -> {
+    private Listener<PacketReceiveEvent> onPacketReceive = new Listener<>(event -> {
         if (event.packet instanceof HealthUpdateS2CPacket) {
             HealthUpdateS2CPacket packet = (HealthUpdateS2CPacket) event.packet;
 

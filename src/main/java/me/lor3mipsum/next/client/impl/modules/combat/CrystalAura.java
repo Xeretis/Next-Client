@@ -27,7 +27,6 @@ import me.lor3mipsum.next.client.core.module.Category;
 import me.lor3mipsum.next.client.core.module.Module;
 import me.lor3mipsum.next.client.core.module.annotation.Mod;
 import me.lor3mipsum.next.client.core.setting.SettingSeparator;
-import me.lor3mipsum.next.client.core.social.SocialManager;
 import me.lor3mipsum.next.client.impl.settings.*;
 import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
@@ -489,7 +488,7 @@ public class CrystalAura extends Module {
 
             if (targetingMode.getValue() == TargetingMode.All)
                 for (Entity entity : mc.world.getEntities()) {
-                    if (!(entity instanceof PlayerEntity) || entity == mc.player || Main.socialManager.isFriend(entity.getName().getString()) || mc.player.isDead() || mc.player.squaredDistanceTo(entity) > 13 * 13)
+                    if (!(entity instanceof PlayerEntity) || ((PlayerEntity) entity).isDead() || entity == mc.player || Main.socialManager.isFriend(entity.getName().getString()) || mc.player.squaredDistanceTo(entity) > 13 * 13)
                         continue;
 
                     DmgResult res = getPlaceDmg(pos, (PlayerEntity) entity);
@@ -555,7 +554,7 @@ public class CrystalAura extends Module {
 
             if (targetingMode.getValue() == TargetingMode.All)
                 for (Entity entity : mc.world.getEntities()) {
-                    if (!(entity instanceof PlayerEntity) || entity == mc.player || Main.socialManager.isFriend(entity.getName().getString()) || mc.player.isDead() || mc.player.squaredDistanceTo(entity) > 13 * 13)
+                    if (!(entity instanceof PlayerEntity) || ((PlayerEntity) entity).isDead() || entity == mc.player || Main.socialManager.isFriend(entity.getName().getString()) || mc.player.squaredDistanceTo(entity) > 13 * 13)
                         continue;
 
                     DmgResult res = getBreakDmg( (EndCrystalEntity) crystal, (PlayerEntity) entity);

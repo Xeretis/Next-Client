@@ -196,7 +196,7 @@ public class NextGui extends MinecraftHUDGUI {
                 this.size.width = size.width;
                 this.size.height = size.height;
                 if (size.width < 75) this.size.width = 75;
-                if (size.height<50) this.size.height = 50;
+                if (size.height < 50) this.size.height = 50;
             }
         };
 
