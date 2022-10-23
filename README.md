@@ -1,9 +1,7 @@
-# Fabric Example Mod
+# Next-Client
 
-## Setup
+A minecraft utility mod written in Java aimed at anarchy servers. It was originally exclusive to a group of friends, but I'm making it public as it is discontinued and quite outdated by now.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+Credits to Meteor Client for some of the code (mainly utils).
 
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+I will not be providing support for issues related to this, as it is fairly old and discontinued.
